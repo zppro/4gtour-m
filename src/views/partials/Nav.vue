@@ -1,15 +1,11 @@
-<template>
-  <nav class="nav-header">
-    <a class="nav-item nav-item-left" >
-      <span class="icon icon-me"></span>
-    </a>
-    <a class="nav-item nav-item-center" >
-      <h1 class="" v-text="title"></h1>
-    </a>
-    <a class="nav-item nav-item-right" >
-      <span class="icon icon-menu"></span>
-    </a>
-  </nav>
+<template lang="jade">
+  nav.nav-header
+    a.nav-item.nav-item-left
+      span.icon.icon-me
+    a.nav-item.nav-item-center
+      h1 {{title}}
+    a.nav-item.nav-item-right
+      span.icon.icon-menu
 </template>
 <style>
     .nav-header{
@@ -17,9 +13,6 @@
       color:#333;
       height:60px;
       text-align: center;
-      display:-webkit-box;
-      display:-webkit-flex;
-      display:-ms-flexbox;
       display:flex;
       flex-direction:row;
       align-items: center;
@@ -64,6 +57,7 @@
 </style>
 <script>
     export default {
+
       data () {
         return {
           title: '杭州',
