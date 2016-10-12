@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
+// import 'font-awesome-webpack'
 // import App from './App'
 
 // load router plugin

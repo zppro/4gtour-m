@@ -1,15 +1,15 @@
 <template lang="jade">
   #home
-    hello
+    home
     p Welcome to your 4gtour web app!!!
 </template>
 
 <script>
-import Hello from './components/Hello'
+import Home from './views/Home'
 
 export default {
   components: {
-    Hello
+    Home
   }
 }
 </script>

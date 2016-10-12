@@ -1,4 +1,4 @@
-import App from './Home'
+import App from './App'
 import Nav from './views/partials/Nav'
 
 export default [

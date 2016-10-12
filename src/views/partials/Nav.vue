@@ -1,17 +1,18 @@
 <template lang="jade">
   nav.nav-header
     a.nav-item.nav-item-left
-      span.icon.icon-me
+      span.fa.fa-user
     a.nav-item.nav-item-center
       h1 {{title}}
+        span.fa.fa-caret-down
     a.nav-item.nav-item-right
-      span.icon.icon-menu
+      span.fa.fa-list
 </template>
 <style>
     .nav-header{
-      background-color:lightgray;
-      color:#333;
-      height:60px;
+      background-color:#ea5513;
+      color:white;
+      height:3.2rem;
       text-align: center;
       display:flex;
       flex-direction:row;
@@ -29,7 +30,7 @@
       margin:0;
       height:100%;
       line-height: 60px;
-      font-size:1rem;
+      font-size:1.2rem;
       box-sizing: border-box;
     }
     .nav-header .nav-item-center{
@@ -51,8 +52,8 @@
       margin-right:0.2rem;
     }
 
-    .nav-header .nav-item-left > span,.nav-header .nav-item-right > span{
-
+    .nav-header .nav-item-center > h1 > span{
+      margin-left:0.2rem;
     }
 </style>
 <script>
