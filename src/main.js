@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
 // import 'font-awesome-webpack'
-// import App from './App'
+import App from './App'
 
 // load router plugin
 Vue.use(VueRouter)
@@ -19,5 +19,7 @@ const router = new VueRouter({
 })
 
 new Vue({
-  router
-}).$mount('#app')
+  el: '#app',
+  router: router,
+  render: h => h(App)
+})

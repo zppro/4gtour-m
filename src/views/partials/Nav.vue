@@ -11,7 +11,7 @@
 <style>
     .nav-header{
       background-color:#ea5513;
-      color:white;
+
       height:3.2rem;
       text-align: center;
       display:flex;
@@ -22,10 +22,12 @@
       width:100%;
     }
     .nav-item{
+      color:white;
       font-size:1rem;
       justify-content: center;
     }
     .nav-item h1{
+
       padding:0;
       margin:0;
       height:100%;
