@@ -1,18 +1,13 @@
 <template lang="jade">
   .product-details-intro
-    .product-img
-      img(src="static/img/2.png")
-    .hello
-      h1 {{msg}}
-      p
-        button(@click="hb()") heart-beat
-        button(@click="tpost()") test-post-crossdomain
+    iframe(src="http://r.xiumi.us/board/v5/2thVS/23650245")
 </template>
 
 <script>
 export default {
-  ready () {
-    console.log(123)
+  beforeRouteEnter (to, from, next) {
+    console.log(1231111)
+    next()
   },
   data () {
     return {
@@ -30,18 +25,19 @@ export default {
       console(ret)
     }
   }
-
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .product-details-intro {
-    width:100%;
-    img {
-      height: auto;
-      width: auto\9;
-      width:100%;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border:none;
     }
   }
 </style>

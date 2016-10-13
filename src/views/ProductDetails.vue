@@ -33,5 +33,8 @@ export default {
 <style lang="less" scoped>
   .product-details {
     width:100%;
+    display:flex;
+    height:30.15rem;
+    flex-direction:column;
   }
 </style>

@@ -96,7 +96,5 @@
       padding:0 0.2rem;
       opacity: 0.6;
     }
-
   }
-
 </style>

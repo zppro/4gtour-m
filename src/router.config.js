@@ -3,7 +3,7 @@ import Home from './views/Home'
 import DetailsNav from './views/partials/ProductDetailsNav'
 import Details from './views/ProductDetails'
 import DetailsItem from './views/ProductDetailsItem'
-
+import DetailsIntro from './views/ProductDetailsIntro'
 export default [
   // {
   //   path: '*', component: App
@@ -26,6 +26,12 @@ export default [
         path: 'item',
         components: {
           item: DetailsItem
+        }
+      },
+      {
+        path: 'intro',
+        components: {
+          intro: DetailsIntro
         }
       }
     ]

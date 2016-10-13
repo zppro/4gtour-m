@@ -2,8 +2,6 @@
   #app
     router-view(name="head")
     router-view(name="body" transition="fade" transition-mode="out-in")
-    #home
-      p Welcome to your 4gtour web app!!!
 </template>
 
 <script>
@@ -33,14 +31,5 @@
     max-width: 600px;
     font-family: Source Sans Pro, Helvetica, sans-serif;
     text-align: center;
-    -webkit-box-flex:1;
-    -webkit-flex:1;
-    -ms-flex:1;
-    flex:1;
-  }
-
-  .logo {
-    width: 100px;
-    height: 100px
   }
 </style>
