@@ -1,23 +1,22 @@
 <template lang="jade">
   #app
     router-view(name="head")
-    router-view(name="body" transition="fade" transition-mode="out-in" keep-alive)
+    router-view(name="body" transition="fade" transition-mode="out-in")
     #home
       p Welcome to your 4gtour web app!!!
 </template>
 
 <script>
-import Home from './views/Home'
+  import Home from './views/Home'
 
-export default {
-  components: {
-    Home
+  export default {
+    components: {
+      Home
+    }
   }
-}
 </script>
 
 <style>
-
   .fade-transition {
     transition: opacity .3s ease;
   }

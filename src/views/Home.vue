@@ -5,8 +5,8 @@
         .product-img(slot="img")
           img(:src="product.img")
           .product-price(slot="price")
-            span ￥
-            {{product.price}}
+            span.unit ￥
+            span {{product.price}}
         .product-title(slot="title") {{product.title}}
         .product-description(slot="description") {{product.description}}
     p
@@ -76,7 +76,7 @@
         position:absolute;
         bottom: 1rem;
         right: 0;
-        span{
+        span.unit{
           font-size:0.6rem;
         }
       }
@@ -94,6 +94,7 @@
       margin-bottom: 0.65rem;
       width:100%;
       padding:0 0.2rem;
+      opacity: 0.6;
     }
 
   }

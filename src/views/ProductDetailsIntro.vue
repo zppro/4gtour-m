@@ -1,7 +1,12 @@
 <template lang="jade">
-  .product-details
-    router-view(name="item")
-    router-view(name="intro")
+  .product-details-intro
+    .product-img
+      img(src="static/img/2.png")
+    .hello
+      h1 {{msg}}
+      p
+        button(@click="hb()") heart-beat
+        button(@click="tpost()") test-post-crossdomain
 </template>
 
 <script>
@@ -31,7 +36,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  .product-details {
+  .product-details-intro {
     width:100%;
+    img {
+      height: auto;
+      width: auto\9;
+      width:100%;
+    }
   }
 </style>

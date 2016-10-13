@@ -10,9 +10,7 @@
     props: ['productId'],
     computed: {
       itemUrl () {
-        var ret = {name: 'details', params: {id: this.productId}}
-        console.log(ret)
-        return ret
+        return {path: '/details/' + this.productId + '/item'}
       }
     }
   }

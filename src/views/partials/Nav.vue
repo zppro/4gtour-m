@@ -1,17 +1,15 @@
 <template lang="jade">
   nav.nav-header
     a.nav-item.nav-item-left
-      span.fa.fa-user
+      span.fa.fa-chevron-left
     a.nav-item.nav-item-center
       h1 {{title}}
-        span.fa.fa-caret-down
     a.nav-item.nav-item-right
-      span.fa.fa-list
+      span.fa.fa-external-link
 </template>
 <style>
     .nav-header{
       background-color:#ea5513;
-
       height:3.2rem;
       text-align: center;
       display:flex;
@@ -63,7 +61,7 @@
 
       data () {
         return {
-          title: '杭州',
+          title: '...',
           path: ''
         }
       }
