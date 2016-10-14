@@ -71,7 +71,7 @@
       switchTab (index) {
         $('.tab-header').removeClass('tab-header-active')
         $($('.tab-header').get(index)).addClass('tab-header-active')
-        let subDetails = index === 0 ? 'item' : 'intro'
+        let subDetails = index === 0 ? 'info' : 'intro'
         console.log(this.$route.params.id)
         // console.log(this.$router)
         this.$router.replace({path: '/details/' + this.$route.params.id + '/' + subDetails})

@@ -5,14 +5,22 @@
 
 <script>
 export default {
-  beforeRouteEnter (to, from, next) {
-    console.log(1231111)
-    next()
-  },
   data () {
     return {
+      hoho: '',
       msg: 'Hello 4gtour!!!'
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    console.log(1231111)
+    next(vm => {
+      vm.hoho = 'got it'
+    })
+  },
+  created () {
+    // fetch the data when the view is created and the data is
+    // already being observed
+    console.log('created in productDetailsIntro')
   },
   methods: {
     hb () {

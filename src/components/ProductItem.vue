@@ -10,7 +10,7 @@
     props: ['productId'],
     computed: {
       itemUrl () {
-        return {path: '/details/' + this.productId + '/item'}
+        return {path: '/details/' + this.productId + '/info'}
       }
     }
   }
