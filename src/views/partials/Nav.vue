@@ -1,11 +1,11 @@
 <template lang="jade">
   nav.nav-header
     a.nav-item.nav-item-left
-      span.fa.fa-chevron-left
+      span.fa.fa-chevron-left(@click="back")
     a.nav-item.nav-item-center
       h1 {{title}}
     a.nav-item.nav-item-right
-      span.fa.fa-external-link
+      span.fa
 </template>
 <style>
     .nav-header{
@@ -18,6 +18,9 @@
       padding:0;
       margin:0;
       width:100%;
+      a{
+        cursor: pointer;
+      }
     }
     .nav-item{
       color:white;
@@ -25,12 +28,11 @@
       justify-content: center;
     }
     .nav-item h1{
-
       padding:0;
       margin:0;
       height:100%;
-      line-height: 60px;
-      font-size:1.2rem;
+      line-height: 3.2rem;
+      font-size:1rem;
       box-sizing: border-box;
     }
     .nav-header .nav-item-center{
@@ -58,11 +60,14 @@
 </style>
 <script>
     export default {
-
       data () {
         return {
-          title: '...',
-          path: ''
+          title: this.$route.name
+        }
+      },
+      methods: {
+        back () {
+          window.history.back()
         }
       }
     }

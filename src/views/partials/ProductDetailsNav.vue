@@ -18,6 +18,7 @@
       padding:0;
       margin:0;
       width:100%;
+      background-color:white;
       a{
         cursor: pointer;
       }

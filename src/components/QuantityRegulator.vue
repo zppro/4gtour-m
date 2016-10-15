@@ -1,19 +1,18 @@
 <template lang="jade">
   span.quantity-regulator
-    span.btn.fa.fa-minus(@click="minus()")
-    span.q-value {{qValue}}
-    span.btn.fa.fa-plus(@click="plus()")
+    span.btn.fa.fa-minus(@click="minus")
+    .q-value {{qValue}}
+    span.btn.fa.fa-plus(@click="plus")
 </template>
 <script>
   export default {
     props: ['qValue'],
     methods: {
       minus () {
-        console.log(this.qValue)
-        // this.qValue--
+        this.$emit('minus')
       },
       plus () {
-        this.qValue++
+        this.$emit('plus')
       }
     }
   }
@@ -24,13 +23,16 @@
     border-radius: 0.8rem;
     -moz-border-radius: 0.8rem;
     border:solid 1px #000;
+    padding:0.2rem;
     span.btn{
       cursor:pointer;
-      margin: 0 0.3rem;
+      margin: 0 0.2rem;
     }
-    span.q-value{
-      border:solid 1px #000;
+    .q-value{
+      width:1.8rem;
+      display:inline-block;
       padding: 0 0.4rem;
+      text-align: center;
     }
   }
 </style>

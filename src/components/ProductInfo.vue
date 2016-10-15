@@ -16,7 +16,7 @@
     .product-block.product-block-ticket
       .product-ticket
         slot(name="ticket")
-      span.fa.fa-ellipsis-h
+      router-link.fa.fa-ellipsis-h(v-show="showChangeTicket" , :to="selectTicketRoute")
     .product-block.product-block-address
       .label-title 详细地址
       slot(name="address")
@@ -30,6 +30,20 @@
       .label-title 交通指南
       slot(name="travel-guide")
 </template>
+<script>
+  export default {
+    data () {
+      return {
+      }
+    },
+    props: ['showChangeTicket', 'selectTicketRoute'],
+    methods: {
+      changeTicket () {
+        this.$emit('changeTicket')
+      }
+    }
+  }
+</script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .product-info {
@@ -88,11 +102,11 @@
         display: inline-block;
         padding-left:0.2rem;
         text-decoration: line-through;
-        display: inline-block;
       }
       .product-buy-quantity{
         padding-left:0.2rem;
         display: inline-block;
+        font-size:1rem;
       }
       .product-level{
         position: absolute;

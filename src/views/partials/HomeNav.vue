@@ -27,7 +27,7 @@
           padding:0;
           margin:0;
           height:100%;
-          line-height: 60px;
+          line-height: 3.2rem;
           font-size:1.2rem;
           box-sizing: border-box;
         }

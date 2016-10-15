@@ -6,6 +6,8 @@ import DetailsInfo from './views/ProductDetailsInfo'
 import DetailsIntro from './views/ProductDetailsIntro'
 import Nav from './views/partials/Nav'
 import TicketSelect from './views/TicketSelect'
+import OrderConfirm from './views/OrderConfirm'
+
 export default [
   // {
   //   path: '*', component: App
@@ -39,10 +41,19 @@ export default [
     ]
   },
   {
-    path: '/ticket-select/:id',
+    name: '挑选门票',
+    path: '/ticket-select/:productId/:ticketId',
     components: {
       head: Nav,
       body: TicketSelect
+    }
+  },
+  {
+    name: '填写订单',
+    path: '/order-confirm',
+    components: {
+      head: Nav,
+      body: OrderConfirm
     }
   }
 ]

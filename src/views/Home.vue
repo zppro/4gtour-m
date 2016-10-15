@@ -22,9 +22,9 @@
       return {
         msg: 'Hello 4gtour!!!',
         products: [
-          {id: 'product 1', img: 'static/img/1.png', title: '杭州西湖雷峰塔', description: '船游千年运河 赏潺潺流水人家', price: '30'},
-          {id: 'product 2', img: 'static/img/2.png', title: '杭州京杭大运河', description: '船游千年运河 赏潺潺流水人家', price: '78'},
-          {id: 'product 3', img: 'static/img/3.png', title: '杭州宋城', description: '船游千年运河 赏潺潺流水人家', price: '45'}
+          {id: 'product 1', img: 'static/img/1.png', title: '杭州西湖雷峰塔', description: '船游千年运河 赏潺潺流水人家', price: 30},
+          {id: 'product 2', img: 'static/img/2.png', title: '杭州京杭大运河', description: '船游千年运河 赏潺潺流水人家', price: 78},
+          {id: 'product 3', img: 'static/img/3.png', title: '杭州宋城', description: '船游千年运河 赏潺潺流水人家', price: 45}
         ]
       }
     },
@@ -51,6 +51,7 @@
   .home{
     width: 100%;
     text-align:left;
+    background-color:white;
     h1 {
       color: #42b983;
     }
