@@ -28,6 +28,18 @@
         ]
       }
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        let success = vm.$http.get('api/scenicSpots').then(ret => ret.success)
+        if (success) {
+          console.log(success)
+          console.log(234)
+        } else {
+          console.log(456)
+        }
+//        console.log(success)
+      })
+    },
     methods: {
       hb () {
         let success = this.$http.get('api/hb')
