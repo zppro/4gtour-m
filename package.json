@@ -1,6 +1,6 @@
 {
   "name": "4gtour-m",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "4gtour web app with h5 ",
   "author": "zppro",
   "private": true,
@@ -12,7 +12,9 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs"
   },
   "dependencies": {
+    "moment": "^2.15.1",
     "vue": "^2.0.1",
+    "vue-datepicker": "^1.2.2",
     "vue-resource": "^1.0.3",
     "vue-router": "^2.0.0"
   },

@@ -61,7 +61,7 @@
     }
     .product-block{
       min-height: 2.4rem;
-      padding:0.6rem;
+      padding:0.4rem;
       border-top:solid 1px #4f4f4f;
       background-color: white;
 

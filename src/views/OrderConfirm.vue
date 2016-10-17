@@ -3,15 +3,19 @@
     .order-info-block
       .order-info-item
         span.item-title 商品:
-        .item-value.field-title {{order.title}}
+        .item-value.field-title {{order.p_name}}
       .order-info-item
         span.item-title 数量:
         .item-value
-          quantity-regulator(:q-value="order.buy_quantity" v-on:minus="minus" v-on:plus="plus")
+          quantity-regulator(:q-value="order.quantity" v-on:minus="minus" v-on:plus="plus")
       .order-info-item
         span.item-title 金额:
         .item-value ￥{{orderAmount}}
     .order-info-block
+      .order-info-item
+        span.item-title 出 游 日 期:
+        .item-value.field-travel_date
+          date-picker(:time.sync="order.travel_date", :option="date_option", :limit="date_limit")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
@@ -21,39 +25,73 @@
         .item-value
           input(v-model="order.link_phone",placeholder="填写联系人姓名")
     .order-actions
-      a.btn.pay-now(@click="pay") 立即购买
+      a.btn.pay-now(@click="pay") 生成订单并支付
     .order-padding-bottom
 </template>
 
 <script>
   import quantityRegulator from '../components/QuantityRegulator'
+  import datePicker from 'vue-datepicker'
+  import moment from 'moment'
   export default {
     data () {
       return {
-        order: null
+        order: {},
+        date_now: moment().format('YYYY-MM-DD'),
+        date_option: {
+          type: 'day',
+          week: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          month: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+          format: 'YYYY-MM-DD',
+          placeholder: '您的出行日期',
+          inputStyle: {
+            'display': 'inline-block',
+            'padding': '0.1rem',
+            'width': '8rem',
+            'line-height': '1.29rem',
+            'font-size': '0.935rem',
+            'border': 'none',
+            'color': '#5F5F5F'
+          },
+          color: {
+            header: '#ccc',
+            headerText: '#f00'
+          },
+          buttons: {
+            ok: '确定',
+            cancel: '取消'
+          },
+          overlayOpacity: 0.5, // 0.5 as default
+          dismissible: true // as true as default
+        },
+        date_limit: [{
+          type: 'fromto',
+          from: moment().format('YYYY-MM-DD')
+        }]
       }
     },
     computed: {
       // a computed getter
       orderAmount: function () {
         // `this` points to the vm instance
-        return this.order.buy_quantity * this.order.price
+        return this.order.quantity * this.order.p_price
       }
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        vm.order = {ticket_id: 'ticket 1', title: '雷峰塔门票A+雷峰塔门票B+雷峰塔门票C', price: 30, buy_quantity: 2, link_phone: '18668001381'}
+        vm.order = window.$.extend({travel_date: vm.date_now}, to.params)
+        console.log(vm.order)
       })
     },
     created () {
-      console.log(this.$route.params)
+      console.log(moment().format('YYYY-MM-DD'))
     },
     methods: {
       minus () {
-        this.order.buy_quantity > 1 && this.order.buy_quantity--
+        this.order.quantity > 1 && this.order.quantity--
       },
       plus () {
-        this.order.buy_quantity++
+        this.order.quantity++
       },
       selectTicket (ticketId) {
         console.log(ticketId)
@@ -70,7 +108,8 @@
       }
     },
     components: {
-      quantityRegulator
+      quantityRegulator,
+      datePicker
     }
   }
 </script>
@@ -106,6 +145,9 @@
             width:8rem;
             border:none;
           }
+          input:active,input:focus{
+            border:none;
+          }
         }
         .field-title{
           font-size:0.6rem;
@@ -126,6 +168,7 @@
         height:3rem;
         line-height:3rem;
         border:none;
+        cursor: pointer;
       }
       .pay-now{
         background-color: #fa761d;

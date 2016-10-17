@@ -9,9 +9,6 @@
             span {{product.price}}
         .product-title(slot="title") {{product.title}}
         .product-description(slot="description") {{product.description}}
-    p
-      button(@click="hb()") heart-beat
-      button(@click="tpost()") test-post-crossdomain
 </template>
 
 <script>
@@ -20,35 +17,25 @@
   export default {
     data () {
       return {
-        msg: 'Hello 4gtour!!!',
-        products: [
-          {id: 'product 1', img: 'static/img/1.png', title: '杭州西湖雷峰塔', description: '船游千年运河 赏潺潺流水人家', price: 30},
-          {id: 'product 2', img: 'static/img/2.png', title: '杭州京杭大运河', description: '船游千年运河 赏潺潺流水人家', price: 78},
-          {id: 'product 3', img: 'static/img/3.png', title: '杭州宋城', description: '船游千年运河 赏潺潺流水人家', price: 45}
-        ]
+        products: []
       }
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        let success = vm.$http.get('api/scenicSpots').then(ret => ret.success)
-        if (success) {
-          console.log(success)
-          console.log(234)
-        } else {
-          console.log(456)
-        }
-//        console.log(success)
+        vm.fetchScenicSpots().then(rows => {
+          vm.products = rows
+        })
       })
     },
     methods: {
-      hb () {
-        let success = this.$http.get('api/hb')
-            .then(ret => ret.success)
-        console(success)
-      },
-      tpost () {
-        let ret = this.$http.post('api/tpost', {foo: 'bar'})
-        console(ret)
+      fetchScenicSpots () {
+        return this.$http.get('api/scenicSpots').then(ret => {
+          let rows = []
+          if (ret.data.success) {
+            rows = ret.data.rows
+          }
+          return rows
+        })
       }
     },
     components: {

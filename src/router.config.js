@@ -50,7 +50,7 @@ export default [
   },
   {
     name: '填写订单',
-    path: '/order-confirm',
+    path: '/order-confirm/:uulid,:uuid,:p_price,:quantity,:p_name',
     components: {
       head: Nav,
       body: OrderConfirm
