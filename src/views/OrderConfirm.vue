@@ -19,13 +19,13 @@
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
-          input(v-model="order.link_man",placeholder="填写联系人姓名")
+          input(v-model="order.link_man",placeholder="填写联系人姓名",required)
       .order-info-item
         span.item-title 联系人手机:
         .item-value
-          input(v-model="order.link_phone",placeholder="填写联系人姓名")
+          input(v-model="order.link_phone",placeholder="填写联系人姓名",required)
     .order-actions
-      a.btn.pay-now(@click="pay") 生成订单并支付
+      a.btn.pay-now(@click="orderAndPay") 生成订单并支付
     .order-padding-bottom
 </template>
 
@@ -78,6 +78,7 @@
       }
     },
     beforeRouteEnter (to, from, next) {
+      console.log(to.params)
       next(vm => {
         vm.order = window.$.extend({travel_date: vm.date_now}, to.params)
         console.log(vm.order)
@@ -97,10 +98,17 @@
         console.log(ticketId)
         this.choosen = ticketId
       },
-      pay () {
-        let success = this.$http.get('api/hb')
-            .then(ret => ret.success)
-        console(success)
+      orderAndPay () {
+        window.proxy.$exec('getToken')
+        //        this.$http.post('api/order', this.order).then(ret => {
+//          if (ret.data.success) {
+//            var r = ret.data.ret
+//            let info = {code: r.code, amount: r.amount}
+//            console.log(info)
+//          } else {
+//            console.log(ret.data.msg)
+//          }
+//        })
       },
       tpost () {
         let ret = this.$http.post('api/tpost', {foo: 'bar'})
