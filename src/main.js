@@ -7,8 +7,8 @@ import App from './App'
 // load router plugin
 Vue.use(VueRouter)
 Vue.use(VueResource)
-// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services'
-Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.106:3002/me-services' : 'http://sh.okertrip.com/me-services'
+// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services' http://sh.okertrip.com/me-services
+Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.106:3002/me-services' : 'http://192.168.255.106:3002/me-services'
 Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
 Vue.http.interceptors.push((request, next) => {
@@ -24,7 +24,7 @@ Vue.http.interceptors.push((request, next) => {
   // oPayload.iat = tNow
   // oPayload.exp = tEnd
   let salt = 'carrycheng:' + ts
-  oPayload.member = {member_id: 'everyone', member_name: 'everyone'}
+  oPayload.member = window.proxy.member || {member_id: 'everyone', member_name: 'everyone'}
   let sHeader = JSON.stringify(oHeader)
   let sPayload = JSON.stringify(oPayload)
   let sJWT = window.KJUR.jws.JWS.sign('HS256', sHeader, sPayload, salt)

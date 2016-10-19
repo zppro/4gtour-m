@@ -37,13 +37,14 @@
         }
       }
       var url = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
-      // alert(url);
       this.proxyHost.src = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
     },
     setMember: function(params){
-      alert(params);
-      alert(params.member_id);
+      alert(JSON.stringify(params));
       this.member = params;//保证设置了用户 params {member_id: member_name:}
+    },
+    paySuccess: function(){
+      alert('支付成功');
     },
     setToken: function (params) {
       this.token = params.token;

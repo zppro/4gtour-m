@@ -103,11 +103,12 @@
         if (!window.proxy.member) {
           window.proxy.$exec('openLogin')
         } else {
+//          window.proxy.$exec('payTest', this.order)
+          window.alert(JSON.stringify(window.proxy.member))
           this.$http.post('api/order', this.order).then(ret => {
             if (ret.data.success) {
               var r = ret.data.ret
               let info = {code: r.code, amount: r.amount}
-              console.log(info)
               window.proxy.$exec('pay', info)
             } else {
               console.log(ret.data.msg)
