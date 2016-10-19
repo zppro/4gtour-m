@@ -99,16 +99,21 @@
         this.choosen = ticketId
       },
       orderAndPay () {
-        window.proxy.$exec('getToken')
-        //        this.$http.post('api/order', this.order).then(ret => {
-//          if (ret.data.success) {
-//            var r = ret.data.ret
-//            let info = {code: r.code, amount: r.amount}
-//            console.log(info)
-//          } else {
-//            console.log(ret.data.msg)
-//          }
-//        })
+        console.log(window.proxy.member)
+        if (!window.proxy.member) {
+          window.proxy.$exec('openLogin')
+        } else {
+          this.$http.post('api/order', this.order).then(ret => {
+            if (ret.data.success) {
+              var r = ret.data.ret
+              let info = {code: r.code, amount: r.amount}
+              console.log(info)
+              window.proxy.$exec('pay', info)
+            } else {
+              console.log(ret.data.msg)
+            }
+          })
+        }
       },
       tpost () {
         let ret = this.$http.post('api/tpost', {foo: 'bar'})

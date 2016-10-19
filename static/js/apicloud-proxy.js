@@ -17,19 +17,18 @@
   }
 
   window.proxy= {
-    token: 'none',
+    querty: 'none',
     $init: function() {
       var ret = parseQueryString();
       this.proxy_url = ret.url;
-      alert(this.proxy_url);
-
     },
     $exec: function(method,params) {
-      alert('$exec');
       if (!this.proxyHost) {
         this.proxyHost = document.createElement('iframe');
+        this.proxyHost.id = 'proxy_frame';
         this.proxyHost.name = 'proxy_frame';
         this.proxyHost.style.display = 'none';
+        document.body.appendChild(this.proxyHost);
       }
       var arr = [];
       if(params){
@@ -38,14 +37,19 @@
         }
       }
       var url = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
-      alert(url);
-      alert(this.proxyHost);
+      // alert(url);
       this.proxyHost.src = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
     },
+    setMember: function(params){
+      alert(params);
+      alert(params.member_id);
+      this.member = params;//保证设置了用户 params {member_id: member_name:}
+    },
     setToken: function (params) {
-      this.token = params;
+      this.token = params.token;
+      alert(this.token);
     }
   };
   window.proxy.$init();
-
+  window.proxy.$exec('remote-proxy');
 }())

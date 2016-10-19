@@ -23,7 +23,7 @@
           for(var i = 0; i < parms.length; i ++) {
             console.log(23);
             var arr = parms[i].split('=');
-            this.params[arr[0]]=qsUnescape(arr[1]);
+            this.params[arr[0]] = unescape(arr[1]);
           }
         },
         delegateInvoke: function () {
