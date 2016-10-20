@@ -80,12 +80,16 @@
     beforeRouteEnter (to, from, next) {
       console.log(to.params)
       next(vm => {
-        vm.order = window.$.extend({travel_date: vm.date_now}, to.params)
-        console.log(vm.order)
+        vm.order = window.$.extend({travel_date: vm.date_now}, to.params, (window.proxy.order_info || {}))
       })
     },
     created () {
-      console.log(moment().format('YYYY-MM-DD'))
+      console.log(window.proxy.paySuccess || 'null')
+      window.proxy.paySuccess = this.paySuccess
+    },
+    beforeDestroy () {
+      window.proxy.paySuccess = null
+      console.log('before destroy')
     },
     methods: {
       minus () {
@@ -99,22 +103,34 @@
         this.choosen = ticketId
       },
       orderAndPay () {
-        console.log(window.proxy.member)
-        if (!window.proxy.member) {
+        if (!window.proxy.member.member_id) {
+          window.alert('需要登录')
           window.proxy.$exec('openLogin')
         } else {
-//          window.proxy.$exec('payTest', this.order)
-          window.alert(JSON.stringify(window.proxy.member))
+          window.alert('开始支付')
           this.$http.post('api/order', this.order).then(ret => {
             if (ret.data.success) {
               var r = ret.data.ret
-              let info = {code: r.code, amount: r.amount}
+              this.order.orderId = r._id
+              let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
+              window.alert(JSON.stringify(info))
               window.proxy.$exec('pay', info)
             } else {
               console.log(ret.data.msg)
             }
           })
         }
+      },
+      paySuccess () {
+        window.alert(this.order.orderId)
+        this.$http.put('api/order/' + this.order.orderId).then(ret => {
+          if (ret.data.success) {
+            window.alert('支付成功')
+            this.$router.replace({path: '/'})
+          } else {
+            console.log(ret.data.msg)
+          }
+        })
       },
       tpost () {
         let ret = this.$http.post('api/tpost', {foo: 'bar'})

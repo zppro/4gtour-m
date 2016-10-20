@@ -18,6 +18,8 @@
 
   window.proxy= {
     querty: 'none',
+    member: {},
+    order_info: {},
     $init: function() {
       var ret = parseQueryString();
       this.proxy_url = ret.url;
@@ -39,12 +41,18 @@
       var url = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
       this.proxyHost.src = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
     },
+    autoLogin: function(params){
+      if(params.member_id){
+        alert('自动登录...')
+        this.member.member_id = params.member_id;
+        this.member.member_name = params.member_name;
+        this.order_info.link_man = params.order_link_man;
+        this.order_info.link_phone = params.order_link_phone;
+      }
+    },
     setMember: function(params){
       alert(JSON.stringify(params));
       this.member = params;//保证设置了用户 params {member_id: member_name:}
-    },
-    paySuccess: function(){
-      alert('支付成功');
     },
     setToken: function (params) {
       this.token = params.token;

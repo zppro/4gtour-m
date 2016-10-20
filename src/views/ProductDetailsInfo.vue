@@ -72,6 +72,9 @@
         })
       })
     },
+    created () {
+      console.log(window.proxy.paySuccess || 'null')
+    },
     methods: {
       fetchScenicSpotInfo (scenicSpotId) {
         console.log(scenicSpotId)
@@ -106,17 +109,17 @@
     width:100%;
     .product-actions{
       text-align:center;
-      margin: 0;
+      margin: 0 auto;
       pading: 0;
       max-width: 18.75rem;
-      width:18.75rem;
+      width: 18.75rem;
       position: fixed;
       bottom:0;
       .btn{
         display: inline-block;
         opacity: 0.8;
         color:white;
-        width:100%;
+        width: 100%;
         font-size:1.1rem;
         height:3rem;
         line-height:3rem;

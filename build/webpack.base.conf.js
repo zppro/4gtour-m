@@ -5,7 +5,6 @@ var projectRoot = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    fa: 'font-awesome-webpack',
     app: './src/main.js'
   },
   output: {
@@ -64,26 +63,14 @@ module.exports = {
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
       },
-      // {
-      //   test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-      //   loader: 'url',
-      //   query: {
-      //     limit: 10000,
-      //     name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
-      //   }
-      // },
-      //font-awesome
-      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" ,
-        query:{
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
-        }
-      },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader",
-        query:{
+      {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'url',
+        query: {
+          limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
-
     ]
   },
   eslint: {

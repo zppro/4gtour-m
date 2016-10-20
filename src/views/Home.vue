@@ -22,12 +22,16 @@
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
+        vm.autoLogin()
         vm.fetchScenicSpots().then(rows => {
           vm.products = rows
         })
       })
     },
     methods: {
+      autoLogin () {
+        window.proxy.$exec('autoLogin')
+      },
       fetchScenicSpots () {
         return this.$http.get('api/scenicSpots').then(ret => {
           let rows = []
