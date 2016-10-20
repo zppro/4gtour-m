@@ -22,7 +22,7 @@
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        if (window.proxy.$isLogin()) {
+        if (!window.proxy.$isLogin()) {
           vm.autoLogin()
         }
         vm.fetchScenicSpots().then(rows => {
