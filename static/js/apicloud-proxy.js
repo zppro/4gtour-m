@@ -25,7 +25,7 @@
       this.proxy_url = ret.url;
     },
     $isLogin: function(){
-      return !!window.proxy.member.member_id
+      return !!this.member.member_id
     },
     $exec: function(method,params) {
       if (!this.proxyHost) {
@@ -46,9 +46,8 @@
     },
     autoLogin: function(params){
       alert('自动登录...');
-      alert(JSON.stringify(params));
       if(params.member_id){
-
+        alert(JSON.stringify(params));
         this.member.member_id = params.member_id;
         this.member.member_name = params.member_name;
         this.order_info.link_man = params.order_link_man;

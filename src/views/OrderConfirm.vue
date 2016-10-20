@@ -157,7 +157,7 @@
       border-bottom: solid 1px lightgray;
       .order-info-item{
         text-align:left;
-        height:2.5rem;
+        height:2.5rem;vm.autoLogin()
         padding-left:0.2rem;
         border-bottom: solid 1px lightgray;
         font-size:0.935rem;
