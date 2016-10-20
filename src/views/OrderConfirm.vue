@@ -148,7 +148,6 @@
 <style lang="less" scoped>
   .order-details {
     width: 100%;
-
     .order-info-block{
       background-color: white;
       margin-top:0.6rem;
@@ -157,7 +156,7 @@
       border-bottom: solid 1px lightgray;
       .order-info-item{
         text-align:left;
-        height:2.5rem;vm.autoLogin()
+        height:2.5rem;
         padding-left:0.2rem;
         border-bottom: solid 1px lightgray;
         font-size:0.935rem;
