@@ -22,7 +22,9 @@
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        vm.autoLogin()
+        if (window.proxy.$isLogin()) {
+          vm.autoLogin()
+        }
         vm.fetchScenicSpots().then(rows => {
           vm.products = rows
         })

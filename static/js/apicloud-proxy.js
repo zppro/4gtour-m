@@ -24,6 +24,9 @@
       var ret = parseQueryString();
       this.proxy_url = ret.url;
     },
+    $isLogin: function(){
+      return !!window.proxy.member.member_id
+    },
     $exec: function(method,params) {
       if (!this.proxyHost) {
         this.proxyHost = document.createElement('iframe');
@@ -42,8 +45,10 @@
       this.proxyHost.src = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
     },
     autoLogin: function(params){
+      alert('自动登录...');
+      alert(JSON.stringify(params));
       if(params.member_id){
-        alert('自动登录...')
+
         this.member.member_id = params.member_id;
         this.member.member_name = params.member_name;
         this.order_info.link_man = params.order_link_man;
@@ -51,12 +56,11 @@
       }
     },
     setMember: function(params){
-      alert(JSON.stringify(params));
+      // alert(JSON.stringify(params));
       this.member = params;//保证设置了用户 params {member_id: member_name:}
     },
     setToken: function (params) {
       this.token = params.token;
-      alert(this.token);
     }
   };
   window.proxy.$init();

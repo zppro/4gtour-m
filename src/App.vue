@@ -28,7 +28,7 @@
     flex-direction:column;
     align-items: center;
     color: #2c3e50;
-    max-width: 600px;
+    max-width: 18.75rem;
     font-family: Source Sans Pro, Helvetica, sans-serif;
     text-align: center;
   }

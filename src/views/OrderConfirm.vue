@@ -103,17 +103,16 @@
         this.choosen = ticketId
       },
       orderAndPay () {
-        if (!window.proxy.member.member_id) {
-          window.alert('需要登录')
+        if (!window.proxy.$isLogin()) {
+//          window.alert('需要登录')
           window.proxy.$exec('openLogin')
         } else {
-          window.alert('开始支付')
+//          window.alert('开始支付')
           this.$http.post('api/order', this.order).then(ret => {
             if (ret.data.success) {
               var r = ret.data.ret
               this.order.orderId = r._id
               let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
-              window.alert(JSON.stringify(info))
               window.proxy.$exec('pay', info)
             } else {
               console.log(ret.data.msg)
@@ -122,10 +121,11 @@
         }
       },
       paySuccess () {
-        window.alert(this.order.orderId)
         this.$http.put('api/order/' + this.order.orderId).then(ret => {
           if (ret.data.success) {
-            window.alert('支付成功')
+//            window.alert('支付成功')
+            window.proxy.order_info.link_man = this.order.link_man
+            window.proxy.order_info.link_phone = this.order.link_phone
             this.$router.replace({path: '/'})
           } else {
             console.log(ret.data.msg)
