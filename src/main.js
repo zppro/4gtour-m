@@ -8,8 +8,8 @@ import App from './App'
 Vue.use(VueRouter)
 Vue.use(VueResource)
 // console.log()
-// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services' http://sh.okertrip.com/me-services
-Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.106:3002/me-services' : 'http://192.168.255.106:3002/me-services'
+// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services'
+Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.106:3002/me-services' : 'http://sh.okertrip.com/me-services'
 Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
 Vue.http.interceptors.push((request, next) => {
