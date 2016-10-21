@@ -3,7 +3,7 @@
 
   function parseQueryString() {
     var ret = {};
-    var queryString = window.location.search;
+    var queryString = decodeURI(decodeURI(window.location.search));
     if (queryString.indexOf("?") != -1) {
       queryString = queryString.substr(1);
     }
@@ -11,13 +11,14 @@
 
     for(var i = 0; i < parms.length; i ++) {
       var arr = parms[i].split('=');
-      ret[arr[0]] = unescape(arr[1]);
+      ret[arr[0]] = arr[1];
     }
     return ret;
   }
 
   window.proxy= {
-    querty: 'none',
+    auto_login_retry_count: 0,
+    auto_login_retry_max: 2,
     member: {},
     order_info: {},
     $init: function() {
@@ -27,7 +28,13 @@
     $isLogin: function(){
       return !!this.member.member_id
     },
+    $needLogin: function() {
+      return !this.$isLogin() && this.auto_login_retry_count < this.auto_login_retry_max;
+    },
     $exec: function(method,params) {
+      if(!this.proxy_url){
+        return;
+      }
       if (!this.proxyHost) {
         this.proxyHost = document.createElement('iframe');
         this.proxyHost.id = 'proxy_frame';
@@ -38,21 +45,21 @@
       var arr = [];
       if(params){
         for (var key in params) {
-          arr.push(key + '=' + escape(params[key]));
+          arr.push(key + '=' + params[key]);
         }
       }
-      var url = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
-      this.proxyHost.src = this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime());
+      var url = encodeURI(encodeURI(this.proxy_url + '?method=' + method + '&' + arr.join('&') + '&ts=' + (new Date().getTime())));
+      this.proxyHost.src = url;
     },
     autoLogin: function(params){
-      alert('自动登录...');
       if(params.member_id){
-        alert(JSON.stringify(params));
+        //alert(JSON.stringify(params));
         this.member.member_id = params.member_id;
         this.member.member_name = params.member_name;
         this.order_info.link_man = params.order_link_man;
         this.order_info.link_phone = params.order_link_phone;
       }
+      this.auto_login_retry_count++;
     },
     setMember: function(params){
       // alert(JSON.stringify(params));

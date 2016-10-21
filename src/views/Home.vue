@@ -22,8 +22,8 @@
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        if (!window.proxy.$isLogin()) {
-          vm.autoLogin()
+        if (window.proxy.$needLogin()) {
+          window.proxy.$exec('autoLogin')
         }
         vm.fetchScenicSpots().then(rows => {
           vm.products = rows
@@ -31,9 +31,6 @@
       })
     },
     methods: {
-      autoLogin () {
-        window.proxy.$exec('autoLogin')
-      },
       fetchScenicSpots () {
         return this.$http.get('api/scenicSpots').then(ret => {
           let rows = []

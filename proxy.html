@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!--<meta name="viewport" content="initial-scale=1.0, maximum-scale=1" />-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <!--<meta name=”viewport” content=”width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;” />-->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-    <title>apicloud 代理</title>
-  </head>
-  <body>
-    <script type='text/javascript'>
-      window.apicloud_proxy = {
-        params: {},
-        parseQueryString: function () {
-          var queryString = window.location.search;
-          if (queryString.indexOf("?") != -1) {
-            queryString = queryString.substr(1);
-          }
-          var parms = queryString.split('&');
-          for(var i = 0; i < parms.length; i ++) {
-            var arr = parms[i].split('=');
-            this.params[arr[0]] = unescape(arr[1]);
-          }
-        },
-        delegateInvoke: function () {
-          this.parseQueryString();
-          if(this.params.method){
-            if(parent.parent){
-              parent.parent.proxy[this.params.method](this.params);
-            }
-            else{
-              window.proxy.$exec(this.params.method,this.params);
-            }
-          }
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!--<meta name="viewport" content="initial-scale=1.0, maximum-scale=1" />-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <!--<meta name=”viewport” content=”width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;” />-->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+  <title>apicloud 代理</title>
+</head>
+<body>
+<script type='text/javascript'>
+  window.apicloud_proxy = {
+    params: {},
+    parseQueryString: function () {
+      var queryString = decodeURI(decodeURI(window.location.search));
+      if (queryString.indexOf("?") != -1) {
+        queryString = queryString.substr(1);
+      }
+      var parms = queryString.split('&');
+      for(var i = 0; i < parms.length; i ++) {
+        var arr = parms[i].split('=');
+        this.params[arr[0]] = arr[1];
+      }
+    },
+    delegateInvoke: function () {
+      this.parseQueryString();
+      if(this.params.method){
+        if(parent.parent){
+          parent.parent.proxy[this.params.method](this.params);
+        }
+        else{
+          window.proxy.$exec(this.params.method,this.params);
         }
       }
+    }
+  }
 
-      window.apicloud_proxy.delegateInvoke();
+  window.apicloud_proxy.delegateInvoke();
 
-    </script>
-  </body>
+</script>
+</body>
 </html>

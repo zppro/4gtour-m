@@ -23,7 +23,7 @@
       .order-info-item
         span.item-title 联系人手机:
         .item-value
-          input(v-model="order.link_phone",placeholder="填写联系人姓名",required)
+          input(type="number", v-model="order.link_phone",placeholder="填写联系人姓名",required)
     .order-actions
       a.btn.pay-now(@click="orderAndPay") 生成订单并支付
     .order-padding-bottom
@@ -107,7 +107,20 @@
 //          window.alert('需要登录')
           window.proxy.$exec('openLogin')
         } else {
+          if (!this.order.link_man) {
+            window.alert('[联系人姓名]必须填写')
+            return
+          }
+          if (!this.order.link_man) {
+            window.alert('[联系人手机]必须填写')
+            return
+          }
+          if (!window.utils.isPhone(this.order.link_phone)) {
+            window.alert('[联系人手机]格式不正确')
+            return
+          }
 //          window.alert('开始支付')
+//          window.alert('in webapp:' + JSON.stringify(this.order))
           this.$http.post('api/order', this.order).then(ret => {
             if (ret.data.success) {
               var r = ret.data.ret
@@ -115,7 +128,7 @@
               let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
               window.proxy.$exec('pay', info)
             } else {
-              console.log(ret.data.msg)
+              window.alert(ret.data.msg)
             }
           })
         }
@@ -123,7 +136,7 @@
       paySuccess () {
         this.$http.put('api/order/' + this.order.orderId).then(ret => {
           if (ret.data.success) {
-//            window.alert('支付成功')
+            window.alert('支付成功')
             window.proxy.order_info.link_man = this.order.link_man
             window.proxy.order_info.link_phone = this.order.link_phone
             this.$router.replace({path: '/'})
@@ -150,7 +163,7 @@
     width: 100%;
     .order-info-block{
       background-color: white;
-      margin-top:0.6rem;
+      margin-top:0.6rem;autoLogin
       padding: 0.2rem;
       border-top: solid 1px lightgray;
       border-bottom: solid 1px lightgray;
