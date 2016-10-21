@@ -121,20 +121,32 @@
           }
 //          window.alert('开始支付')
 //          window.alert('in webapp:' + JSON.stringify(this.order))
-          this.$http.post('api/order', this.order).then(ret => {
-            if (ret.data.success) {
-              var r = ret.data.ret
-              this.order.orderId = r._id
-              let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
-              window.proxy.$exec('pay', info)
-            } else {
-              window.alert(ret.data.msg)
-            }
-          })
+          if (!this.order.orderId) {
+            this.$http.post('api/order', this.order).then(ret => {
+              if (ret.data.success) {
+                var r = ret.data.ret
+                this.order.orderId = r._id
+                this.order.code = r.code
+                let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
+                window.proxy.$exec('pay', info)
+              } else {
+                window.alert(ret.data.msg)
+              }
+            })
+          } else {
+            this.$http.put('api/order/' + this.order.orderId, {quantity: this.order.quantity, amount: this.orderAmount, link_man: this.order.link_man, link_phone: this.order.link_phone, travel_date: this.order.travel_date}).then(ret => {
+              if (ret.data.success) {
+                let info = {code: this.order.code, amount: this.orderAmount, order_link_man: this.order.link_man, order_link_phone: this.order.link_phone}
+                window.proxy.$exec('pay', info)
+              } else {
+                window.alert(ret.data.msg)
+              }
+            })
+          }
         }
       },
       paySuccess () {
-        this.$http.put('api/order/' + this.order.orderId).then(ret => {
+        this.$http.put('api/order/' + this.order.orderId, {local_status: 'A0003'}).then(ret => {
           if (ret.data.success) {
             window.alert('支付成功')
             window.proxy.order_info.link_man = this.order.link_man
