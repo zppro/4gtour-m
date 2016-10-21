@@ -25,9 +25,9 @@
   export default {
     data () {
       return {
-        product: {}
       }
     },
+    props: ['product'],
     computed: {
       // a computed getter
       selectTicketRoute: function () {
@@ -35,7 +35,6 @@
         return '/ticket-select/' + this.product.id + '/' + this.product.selected_ticket_id
       },
       showChangeTicket: function () {
-        console.log(this.product)
         if (this.product) {
           return this.product.tickets_count > 1
         } else {
@@ -46,46 +45,7 @@
         return '/order-confirm/' + this.product.selected_ticket_uulid + ',' + this.product.selected_ticket_uuid + ',' + this.product.selected_ticket_price + ',' + this.product.buy_quantity + ',' + this.product.selected_ticket_name
       }
     },
-    beforeRouteEnter (to, from, next) {
-//      next(vm => {
-//        vm.product = {
-//          id: 'product 1',
-//          img: 'static/img/1.png',
-//          title: '杭州西湖雷峰塔',
-//          buy_quantity: 1,
-//          level: 'AAAAA',
-//          selected_ticket_id: 'ticket 1',
-//          selected_ticket_price: 30,
-//          selected_ticket_bid_price: 90,
-//          selected_ticket_name: '雷峰塔门票A+雷峰塔门票B',
-//          tickets_count: 2,
-//          address: '杭州市西湖区南山路15号',
-//          runtime: '08:00-20:30(3月15日-11月15日)<br/>08:00-17:30(11月16日-次年3月14日)',
-//          tip: '...',
-//          travel_guide: '...'
-//        }
-//        console.log('vm.product')
-//      })
-      next(vm => {
-        vm.fetchScenicSpotInfo(to.params.id).then(p => {
-          vm.product = p
-        })
-      })
-    },
-    created () {
-      console.log(window.proxy.paySuccess || 'null')
-    },
     methods: {
-      fetchScenicSpotInfo (scenicSpotId) {
-        console.log(scenicSpotId)
-        return this.$http.get('api/scenicSpot/' + scenicSpotId).then(ret => {
-          let p = {}
-          if (ret.data.success) {
-            p = ret.data.ret
-          }
-          return p
-        })
-      },
       minus () {
         this.product.buy_quantity > 1 && this.product.buy_quantity--
       },
