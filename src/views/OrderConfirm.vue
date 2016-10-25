@@ -15,7 +15,7 @@
       .order-info-item
         span.item-title 出 游 日 期:
         .item-value.field-travel_date
-          date-picker(:time.sync="order.travel_date", :option="date_option", :limit="date_limit")
+          date-picker(:date="travel_date", :option="date_option", :limit="date_limit")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
@@ -75,6 +75,11 @@
       orderAmount: function () {
         // `this` points to the vm instance
         return this.order.quantity * this.order.p_price
+      },
+      travel_date: function () {
+        return {
+          time: this.order.travel_date
+        }
       }
     },
     beforeRouteEnter (to, from, next) {
