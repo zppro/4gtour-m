@@ -1,34 +1,21 @@
 <template lang="jade">
   .product-details
-    router-view(name="info" , :product="ticket")
-    router-view(name="intro", :introduction-url="ticket.introduction_url")
+    router-view(name="info" , :product="scenicSpotInDetails")
+    router-view(name="intro", :introduction-url="scenicSpotInDetails.introduction_url")
 </template>
 
 <script>
+  import { mapGetters, mapActions } from 'vuex'
   export default {
-    data () {
-      return {
-        ticket: {}
-      }
+    computed: {
+      ...mapGetters(['scenicSpotInDetails'])
     },
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        vm.fetchScenicSpotInfo(to.params.id).then(p => {
-          vm.ticket = p
-        })
-      })
+    created () {
+      window.scrollTo(0, 0)
+      this.fetchScenicSpotInfo(this.$route.params)
     },
     methods: {
-      fetchScenicSpotInfo (scenicSpotId) {
-        console.log(scenicSpotId)
-        return this.$http.get('api/scenicSpot/' + scenicSpotId).then(ret => {
-          let t = {}
-          if (ret.data.success) {
-            t = ret.data.ret
-          }
-          return t
-        })
-      }
+      ...mapActions(['fetchScenicSpotInfo'])
     }
   }
 </script>

@@ -6,7 +6,7 @@
       span(slot="price") ¥{{product.selected_ticket_price}}
       span(slot="bid-price") ¥{{product.selected_ticket_bid_price}}
       span(slot="buy-quantity")
-        quantity-regulator(:q-value="product.buy_quantity", v-on:minus="minus", v-on:plus="plus")
+        quantity-regulator(:q-value="product.buy_quantity", v-on:minus="minusQuantity({size: 1})", v-on:plus="plusQuantity({size: 1})")
       span(slot="level") {{product.level}}
       span(slot="ticket") {{product.selected_ticket_name}}
       div(slot="address" ) {{product.address}}
@@ -20,13 +20,10 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex'
   import productInfo from '../components/ProductInfo'
   import quantityRegulator from '../components/QuantityRegulator'
   export default {
-    data () {
-      return {
-      }
-    },
     props: ['product'],
     computed: {
       // a computed getter
@@ -46,15 +43,10 @@
       }
     },
     methods: {
-      minus () {
-        this.product.buy_quantity > 1 && this.product.buy_quantity--
-      },
-      plus () {
-        this.product.buy_quantity++
-      },
       confirmOrder () {
         this.$router.push(this.comfirmOrderPath)
-      }
+      },
+      ...mapActions(['minusQuantity', 'plusQuantity'])
     },
     components: {
       productInfo,

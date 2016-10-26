@@ -1,6 +1,6 @@
 <template lang="jade">
   .home
-    product-list(v-for="product in products")
+    product-list(v-for="product in allScenicSpotsInHome")
       product-item(:product-id="product.id")
         .product-img(slot="img")
           img(:src="product.img")
@@ -12,34 +12,25 @@
 </template>
 
 <script>
+  import { mapGetters, mapActions } from 'vuex'
   import productList from '../components/ProductList'
   import productItem from '../components/ProductItem'
   export default {
-    data () {
-      return {
-        products: []
-      }
+    computed: {
+      ...mapGetters(['allScenicSpotsInHome'])
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
         if (window.proxy.$needLogin()) {
           window.proxy.$exec('autoLogin')
         }
-        vm.fetchScenicSpots().then(rows => {
-          vm.products = rows
-        })
       })
     },
+    created () {
+      this.fetchScenicSpots()
+    },
     methods: {
-      fetchScenicSpots () {
-        return this.$http.get('api/scenicSpots').then(ret => {
-          let rows = []
-          if (ret.data.success) {
-            rows = ret.data.rows
-          }
-          return rows
-        })
-      }
+      ...mapActions(['fetchScenicSpots'])
     },
     components: {
       productList,

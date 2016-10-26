@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
+import store from './store'
 import App from './App'
 
 // load router plugin
@@ -9,7 +10,7 @@ Vue.use(VueRouter)
 Vue.use(VueResource)
 // console.log()
 // 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services'
-Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://sh.okertrip.com/me-services' : 'http://sh.okertrip.com/me-services'
+Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.111:3002/me-services' : 'http://sh.okertrip.com/me-services'
 Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
 Vue.http.interceptors.push((request, next) => {
@@ -41,8 +42,13 @@ const router = new VueRouter({
   routes // 相当于 routes: routes
 })
 
+// router.beforeEach(function (transition) {
+//   window.scrollTo(0, 0)
+// })
+
 new Vue({
   el: '#app',
+  store,
   router: router,
   render: h => h(App)
 })

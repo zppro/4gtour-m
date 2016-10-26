@@ -59,8 +59,7 @@
     export default {
       data () {
         return {
-          title: '杭州',
-          path: ''
+          title: '杭州'
         }
       }
     }
