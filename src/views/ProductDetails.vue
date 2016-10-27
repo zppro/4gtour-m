@@ -10,9 +10,16 @@
     computed: {
       ...mapGetters(['scenicSpotInDetails'])
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        if (from.path === '/') {
+          vm.fetchScenicSpotInfo(to.params)
+        }
+      })
+    },
     created () {
       window.scrollTo(0, 0)
-      this.fetchScenicSpotInfo(this.$route.params)
+      // this.fetchScenicSpotInfo(this.$route.params)
     },
     methods: {
       ...mapActions(['fetchScenicSpotInfo'])

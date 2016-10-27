@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
+import { sync } from 'vuex-router-sync'
 import store from './store'
 import App from './App'
 
@@ -45,6 +46,8 @@ const router = new VueRouter({
 // router.beforeEach(function (transition) {
 //   window.scrollTo(0, 0)
 // })
+
+sync(store, router) // done.
 
 new Vue({
   el: '#app',

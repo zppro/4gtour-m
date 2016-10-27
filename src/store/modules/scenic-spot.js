@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import * as mutationTypes from '../mutation-types'
 
-const moduleName = 'SCENIC-SPOT'
+const entityName = 'SCENIC-SPOT'
+
 const MINUS_QUANTITY = '/MINUS_QUANTITY'
 const PLUS_QUANTITY = '/PLUS_QUANTITY'
+
+const LIST_TICKETS = '/LIST_TICKETS'
+const CHOOSE_TICKET = '/CHOOSE_TICKET'
 
 // initial state
 const state = {
@@ -18,26 +22,48 @@ const getters = {
   },
   scenicSpotInDetails (state) {
     return state.current
+  },
+  ticketsInSelect (state) {
+    return (state.current || {}).tickets || []
+  },
+  ticketSelected (state) {
+    return (state.current || {}).selected_ticket_id
   }
 }
 
 // mutations
 const mutations = {
-  [moduleName + mutationTypes.REFRESH_SUCCESS] (state, { scenicSpots }) {
+  [entityName + mutationTypes.REFRESH_SUCCESS] (state, { scenicSpots }) {
     state.all = scenicSpots
   },
-  [moduleName + mutationTypes.APPEND_SUCCESS] (state, { scenicSpots }) {
+  [entityName + mutationTypes.APPEND_SUCCESS] (state, { scenicSpots }) {
     state.all = state.all.concat(scenicSpots)
   },
-  [moduleName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
+  [entityName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
     // state.current = Object.assign({}, state.current, scenicSpot)
     state.current = scenicSpot
   },
-  [moduleName + MINUS_QUANTITY] (state, { size = 1 }) {
+  [entityName + MINUS_QUANTITY] (state, { size = 1 }) {
     state.current && (state.current.buy_quantity - size) > 0 && (state.current.buy_quantity = state.current.buy_quantity - size)
   },
-  [moduleName + PLUS_QUANTITY] (state, { size = 1 }) {
+  [entityName + PLUS_QUANTITY] (state, { size = 1 }) {
     state.current && (state.current.buy_quantity = state.current.buy_quantity + size)
+  },
+  [entityName + LIST_TICKETS] (state, { tickets }) {
+    state.current && Vue.set(state.current, 'tickets', tickets)
+  },
+  [entityName + CHOOSE_TICKET] (state, { ticketId }) {
+    if (state.current) {
+      const ticket = state.current.tickets.find(o => o.ticket_id === ticketId)
+      if (ticket) {
+        Vue.set(state.current, 'selected_ticket_id', ticket.ticket_id)
+        Vue.set(state.current, 'selected_ticket_uulid', ticket.ticket_uulid)
+        Vue.set(state.current, 'selected_ticket_uuid', ticket.ticket_uuid)
+        Vue.set(state.current, 'selected_ticket_price', ticket.ticket_price)
+        Vue.set(state.current, 'selected_ticket_bid_price', ticket.ticket_bid_price)
+        Vue.set(state.current, 'selected_ticket_name', ticket.ticket_name)
+      }
+    }
   }
 }
 
@@ -47,30 +73,42 @@ const actions = {
     return Vue.http.get('api/scenicSpots').then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
-        commit(moduleName + mutationTypes.REFRESH_SUCCESS, { scenicSpots })
+        commit(entityName + mutationTypes.REFRESH_SUCCESS, { scenicSpots })
         return scenicSpots
       }
     })
   },
-  fetchScenicSpotInfo ({ commit }, { id }) {
+  fetchScenicSpotInfo ({commit, rootState}, { id }) {
+    // console.log(rootState.route)
     return Vue.http.get('api/scenicSpot/' + id).then(ret => {
       if (ret.data.success) {
         const scenicSpot = ret.data.ret
-        commit(moduleName + mutationTypes.FETCH_DETAILS_SUCCESS, { scenicSpot })
+        commit(entityName + mutationTypes.FETCH_DETAILS_SUCCESS, { scenicSpot })
         return scenicSpot
       }
     })
   },
   minusQuantity ({ commit }, { size = 1 }) {
-    commit(moduleName + MINUS_QUANTITY, { size })
+    commit(entityName + MINUS_QUANTITY, { size })
   },
   plusQuantity ({ commit }, { size = 1 }) {
-    commit(moduleName + PLUS_QUANTITY, { size })
+    commit(entityName + PLUS_QUANTITY, { size })
+  },
+  listTickets ({ commit }, { id }) {
+    return Vue.http.get('api/tickets/' + id).then(ret => {
+      if (ret.data.success) {
+        const tickets = ret.data.rows
+        commit(entityName + LIST_TICKETS, { tickets })
+        return tickets
+      }
+    })
+  },
+  chooseTicket ({ commit }, { ticketId }) {
+    commit(entityName + CHOOSE_TICKET, { ticketId })
   }
 }
 
 export default {
-  moduleName,
   state,
   getters,
   mutations,

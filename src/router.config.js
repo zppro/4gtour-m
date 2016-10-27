@@ -42,7 +42,7 @@ export default [
   },
   {
     name: '挑选门票',
-    path: '/ticket-select/:productId/:ticketId',
+    path: '/ticket-select/:id',
     components: {
       head: Nav,
       body: TicketSelect

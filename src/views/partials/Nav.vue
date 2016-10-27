@@ -7,7 +7,7 @@
     a.nav-item.nav-item-right
       span.fa
 </template>
-<style>
+<style lang="less" scoped>
     .nav-header{
       background-color:#ea5513;
       height:3.2rem;

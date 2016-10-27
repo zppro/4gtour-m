@@ -29,7 +29,7 @@
       // a computed getter
       selectTicketRoute: function () {
         // `this` points to the vm instance
-        return '/ticket-select/' + this.product.id + '/' + this.product.selected_ticket_id
+        return '/ticket-select/' + this.product.id
       },
       showChangeTicket: function () {
         if (this.product) {

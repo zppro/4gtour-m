@@ -12,7 +12,7 @@
     props: ['ticketId', 'choosen'],
     methods: {
       pick (ticketId) {
-        this.$emit('selectTicket', ticketId)
+        this.$emit('selectTicket', { ticketId })
       }
     }
   }

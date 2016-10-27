@@ -1,49 +1,26 @@
 <template lang="jade">
   .product-details-tickets
     .product-ticket-select-intro 选择门票后左上角返回
-    ticket-list.ticket-list(v-for="ticket in tickets")
-      ticket-item(:ticket-id="ticket.id",v-on:selectTicket="selectTicket",:choosen="choosen")
-        span(slot="title") {{ticket.title}}
-        span(slot="price") ¥{{ticket.price}}
-        span(slot="bid-price") ¥{{ticket.bid_price}}
+    ticket-list.ticket-list(v-for="ticket in ticketsInSelect")
+      ticket-item(:ticket-id="ticket.ticket_id",v-on:selectTicket="chooseTicket",:choosen="ticketSelected")
+        span(slot="title") {{ticket.ticket_name}}
+        span(slot="price") ¥{{ticket.ticket_price}}
+        span(slot="bid-price") ¥{{ticket.ticket_bid_price}}
 </template>
 
 <script>
+  import { mapGetters, mapActions } from 'vuex'
   import ticketList from '../components/TicketList'
   import ticketItem from '../components/TicketItem'
   export default {
-    data () {
-      return {
-        tickets: [],
-        choosen: this.$route.params.ticketId
-      }
-    },
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        vm.tickets = [
-          {id: 'ticket 1', title: '雷峰塔门票A+雷峰塔门票B', price: 30, bid_price: 78},
-          {id: 'ticket 2', title: '雷峰塔门票A', price: 13, bid_price: 33},
-          {id: 'ticket 3', title: '雷峰塔门票B', price: 17, bid_price: 45}
-        ]
-      })
+    computed: {
+      ...mapGetters(['ticketsInSelect', 'ticketSelected'])
     },
     created () {
-      console.log(this.$route.params)
+      this.listTickets(this.$route.params)
     },
     methods: {
-      selectTicket (ticketId) {
-        console.log(ticketId)
-        this.choosen = ticketId
-      },
-      hb () {
-        let success = this.$http.get('api/hb')
-            .then(ret => ret.success)
-        console(success)
-      },
-      tpost () {
-        let ret = this.$http.post('api/tpost', {foo: 'bar'})
-        console(ret)
-      }
+      ...mapActions(['listTickets', 'chooseTicket'])
     },
     components: {
       ticketList,
