@@ -1,12 +1,12 @@
 <template lang="jade">
   nav#nav-header-product-details
     a.nav-item.nav-item-left(@click="back()")
-      span.fa.fa-chevron-left
+      i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       a.tab-header.tab-header-active(@click="switchTab(0)") 景点
       a.tab-header(@click="switchTab(1)") 详情
     a.nav-item.nav-item-right
-      span.fa.fa-external-link
+      i.fa.fa-external-link(aria-hidden="true")
 </template>
 <style lang="less" scoped>
     #nav-header-product-details{
@@ -19,9 +19,6 @@
       margin:0;
       width:100%;
       background-color:white;
-      a{
-        cursor: pointer;
-      }
       .nav-item{
         color:#4f4f4f;
         font-size:1rem;

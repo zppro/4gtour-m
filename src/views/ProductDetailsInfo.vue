@@ -39,7 +39,7 @@
         }
       },
       comfirmOrderPath: function () {
-        return '/order-confirm/' + this.product.selected_ticket_uulid + ',' + this.product.selected_ticket_uuid + ',' + this.product.selected_ticket_price + ',' + this.product.buy_quantity + ',' + this.product.selected_ticket_name
+        return '/order-confirm/' + this.product.id + ',' + this.product.buy_quantity
       }
     },
     methods: {

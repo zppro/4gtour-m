@@ -16,7 +16,8 @@
     .product-block.product-block-ticket
       .product-ticket
         slot(name="ticket")
-      router-link.fa.fa-ellipsis-h(v-show="showChangeTicket" , :to="selectTicketRoute")
+      router-link(v-show="showChangeTicket", :to="selectTicketRoute")
+        i.fa.fa-ellipsis-h(aria-hidden="true")
     .product-block.product-block-address
       .label-title 详细地址
       slot(name="address")

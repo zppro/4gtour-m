@@ -26,8 +26,17 @@ const getters = {
   ticketsInSelect (state) {
     return (state.current || {}).tickets || []
   },
-  ticketSelected (state) {
+  ticketIdSelected (state) {
     return (state.current || {}).selected_ticket_id
+  },
+  infoPreparedToOrder (state) {
+    return {
+      UUlid: state.current.selected_ticket_uulid,
+      UUid: state.current.selected_ticket_uuid,
+      p_price: state.current.selected_ticket_price,
+      quantity: state.current.buy_quantity,
+      p_name: state.current.selected_ticket_name
+    }
   }
 }
 
@@ -79,7 +88,6 @@ const actions = {
     })
   },
   fetchScenicSpotInfo ({commit, rootState}, { id }) {
-    // console.log(rootState.route)
     return Vue.http.get('api/scenicSpot/' + id).then(ret => {
       if (ret.data.success) {
         const scenicSpot = ret.data.ret
@@ -105,6 +113,12 @@ const actions = {
   },
   chooseTicket ({ commit }, { ticketId }) {
     commit(entityName + CHOOSE_TICKET, { ticketId })
+  },
+  ensureScenicSpot ({ commit, state, rootState, dispatch }) {
+    if (!state.current.id) {
+      return dispatch('fetchScenicSpotInfo', rootState.route.params)
+    }
+    return dispatch('noop')
   }
 }
 

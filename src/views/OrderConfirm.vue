@@ -16,6 +16,8 @@
         span.item-title 出 游 日 期:
         .item-value.field-travel_date
           date-picker(:date="travel_date", :option="date_option", :limit="date_limit")
+          a(@click="triggerDatePicker")
+            i.fa.fa-calendar(aria-hidden="true")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
@@ -30,40 +32,17 @@
 </template>
 
 <script>
+  import { mapGetters, mapActions } from 'vuex'
   import quantityRegulator from '../components/QuantityRegulator'
   import datePicker from 'vue-datepicker'
   import moment from 'moment'
+  import defaultDateOption from '../config/datepicker-option'
   export default {
     data () {
       return {
         order: {},
         date_now: moment().format('YYYY-MM-DD'),
-        date_option: {
-          type: 'day',
-          week: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-          month: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-          format: 'YYYY-MM-DD',
-          placeholder: '您的出行日期',
-          inputStyle: {
-            'display': 'inline-block',
-            'padding': '0.1rem',
-            'width': '8rem',
-            'line-height': '1.29rem',
-            'font-size': '0.935rem',
-            'border': 'none',
-            'color': '#5F5F5F'
-          },
-          color: {
-            header: '#ccc',
-            headerText: '#f00'
-          },
-          buttons: {
-            ok: '确定',
-            cancel: '取消'
-          },
-          overlayOpacity: 0.5, // 0.5 as default
-          dismissible: true // as true as default
-        },
+        date_option: defaultDateOption,
         date_limit: [{
           type: 'fromto',
           from: moment().format('YYYY-MM-DD')
@@ -80,32 +59,28 @@
         return {
           time: this.order.travel_date
         }
-      }
-    },
-    beforeRouteEnter (to, from, next) {
-      console.log(to.params)
-      next(vm => {
-        vm.order = window.$.extend({travel_date: vm.date_now}, to.params, (window.proxy.order_info || {}))
-      })
+      },
+      ...mapGetters(['infoPreparedToOrder'])
     },
     created () {
-      console.log(window.proxy.paySuccess || 'null')
       window.proxy.paySuccess = this.paySuccess
+      this.ensureScenicSpot().then(() => {
+        this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder, this.$route.params, (window.proxy.order_info || {}))
+      })
     },
     beforeDestroy () {
       window.proxy.paySuccess = null
       console.log('before destroy')
     },
     methods: {
+      triggerDatePicker () {
+        window.$('.field-travel_date input').click()
+      },
       minus () {
         this.order.quantity > 1 && this.order.quantity--
       },
       plus () {
         this.order.quantity++
-      },
-      selectTicket (ticketId) {
-        console.log(ticketId)
-        this.choosen = ticketId
       },
       orderAndPay () {
         if (!window.proxy.$isLogin()) {
@@ -162,10 +137,7 @@
           }
         })
       },
-      tpost () {
-        let ret = this.$http.post('api/tpost', {foo: 'bar'})
-        console(ret)
-      }
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot'])
     },
     components: {
       quantityRegulator,

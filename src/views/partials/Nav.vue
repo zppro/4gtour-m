@@ -1,11 +1,11 @@
 <template lang="jade">
   nav.nav-header
-    a.nav-item.nav-item-left
-      span.fa.fa-chevron-left(@click="back")
+    a.nav-item.nav-item-left(@click="back")
+      i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
     a.nav-item.nav-item-right
-      span.fa
+      i.fa(aria-hidden="true")
 </template>
 <style lang="less" scoped>
     .nav-header{
@@ -18,9 +18,6 @@
       padding:0;
       margin:0;
       width:100%;
-      a{
-        cursor: pointer;
-      }
     }
     .nav-item{
       color:white;

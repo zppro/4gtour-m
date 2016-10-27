@@ -1,12 +1,12 @@
 <template lang="jade">
   nav#nav-header-home
     a.nav-item.nav-item-left
-      span.fa.fa-user
+      i.fa.fa-user(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-        span.fa.fa-caret-down
+        i.fa.fa-caret-down(aria-hidden="true")
     a.nav-item.nav-item-right
-      span.fa.fa-list
+      i.fa.fa-list(aria-hidden="true")
 </template>
 <style lang="less" scoped>
     #nav-header-home{
@@ -19,9 +19,6 @@
       padding:0;
       margin:0;
       width:100%;
-      a{
-        cursor: pointer;
-      }
       > .nav-item{
         color:white;
         font-size:1rem;

@@ -14,7 +14,7 @@
   }
 </script>
 
-<style>
+<style lang="less" scoped>
   .fade-transition {
     transition: opacity .3s ease;
   }
