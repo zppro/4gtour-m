@@ -1,14 +1,15 @@
 <template lang="jade">
-  .home
-    product-list(v-for="product in allScenicSpotsInHome")
-      product-item(:product-id="product.id")
-        .product-img(slot="img")
-          img(:src="product.img")
-          .product-price(slot="price")
-            span.unit ￥
-            span {{product.price}}
-        .product-title(slot="title") {{product.title}}
-        .product-description(slot="description") {{product.description}}
+  .home(v-infinite-scroll="append", infinite-scroll-disabled="loading", infinite-scroll-distance="10")
+    mt-loadmore(:top-method="refresh", ref="scenicSpotList")
+      product-list()
+        product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
+          .product-img(slot="img")
+            img(:src="product.img")
+            .product-price(slot="price")
+              span.unit ￥
+              span {{product.price}}
+          .product-title(slot="title") {{product.title}}
+          .product-description(slot="description") {{product.description}}
 </template>
 
 <script>
@@ -17,7 +18,7 @@
   import productItem from '../components/ProductItem'
   export default {
     computed: {
-      ...mapGetters(['allScenicSpotsInHome'])
+      ...mapGetters(['allScenicSpotsInHome', 'loading'])
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
@@ -26,11 +27,22 @@
         }
       })
     },
-    created () {
-      this.fetchScenicSpots()
-    },
+//    created () {
+//      this.$route.path === '/' && this.fetchScenicSpots()
+//    },
     methods: {
-      ...mapActions(['fetchScenicSpots'])
+      refresh (id) {
+        this.$store.dispatch('fetchScenicSpots').then(() => {
+          this.$refs.scenicSpotList.onTopLoaded(id)
+        })
+      },
+      append () {
+        this.startLoading()
+        this.$store.dispatch('appendScenicSpots').then(() => {
+          this.finishLoading()
+        })
+      },
+      ...mapActions(['startLoading', 'finishLoading'])
     },
     components: {
       productList,

@@ -3,16 +3,21 @@ import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
 import { sync } from 'vuex-router-sync'
+import VeeValidate from 'vee-validate'
+import veeValidateOption from './config/vee-validate-option'
+import { Loadmore, InfiniteScroll, Field } from 'mint-ui'
+
 import store from './store'
 import App from './App'
 
 // load router plugin
 Vue.use(VueRouter)
 Vue.use(VueResource)
-// console.log()
+Vue.use(VeeValidate, veeValidateOption)
+
 // 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services'
 Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.111:3002/me-services' : 'http://sh.okertrip.com/me-services'
-Vue.http.options.emulateJSON = true
+// Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
 Vue.http.interceptors.push((request, next) => {
   let ts = Math.round(new Date().getTime() / 1000)
@@ -21,11 +26,6 @@ Vue.http.interceptors.push((request, next) => {
   let oHeader = {alg: 'HS256', typ: 'JWT'}
   // Payload
   let oPayload = {}
-  // let tNow = window.KJUR.jws.IntDate.get('now')
-  // let tEnd = window.KJUR.jws.IntDate.get('now + 1day')
-  // oPayload.nbf = tNow
-  // oPayload.iat = tNow
-  // oPayload.exp = tEnd
   let salt = 'carrycheng:' + ts
   oPayload.member = window.proxy.member || {member_id: 'everyone', member_name: 'everyone'}
   let sHeader = JSON.stringify(oHeader)
@@ -48,6 +48,11 @@ const router = new VueRouter({
 // })
 
 sync(store, router) // done.
+
+// declare mint-ui
+Vue.component(Loadmore.name, Loadmore)
+Vue.component(Field.name, Field)
+Vue.use(InfiniteScroll)
 
 new Vue({
   el: '#app',

@@ -16,22 +16,27 @@
         span.item-title 出 游 日 期:
         .item-value.field-travel_date
           date-picker(:date="travel_date", :option="date_option", :limit="date_limit")
-          a(@click="triggerDatePicker")
+          a.primary(@click="triggerDatePicker")
             i.fa.fa-calendar(aria-hidden="true")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
-          input(v-model="order.link_man",placeholder="填写联系人姓名",required)
+          input(v-model="link_man",placeholder="填写联系人姓名",v-validate="link_man", data-as="联系人姓名" data-rules="required")
+          a.warning(v-show="errors.has('link_man')" @click="toast({msg:errors.first('link_man')})")
+            i.fa.fa-warning(aria-hidden="true")
       .order-info-item
         span.item-title 联系人手机:
         .item-value
-          input(type="number", v-model="order.link_phone",placeholder="填写联系人姓名",required)
+          input(v-model="link_phone",placeholder="填写联系人手机",v-validate="link_phone",data-as="联系人手机" data-rules="required|regex:[0-9]{3}")
+          a.warning(v-show="errors.has('link_phone')" @click="toast({msg:errors.first('link_phone')})")
+            i.fa.fa-warning(aria-hidden="true")
     .order-actions
       a.btn.pay-now(@click="orderAndPay") 生成订单并支付
     .order-padding-bottom
 </template>
 
 <script>
+  import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
   import quantityRegulator from '../components/QuantityRegulator'
   import datePicker from 'vue-datepicker'
@@ -50,6 +55,22 @@
       }
     },
     computed: {
+      link_man: {
+        get () {
+          return this.order.link_man
+        },
+        set (newValue) {
+          Vue.set(this.order, 'link_man', newValue)
+        }
+      },
+      link_phone: {
+        get () {
+          return this.order.link_phone
+        },
+        set (newValue) {
+          Vue.set(this.order, 'link_phone', newValue)
+        }
+      },
       // a computed getter
       orderAmount: function () {
         // `this` points to the vm instance
@@ -67,6 +88,7 @@
       this.ensureScenicSpot().then(() => {
         this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder, this.$route.params, (window.proxy.order_info || {}))
       })
+      console.log(this.errors)
     },
     beforeDestroy () {
       window.proxy.paySuccess = null
@@ -137,7 +159,7 @@
           }
         })
       },
-      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot'])
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast'])
     },
     components: {
       quantityRegulator,
@@ -182,6 +204,12 @@
         }
         .field-title{
           font-size:0.6rem;
+        }
+        .primary{
+          color:#418BCA;
+        }
+        .warning{
+          color:orange;
         }
       }
       .order-info-item:last-child{

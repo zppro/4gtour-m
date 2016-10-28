@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import * as mutationTypes from '../mutation-types'
+import dataFetchingOption from '../../config/data-fetching-option'
 
 const entityName = 'SCENIC-SPOT'
 
@@ -42,10 +43,10 @@ const getters = {
 
 // mutations
 const mutations = {
-  [entityName + mutationTypes.REFRESH_SUCCESS] (state, { scenicSpots }) {
+  [entityName + mutationTypes.FETCH_LIST_SUCCESS] (state, { scenicSpots }) {
     state.all = scenicSpots
   },
-  [entityName + mutationTypes.APPEND_SUCCESS] (state, { scenicSpots }) {
+  [entityName + mutationTypes.APPEND_LIST_SUCCESS] (state, { scenicSpots }) {
     state.all = state.all.concat(scenicSpots)
   },
   [entityName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
@@ -79,10 +80,21 @@ const mutations = {
 // actions
 const actions = {
   fetchScenicSpots ({ commit }) {
-    return Vue.http.get('api/scenicSpots').then(ret => {
+    console.log('fetchScenicSpots...')
+    return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: 0}}).then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
-        commit(entityName + mutationTypes.REFRESH_SUCCESS, { scenicSpots })
+        commit(entityName + mutationTypes.FETCH_LIST_SUCCESS, {scenicSpots})
+        return scenicSpots
+      }
+    })
+  },
+  appendScenicSpots ({ commit, state }) {
+    console.log('state.all.length:' + state.all.length)
+    return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: state.all.length}}).then(ret => {
+      if (ret.data.success) {
+        const scenicSpots = ret.data.rows
+        scenicSpots.length > 0 && commit(entityName + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
         return scenicSpots
       }
     })
