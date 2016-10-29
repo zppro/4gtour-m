@@ -1,4 +1,4 @@
-import messagesZhCN from '../patchs/vee-validate/messages/zh_CN'
+import messagesZhCN from '../patchs/vee-validate/zh_CN'
 export default {
   errorBagName: 'errors',
   locale: 'zh_CN',

@@ -8,3 +8,10 @@ export const finishLoading = ({ commit }) => { commit(mutationTypes.$GLOABL_PREF
 export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
+export const validateAll = (o, { $validator, errors }) => {
+  $validator.validateAll()
+  if (errors.any()) {
+    return false
+  }
+  return true
+}

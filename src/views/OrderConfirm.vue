@@ -27,7 +27,7 @@
       .order-info-item
         span.item-title 联系人手机:
         .item-value
-          input(v-model="link_phone",placeholder="填写联系人手机",v-validate="link_phone",data-as="联系人手机" data-rules="required|regex:[0-9]{3}")
+          input(v-model="link_phone",placeholder="填写联系人手机",v-validate="link_phone",data-as="联系人手机" data-rules="required|chinese-phone")
           a.warning(v-show="errors.has('link_phone')" @click="toast({msg:errors.first('link_phone')})")
             i.fa.fa-warning(aria-hidden="true")
     .order-actions
@@ -105,47 +105,55 @@
         this.order.quantity++
       },
       orderAndPay () {
-        if (!window.proxy.$isLogin()) {
-//          window.alert('需要登录')
-          window.proxy.$exec('openLogin')
-        } else {
-          if (!this.order.link_man) {
-            window.alert('[联系人姓名]必须填写')
+        this.validateAll(this).then((b) => {
+          if (!b) {
+            console.log(123)
             return
           }
-          if (!this.order.link_man) {
-            window.alert('[联系人手机]必须填写')
-            return
-          }
-          if (!window.utils.isPhone(this.order.link_phone)) {
-            window.alert('[联系人手机]格式不正确')
-            return
-          }
-//          window.alert('开始支付')
-//          window.alert('in webapp:' + JSON.stringify(this.order))
-          if (!this.order.orderId) {
-            this.$http.post('api/order', this.order).then(ret => {
-              if (ret.data.success) {
-                var r = ret.data.ret
-                this.order.orderId = r._id
-                this.order.code = r.code
-                let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
-                window.proxy.$exec('pay', info)
-              } else {
-                window.alert(ret.data.msg)
-              }
-            })
+          console.log(345)
+
+          if (!window.proxy.$isLogin()) {
+  //          window.alert('需要登录')
+            window.proxy.$exec('openLogin')
           } else {
-            this.$http.put('api/order/' + this.order.orderId, {quantity: this.order.quantity, amount: this.orderAmount, link_man: this.order.link_man, link_phone: this.order.link_phone, travel_date: this.order.travel_date}).then(ret => {
-              if (ret.data.success) {
-                let info = {code: this.order.code, amount: this.orderAmount, order_link_man: this.order.link_man, order_link_phone: this.order.link_phone}
-                window.proxy.$exec('pay', info)
-              } else {
-                window.alert(ret.data.msg)
-              }
-            })
+            if (!this.order.link_man) {
+              window.alert('[联系人姓名]必须填写')
+              return
+            }
+            if (!this.order.link_man) {
+              window.alert('[联系人手机]必须填写')
+              return
+            }
+            if (!window.utils.isPhone(this.order.link_phone)) {
+              window.alert('[联系人手机]格式不正确')
+              return
+            }
+  //          window.alert('开始支付')
+  //          window.alert('in webapp:' + JSON.stringify(this.order))
+            if (!this.order.orderId) {
+              this.$http.post('api/order', this.order).then(ret => {
+                if (ret.data.success) {
+                  var r = ret.data.ret
+                  this.order.orderId = r._id
+                  this.order.code = r.code
+                  let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
+                  window.proxy.$exec('pay', info)
+                } else {
+                  window.alert(ret.data.msg)
+                }
+              })
+            } else {
+              this.$http.put('api/order/' + this.order.orderId, {quantity: this.order.quantity, amount: this.orderAmount, link_man: this.order.link_man, link_phone: this.order.link_phone, travel_date: this.order.travel_date}).then(ret => {
+                if (ret.data.success) {
+                  let info = {code: this.order.code, amount: this.orderAmount, order_link_man: this.order.link_man, order_link_phone: this.order.link_phone}
+                  window.proxy.$exec('pay', info)
+                } else {
+                  window.alert(ret.data.msg)
+                }
+              })
+            }
           }
-        }
+        })
       },
       paySuccess () {
         this.$http.put('api/order/' + this.order.orderId, {local_status: 'A0003'}).then(ret => {
@@ -159,7 +167,7 @@
           }
         })
       },
-      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast'])
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'validateAll'])
     },
     components: {
       quantityRegulator,

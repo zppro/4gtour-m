@@ -3,7 +3,8 @@ import VueRouter from 'vue-router'
 import routes from './router.config'
 import VueResource from 'vue-resource'
 import { sync } from 'vuex-router-sync'
-import VeeValidate from 'vee-validate'
+import VeeValidate, { Validator } from 'vee-validate'
+import { chinesePhone } from './patchs/vee-validate/rules'
 import veeValidateOption from './config/vee-validate-option'
 import { Loadmore, InfiniteScroll, Field } from 'mint-ui'
 
@@ -16,7 +17,7 @@ Vue.use(VueResource)
 Vue.use(VeeValidate, veeValidateOption)
 
 // 'http://192.168.101.3:3002/me-services' 'http://192.168.255.106:3002/me-services'
-Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.111:3002/me-services' : 'http://sh.okertrip.com/me-services'
+Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://192.168.101.3:3002/me-services' : 'http://sh.okertrip.com/me-services'
 // Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
 Vue.http.interceptors.push((request, next) => {
@@ -53,6 +54,9 @@ sync(store, router) // done.
 Vue.component(Loadmore.name, Loadmore)
 Vue.component(Field.name, Field)
 Vue.use(InfiniteScroll)
+
+// extend vee custom validate rules
+Validator.extend('chinese-phone', chinesePhone)
 
 new Vue({
   el: '#app',
