@@ -107,11 +107,8 @@
       orderAndPay () {
         this.validateAll(this).then((b) => {
           if (!b) {
-            console.log(123)
             return
           }
-          console.log(345)
-
           if (!window.proxy.$isLogin()) {
   //          window.alert('需要登录')
             window.proxy.$exec('openLogin')

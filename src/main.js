@@ -6,7 +6,7 @@ import { sync } from 'vuex-router-sync'
 import VeeValidate, { Validator } from 'vee-validate'
 import { chinesePhone } from './patchs/vee-validate/rules'
 import veeValidateOption from './config/vee-validate-option'
-import { Loadmore, InfiniteScroll, Field } from 'mint-ui'
+import { Spinner, Loadmore, InfiniteScroll, Field } from 'mint-ui'
 
 import store from './store'
 import App from './App'
@@ -51,6 +51,7 @@ const router = new VueRouter({
 sync(store, router) // done.
 
 // declare mint-ui
+Vue.component(Spinner.name, Spinner)
 Vue.component(Loadmore.name, Loadmore)
 Vue.component(Field.name, Field)
 Vue.use(InfiniteScroll)

@@ -10,6 +10,9 @@
               span {{product.price}}
           .product-title(slot="title") {{product.title}}
           .product-description(slot="description") {{product.description}}
+      p(v-show="loading" class="page-infinite-loading")
+        mt-spinner(type="fading-circle")
+        | 加载中...
 </template>
 
 <script>
@@ -38,8 +41,11 @@
       },
       append () {
         this.startLoading()
+        console.log(this.loading)
         this.$store.dispatch('appendScenicSpots').then(() => {
+          console.log(this.loading)
           this.finishLoading()
+          console.log(this.loading)
         })
       },
       ...mapActions(['startLoading', 'finishLoading'])
@@ -52,7 +58,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less" >
   .home{
     width: 100%;
     text-align:left;
@@ -102,5 +108,17 @@
       padding:0 0.2rem;
       opacity: 0.6;
     }
+    .page-infinite-loading{
+      text-align: center;
+      height: 2.5rem;
+      line-height: 2.5rem;
+      font-size:0.7rem;
+      div{
+        display: inline-block;
+        vertical-align: middle;
+        margin-right:0.25rem;
+      }
+    }
+
   }
 </style>
