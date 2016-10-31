@@ -88,7 +88,6 @@
       this.ensureScenicSpot().then(() => {
         this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder, this.$route.params, (window.proxy.order_info || {}))
       })
-      console.log(this.errors)
     },
     beforeDestroy () {
       window.proxy.paySuccess = null
@@ -105,6 +104,7 @@
         this.order.quantity++
       },
       orderAndPay () {
+        console.log(this.errors.first('link_man'))
         this.validateAll(this).then((b) => {
           if (!b) {
             return

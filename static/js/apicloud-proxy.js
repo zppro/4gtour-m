@@ -52,6 +52,7 @@
       this.proxyHost.src = url;
     },
     autoLogin: function(params){
+      window.alert(params);
       if(params.member_id){
         //alert(JSON.stringify(params));
         this.member.member_id = params.member_id;
@@ -62,7 +63,7 @@
       this.auto_login_retry_count++;
     },
     setMember: function(params){
-      // alert(JSON.stringify(params));
+      alert(JSON.stringify(params));
       this.member = params;//保证设置了用户 params {member_id: member_name:}
     },
     setToken: function (params) {

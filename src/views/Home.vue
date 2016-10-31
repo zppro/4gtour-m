@@ -41,11 +41,8 @@
       },
       append () {
         this.startLoading()
-        console.log(this.loading)
         this.$store.dispatch('appendScenicSpots').then(() => {
-          console.log(this.loading)
           this.finishLoading()
-          console.log(this.loading)
         })
       },
       ...mapActions(['startLoading', 'finishLoading'])

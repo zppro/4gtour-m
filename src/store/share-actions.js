@@ -8,9 +8,10 @@ export const finishLoading = ({ commit }) => { commit(mutationTypes.$GLOABL_PREF
 export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
-export const validateAll = (o, { $validator, errors }) => {
+export const validateAll = ({ dispatch }, { $validator, errors }) => {
   $validator.validateAll()
   if (errors.any()) {
+    dispatch('toast', errors.errors[0])
     return false
   }
   return true

@@ -80,7 +80,6 @@ const mutations = {
 // actions
 const actions = {
   fetchScenicSpots ({ commit }) {
-    console.log('fetchScenicSpots...')
     return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: 0}}).then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
@@ -90,7 +89,6 @@ const actions = {
     })
   },
   appendScenicSpots ({ commit, state }) {
-    console.log('state.all.length:' + state.all.length)
     return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: state.all.length}}).then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
