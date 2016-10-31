@@ -11,11 +11,16 @@
       ...mapGetters(['scenicSpotInDetails'])
     },
     beforeRouteEnter (to, from, next) {
-      next(vm => {
-        if (from.path === '/') {
-          vm.fetchScenicSpotInfo(to.params)
-        }
-      })
+      if (from.path === '/') {
+        console.log(to.path)
+        next(vm => {
+          console.log(from.path)
+          console.log(vm)
+          vm.fetchScenicSpotInfo(to.params).then(function () {
+            console.log(vm.scenicSpotInDetails)
+          })
+        })
+      }
     },
     created () {
       window.scrollTo(0, 0)
