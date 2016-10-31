@@ -1,5 +1,5 @@
 <template lang="jade">
-  .home(v-infinite-scroll="append", infinite-scroll-disabled="loading", infinite-scroll-distance="10")
+  .home(v-infinite-scroll="append", infinite-scroll-disabled="loading || !haveMore", infinite-scroll-distance="10")
     mt-loadmore(:top-method="refresh", ref="scenicSpotList")
       product-list()
         product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
@@ -10,17 +10,18 @@
               span {{product.price}}
           .product-title(slot="title") {{product.title}}
           .product-description(slot="description") {{product.description}}
-      p(v-show="loading" class="page-infinite-loading")
+      p(v-show="loading && haveMore" class="page-infinite-loading")
         mt-spinner(type="fading-circle")
         | 加载中...
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   import productList from '../components/ProductList'
   import productItem from '../components/ProductItem'
   export default {
     computed: {
+      ...mapState(['haveMore']),
       ...mapGetters(['allScenicSpotsInHome', 'loading'])
     },
     beforeRouteEnter (to, from, next) {

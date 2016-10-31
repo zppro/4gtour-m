@@ -52,7 +52,6 @@
       this.proxyHost.src = url;
     },
     autoLogin: function(params){
-      window.alert(params);
       if(params.member_id){
         //alert(JSON.stringify(params));
         this.member.member_id = params.member_id;

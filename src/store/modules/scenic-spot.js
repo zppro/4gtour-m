@@ -13,7 +13,8 @@ const CHOOSE_TICKET = '/CHOOSE_TICKET'
 // initial state
 const state = {
   all: [],
-  current: {}
+  current: {},
+  haveMore: true
 }
 
 // getters
@@ -44,9 +45,11 @@ const getters = {
 // mutations
 const mutations = {
   [entityName + mutationTypes.FETCH_LIST_SUCCESS] (state, { scenicSpots }) {
+    state.haveMore = scenicSpots.length > 0
     state.all = scenicSpots
   },
   [entityName + mutationTypes.APPEND_LIST_SUCCESS] (state, { scenicSpots }) {
+    state.haveMore = scenicSpots.length > 0
     state.all = state.all.concat(scenicSpots)
   },
   [entityName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
