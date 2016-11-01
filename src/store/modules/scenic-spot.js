@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import * as mutationTypes from '../mutation-types'
+// import {START_LOADING, FINISH_LOADING} from '../share-action-names'
 import dataFetchingOption from '../../config/data-fetching-option'
 
 const entityName = 'SCENIC-SPOT'
@@ -10,11 +11,14 @@ const PLUS_QUANTITY = '/PLUS_QUANTITY'
 const LIST_TICKETS = '/LIST_TICKETS'
 const CHOOSE_TICKET = '/CHOOSE_TICKET'
 
+const SET_SCENICSPOT_NO_MORE = '/SET_SCENICSPOT_NO_MORE'
+
 // initial state
 const state = {
   all: [],
   current: {},
-  haveMore: true
+  listRequestTypeAppending: true,
+  noMore: false
 }
 
 // getters
@@ -39,17 +43,27 @@ const getters = {
       quantity: state.current.buy_quantity,
       p_name: state.current.selected_ticket_name
     }
+  },
+  appendDiabled (state, getters, rootState) {
+    return rootState.loading || state.noMore
+  },
+  showFetchIndicator (state, getters, rootState) {
+    return rootState.loading && !state.listRequestTypeAppending
+  },
+  showAppendIndicator (state, getters, rootState) {
+    return rootState.loading && state.listRequestTypeAppending
   }
 }
 
 // mutations
 const mutations = {
+  [entityName + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
+    state.listRequestTypeAppending = listRequestType === 'append'
+  },
   [entityName + mutationTypes.FETCH_LIST_SUCCESS] (state, { scenicSpots }) {
-    state.haveMore = scenicSpots.length > 0
     state.all = scenicSpots
   },
   [entityName + mutationTypes.APPEND_LIST_SUCCESS] (state, { scenicSpots }) {
-    state.haveMore = scenicSpots.length > 0
     state.all = state.all.concat(scenicSpots)
   },
   [entityName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
@@ -77,28 +91,41 @@ const mutations = {
         Vue.set(state.current, 'selected_ticket_name', ticket.ticket_name)
       }
     }
+  },
+  [entityName + SET_SCENICSPOT_NO_MORE] (state, { scenicSpotRecordCount, size }) {
+    state.noMore = scenicSpotRecordCount < size
   }
 }
 
 // actions
 const actions = {
-  fetchScenicSpots ({ commit }) {
-    return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: 0}}).then(ret => {
-      if (ret.data.success) {
-        const scenicSpots = ret.data.rows
-        commit(entityName + mutationTypes.FETCH_LIST_SUCCESS, {scenicSpots})
-        return scenicSpots
-      }
-    })
+  fetchScenicSpots ({ commit, rootState }) {
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    commit(entityName + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    setTimeout(() => {
+      Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: 0}}).then(ret => {
+        if (ret.data.success) {
+          const scenicSpots = ret.data.rows
+          commit(entityName + mutationTypes.FETCH_LIST_SUCCESS, { scenicSpots })
+          commit(entityName + SET_SCENICSPOT_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: dataFetchingOption.size })
+          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+        }
+      })
+    }, rootState.preLoadingMillisecond)
   },
-  appendScenicSpots ({ commit, state }) {
-    return Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: state.all.length}}).then(ret => {
-      if (ret.data.success) {
-        const scenicSpots = ret.data.rows
-        scenicSpots.length > 0 && commit(entityName + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
-        return scenicSpots
-      }
-    })
+  appendScenicSpots ({ commit, state, rootState }) {
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    commit(entityName + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    setTimeout(() => {
+      Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: state.all.length}}).then(ret => {
+        if (ret.data.success) {
+          const scenicSpots = ret.data.rows
+          scenicSpots.length > 0 && commit(entityName + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
+          commit(entityName + SET_SCENICSPOT_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: dataFetchingOption.size })
+          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+        }
+      })
+    }, rootState.preLoadingMillisecond)
   },
   fetchScenicSpotInfo ({commit, rootState}, { id }) {
     return Vue.http.get('api/scenicSpot/' + id).then(ret => {

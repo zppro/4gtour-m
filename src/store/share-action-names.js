@@ -1,0 +1,5 @@
+export const NOOP = 'noop'
+export const START_LOADING = 'startLoading'
+export const FINISH_LOADING = 'finishLoading'
+export const TOAST = 'toast'
+export const VALIDATE_ALL = 'validateAll'

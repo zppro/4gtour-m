@@ -4,8 +4,8 @@
       i.fa.fa-user(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-        i.fa.fa-caret-down(aria-hidden="true")
-    a.nav-item.nav-item-right
+        <!--i.fa.fa-caret-down(aria-hidden="true")-->
+    a.nav-item.nav-item-right(@click="refresh")
       i.fa.fa-list(aria-hidden="true")
 </template>
 <style lang="less" scoped>
@@ -60,6 +60,11 @@
       data () {
         return {
           title: '杭州'
+        }
+      },
+      methods: {
+        refresh () {
+          this.$store.dispatch('fetchScenicSpots')
         }
       }
     }

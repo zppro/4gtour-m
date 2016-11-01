@@ -6,7 +6,7 @@ import { sync } from 'vuex-router-sync'
 import VeeValidate from 'vee-validate'
 import { chinesePhone } from './patchs/vee-validate/rules'
 import veeValidateOption from './config/vee-validate-option'
-import { Progress, Spinner, Loadmore, InfiniteScroll, Field } from 'mint-ui'
+import { Progress, Spinner, InfiniteScroll } from 'mint-ui'
 
 import store from './store'
 import App from './App'
@@ -15,7 +15,7 @@ import App from './App'
 Vue.use(VueRouter)
 Vue.use(VueResource)
 
-// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.111:3002/me-services'
+// 'http://192.168.101.3:3002/me-services' 'http://192.168.255.100:3002/me-services'
 Vue.http.options.root = process.env.NODE_ENV === 'development' ? 'http://sh.okertrip.com/me-services' : 'http://sh.okertrip.com/me-services'
 // Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = true
@@ -79,8 +79,6 @@ sync(store, router) // done.
 // declare mint-ui
 Vue.component(Progress.name, Progress)
 Vue.component(Spinner.name, Spinner)
-Vue.component(Loadmore.name, Loadmore)
-Vue.component(Field.name, Field)
 Vue.use(InfiniteScroll)
 
 // extend vee custom validate rules

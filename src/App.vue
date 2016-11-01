@@ -2,8 +2,7 @@
   #app
     mt-progress.router-transition(v-show="routerTransiting", :value="routerTransitValue", :bar-height="routerTransitHeight")
     router-view(name="head")
-    transition(:name="transitionName"  appear)
-      router-view(class="body-view" name="body")
+    router-view(name="body")
 </template>
 
 <script>
@@ -11,20 +10,7 @@
   import Home from './views/Home'
 
   export default {
-    data () {
-      return {
-        transitionName: 'slide-left'
-      }
-    },
     computed: mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight']),
-    watch: {
-      '$route' (to, from) {
-        const toDepth = to.path.split('/').length
-        const fromDepth = from.path.split('/').length
-        console.log(fromDepth + '=>' + toDepth)
-        this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-      }
-    },
     components: {
       Home
     }
@@ -32,20 +18,6 @@
 </script>
 
 <style lang="less">
-  .body-view {
-    position: absolute;
-    transition: all .5s cubic-bezier(.55,0,.1,1);
-  }
-  .slide-left-enter, .slide-right-leave-active {
-    opacity: 0;
-    -webkit-transform: translate(1.5rem, 0);
-    transform: translate(1.5rem, 0);
-  }
-  .slide-left-leave-active, .slide-right-enter {
-    opacity: 0;
-    -webkit-transform: translate(-1.5rem, 0);
-    transform: translate(-1.5rem, 0);
-  }
   #app {
     margin: 0 auto;
     padding:0;
@@ -61,8 +33,5 @@
       flex:0;
     }
     .mt-progress{height:1px; line-height: 1px;}
-    > div {
-      width:100%;
-    }
   }
 </style>
