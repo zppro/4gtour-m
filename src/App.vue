@@ -2,7 +2,9 @@
   #app
     mt-progress.router-transition(v-show="routerTransiting", :value="routerTransitValue", :bar-height="routerTransitHeight")
     router-view(name="head")
+    a.nav-item.nav-item-left(@click="showLeft") 弹出左栏
     router-view(name="body")
+    mt-popup(v-model="localLeftPopupVisible",position="left" class="mint-popup-left",:modal="true", :close-on-click-modal="true")
 </template>
 
 <script>
@@ -10,7 +12,17 @@
   import Home from './views/Home'
 
   export default {
-    computed: mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight']),
+    data () {
+      return {
+        localLeftPopupVisible: false
+      }
+    },
+    computed: mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight', 'leftPopupVisible']),
+    methods: {
+      showLeft () {
+        this.localLeftPopupVisible = true
+      }
+    },
     components: {
       Home
     }
@@ -33,5 +45,10 @@
       flex:0;
     }
     .mt-progress{height:1px; line-height: 1px;}
+    .mint-popup-left {
+      width: 70%;
+      height: 100%;
+      background-color: #fff;
+    }
   }
 </style>

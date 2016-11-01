@@ -1,11 +1,11 @@
 <template lang="jade">
   nav#nav-header-home
-    a.nav-item.nav-item-left
+    a.nav-item.nav-item-left(@click="showLeft")
       i.fa.fa-user(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
         <!--i.fa.fa-caret-down(aria-hidden="true")-->
-    a.nav-item.nav-item-right(@click="refresh")
+    a.nav-item.nav-item-right(@click="fetchScenicSpots")
       i.fa.fa-list(aria-hidden="true")
 </template>
 <style lang="less" scoped>
@@ -34,7 +34,7 @@
       }
       > .nav-item-center{
         flex: 1;
-        -webkit-flex: 1;
+        -webkit-flex: 1;showLeft
         > h1 > span{
           margin-left:0.2rem;
         }
@@ -56,16 +56,20 @@
     }
 </style>
 <script>
-    export default {
-      data () {
-        return {
-          title: '杭州'
-        }
-      },
-      methods: {
-        refresh () {
-          this.$store.dispatch('fetchScenicSpots')
-        }
+  import { mapMutations, mapActions } from 'vuex'
+  import { $GLOABL_PREFIX$, SHOW_LEFT_POPUP } from '../../store/mutation-types'
+  export default {
+    data () {
+      return {
+        title: '杭州'
       }
+    },
+    methods: {
+      showLeft () {
+        this[$GLOABL_PREFIX$ + SHOW_LEFT_POPUP]()
+      },
+      ...mapMutations([$GLOABL_PREFIX$ + SHOW_LEFT_POPUP]),
+      ...mapActions(['fetchScenicSpots'])
     }
+  }
 </script>

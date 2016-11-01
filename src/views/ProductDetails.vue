@@ -12,14 +12,11 @@
     },
     beforeRouteEnter (to, from, next) {
       if (from.path === '/') {
-        console.log(to.path)
         next(vm => {
-          console.log(from.path)
-          console.log(vm)
-          vm.fetchScenicSpotInfo(to.params).then(function () {
-            console.log(vm.scenicSpotInDetails)
-          })
+          vm.fetchScenicSpotInfo(to.params)
         })
+      } else {
+        next()
       }
     },
     created () {

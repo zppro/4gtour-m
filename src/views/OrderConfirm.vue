@@ -152,8 +152,8 @@
           }
         })
       },
-      paySuccess () {
-        this.$http.put('api/order/' + this.order.orderId, {local_status: 'A0003'}).then(ret => {
+      paySuccess (payRet) {
+        this.$http.put('api/order/' + this.order.orderId, Object.assign({local_status: 'A0003'}, payRet)).then(ret => {
           if (ret.data.success) {
             window.alert('支付成功')
             window.proxy.order_info.link_man = this.order.link_man

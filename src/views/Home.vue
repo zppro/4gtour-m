@@ -3,7 +3,7 @@
     p(v-show="showFetchIndicator" class="page-refresh-loading")
       mt-spinner(type="triple-bounce" color="orange")
       | 刷新中..
-    product-list()
+    product-list
       product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
         .product-img(slot="img")
           img(:src="product.img")

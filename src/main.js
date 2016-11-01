@@ -6,7 +6,7 @@ import { sync } from 'vuex-router-sync'
 import VeeValidate from 'vee-validate'
 import { chinesePhone } from './patchs/vee-validate/rules'
 import veeValidateOption from './config/vee-validate-option'
-import { Progress, Spinner, InfiniteScroll } from 'mint-ui'
+import { Progress, Spinner, Popup, InfiniteScroll } from 'mint-ui'
 
 import store from './store'
 import App from './App'
@@ -79,6 +79,7 @@ sync(store, router) // done.
 // declare mint-ui
 Vue.component(Progress.name, Progress)
 Vue.component(Spinner.name, Spinner)
+Vue.component(Popup.name, Popup)
 Vue.use(InfiniteScroll)
 
 // extend vee custom validate rules

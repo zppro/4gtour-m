@@ -6,5 +6,11 @@ export default {
   },
   [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING] (state) {
     state.loading = false
+  },
+  [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SHOW_LEFT_POPUP] (state) {
+    state.leftPopupVisible = true
+  },
+  [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.HIDE_LEFT_POPUP] (state) {
+    state.leftPopupVisible = false
   }
 }
