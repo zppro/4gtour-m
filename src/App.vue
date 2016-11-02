@@ -2,13 +2,14 @@
   #app
     mt-progress.router-transition(v-show="routerTransiting", :value="routerTransitValue", :bar-height="routerTransitHeight")
     router-view(name="head")
-    a.nav-item.nav-item-left(@click="showLeft") 弹出左栏
     router-view(name="body")
     mt-popup(v-model="localLeftPopupVisible",position="left" class="mint-popup-left",:modal="true", :close-on-click-modal="true")
+      router-view(name="leftPopup")
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapMutations, mapState } from 'vuex'
+  import { $GLOABL_PREFIX$, HIDE_LEFT_POPUP } from './store/mutation-types'
   import Home from './views/Home'
 
   export default {
@@ -18,10 +19,17 @@
       }
     },
     computed: mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight', 'leftPopupVisible']),
-    methods: {
-      showLeft () {
-        this.localLeftPopupVisible = true
+    watch: {
+      // whenever question changes, this function will run
+      leftPopupVisible: function (newLeftPopupVisible) {
+        this.localLeftPopupVisible = newLeftPopupVisible
+      },
+      localLeftPopupVisible: function (newLocalLeftPopupVisible) {
+        !newLocalLeftPopupVisible && this[$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]()
       }
+    },
+    methods: {
+      ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP])
     },
     components: {
       Home
@@ -46,9 +54,21 @@
     }
     .mt-progress{height:1px; line-height: 1px;}
     .mint-popup-left {
-      width: 70%;
+      width: 6.25rem;
       height: 100%;
       background-color: #fff;
+    }
+    .page-refresh-loading, .page-append-loading{
+      text-align: center;
+      height: 1.5rem;
+      line-height: 1.5rem;
+      font-size:0.75rem;
+      color: #ea5513;
+      div{
+        display: inline-block;
+        vertical-align: middle;
+        margin-right:0.25rem;
+      }
     }
   }
 </style>

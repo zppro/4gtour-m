@@ -1,17 +1,13 @@
 import Vue from 'vue'
 import * as mutationTypes from '../mutation-types'
-// import {START_LOADING, FINISH_LOADING} from '../share-action-names'
-import dataFetchingOption from '../../config/data-fetching-option'
 
-const entityName = 'SCENIC-SPOT'
+const ENTITY_NAME = 'SCENIC-SPOT'
 
 const MINUS_QUANTITY = '/MINUS_QUANTITY'
 const PLUS_QUANTITY = '/PLUS_QUANTITY'
 
 const LIST_TICKETS = '/LIST_TICKETS'
 const CHOOSE_TICKET = '/CHOOSE_TICKET'
-
-const SET_SCENICSPOT_NO_MORE = '/SET_SCENICSPOT_NO_MORE'
 
 // initial state
 const state = {
@@ -57,29 +53,29 @@ const getters = {
 
 // mutations
 const mutations = {
-  [entityName + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
+  [ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
     state.listRequestTypeAppending = listRequestType === 'append'
   },
-  [entityName + mutationTypes.FETCH_LIST_SUCCESS] (state, { scenicSpots }) {
+  [ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { scenicSpots }) {
     state.all = scenicSpots
   },
-  [entityName + mutationTypes.APPEND_LIST_SUCCESS] (state, { scenicSpots }) {
+  [ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { scenicSpots }) {
     state.all = state.all.concat(scenicSpots)
   },
-  [entityName + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
+  [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { scenicSpot }) {
     // state.current = Object.assign({}, state.current, scenicSpot)
     state.current = scenicSpot
   },
-  [entityName + MINUS_QUANTITY] (state, { size = 1 }) {
+  [ENTITY_NAME + MINUS_QUANTITY] (state, { size = 1 }) {
     state.current && (state.current.buy_quantity - size) > 0 && (state.current.buy_quantity = state.current.buy_quantity - size)
   },
-  [entityName + PLUS_QUANTITY] (state, { size = 1 }) {
+  [ENTITY_NAME + PLUS_QUANTITY] (state, { size = 1 }) {
     state.current && (state.current.buy_quantity = state.current.buy_quantity + size)
   },
-  [entityName + LIST_TICKETS] (state, { tickets }) {
+  [ENTITY_NAME + LIST_TICKETS] (state, { tickets }) {
     state.current && Vue.set(state.current, 'tickets', tickets)
   },
-  [entityName + CHOOSE_TICKET] (state, { ticketId }) {
+  [ENTITY_NAME + CHOOSE_TICKET] (state, { ticketId }) {
     if (state.current) {
       const ticket = state.current.tickets.find(o => o.ticket_id === ticketId)
       if (ticket) {
@@ -92,7 +88,7 @@ const mutations = {
       }
     }
   },
-  [entityName + SET_SCENICSPOT_NO_MORE] (state, { scenicSpotRecordCount, size }) {
+  [ENTITY_NAME + mutationTypes.SET_NO_MORE] (state, { scenicSpotRecordCount, size }) {
     state.noMore = scenicSpotRecordCount < size
   }
 }
@@ -101,13 +97,13 @@ const mutations = {
 const actions = {
   fetchScenicSpots ({ commit, rootState }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    commit(entityName + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
     setTimeout(() => {
-      Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: 0}}).then(ret => {
+      Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
         if (ret.data.success) {
           const scenicSpots = ret.data.rows
-          commit(entityName + mutationTypes.FETCH_LIST_SUCCESS, { scenicSpots })
-          commit(entityName + SET_SCENICSPOT_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: dataFetchingOption.size })
+          commit(ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS, { scenicSpots })
+          commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: rootState.dataFetchingSize })
           commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
         }
       })
@@ -115,13 +111,13 @@ const actions = {
   },
   appendScenicSpots ({ commit, state, rootState }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    commit(entityName + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
     setTimeout(() => {
-      Vue.http.post('api/scenicSpots', {page: {size: dataFetchingOption.size, skip: state.all.length}}).then(ret => {
+      Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: state.all.length}}).then(ret => {
         if (ret.data.success) {
           const scenicSpots = ret.data.rows
-          scenicSpots.length > 0 && commit(entityName + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
-          commit(entityName + SET_SCENICSPOT_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: dataFetchingOption.size })
+          scenicSpots.length > 0 && commit(ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
+          commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: rootState.dataFetchingSize })
           commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
         }
       })
@@ -131,28 +127,28 @@ const actions = {
     return Vue.http.get('api/scenicSpot/' + id).then(ret => {
       if (ret.data.success) {
         const scenicSpot = ret.data.ret
-        commit(entityName + mutationTypes.FETCH_DETAILS_SUCCESS, { scenicSpot })
+        commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, { scenicSpot })
         return scenicSpot
       }
     })
   },
   minusQuantity ({ commit }, { size = 1 }) {
-    commit(entityName + MINUS_QUANTITY, { size })
+    commit(ENTITY_NAME + MINUS_QUANTITY, { size })
   },
   plusQuantity ({ commit }, { size = 1 }) {
-    commit(entityName + PLUS_QUANTITY, { size })
+    commit(ENTITY_NAME + PLUS_QUANTITY, { size })
   },
   listTickets ({ commit }, { id }) {
     return Vue.http.get('api/tickets/' + id).then(ret => {
       if (ret.data.success) {
         const tickets = ret.data.rows
-        commit(entityName + LIST_TICKETS, { tickets })
+        commit(ENTITY_NAME + LIST_TICKETS, { tickets })
         return tickets
       }
     })
   },
   chooseTicket ({ commit }, { ticketId }) {
-    commit(entityName + CHOOSE_TICKET, { ticketId })
+    commit(ENTITY_NAME + CHOOSE_TICKET, { ticketId })
   },
   ensureScenicSpot ({ commit, state, rootState, dispatch }) {
     if (!state.current.id) {

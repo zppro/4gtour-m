@@ -6,7 +6,7 @@
       h1 {{title}}
         <!--i.fa.fa-caret-down(aria-hidden="true")-->
     a.nav-item.nav-item-right(@click="fetchScenicSpots")
-      i.fa.fa-list(aria-hidden="true")
+      i.fa.fa-refresh(aria-hidden="true")
 </template>
 <style lang="less" scoped>
     #nav-header-home{
@@ -34,7 +34,7 @@
       }
       > .nav-item-center{
         flex: 1;
-        -webkit-flex: 1;showLeft
+        -webkit-flex: 1;
         > h1 > span{
           margin-left:0.2rem;
         }

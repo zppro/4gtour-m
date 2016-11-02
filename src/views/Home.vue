@@ -1,8 +1,8 @@
 <template lang="jade">
-  .home(v-infinite-scroll="appendScenicSpots", infinite-scroll-disabled="appendDiabled", infinite-scroll-distance="10")
+  .home(v-infinite-scroll="appendScenicSpots", infinite-scroll-disabled="appendDiabled", infinite-scroll-distance="infiniteScrollDistance")
     p(v-show="showFetchIndicator" class="page-refresh-loading")
-      mt-spinner(type="triple-bounce" color="orange")
-      | 刷新中..
+      mt-spinner(type="triple-bounce" color="#ea5513")
+      | {{dataFetchText}}
     product-list
       product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
         .product-img(slot="img")
@@ -13,16 +13,17 @@
         .product-title(slot="title") {{product.title}}
         .product-description(slot="description") {{product.description}}
     p(v-show="showAppendIndicator" class="page-append-loading")
-      mt-spinner(type="fading-circle" color="orange")
-      | 加载中...
+      mt-spinner(type="fading-circle" color="#ea5513")
+      | {{dataAppendText}}
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   import productList from '../components/ProductList'
   import productItem from '../components/ProductItem'
   export default {
     computed: {
+      ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText']),
       ...mapGetters(['allScenicSpotsInHome', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
     },
     beforeRouteEnter (to, from, next) {
@@ -92,18 +93,6 @@
       width:100%;
       padding:0 0.2rem;
       opacity: 0.6;
-    }
-    .page-refresh-loading, .page-append-loading{
-      text-align: center;
-      height: 1.5rem;
-      line-height: 1.5rem;
-      font-size:0.75rem;
-      color: orange;
-      div{
-        display: inline-block;
-        vertical-align: middle;
-        margin-right:0.25rem;
-      }
     }
   }
 </style>
