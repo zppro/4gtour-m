@@ -104,8 +104,8 @@ const actions = {
           const scenicSpots = ret.data.rows
           commit(ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS, { scenicSpots })
           commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: rootState.dataFetchingSize })
-          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
         }
+        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       })
     }, rootState.preLoadingMillisecond)
   },
@@ -118,8 +118,8 @@ const actions = {
           const scenicSpots = ret.data.rows
           scenicSpots.length > 0 && commit(ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
           commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: scenicSpots.length, size: rootState.dataFetchingSize })
-          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
         }
+        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       })
     }, rootState.preLoadingMillisecond)
   },

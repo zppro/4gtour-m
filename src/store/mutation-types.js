@@ -9,4 +9,5 @@ export const START_LOADING = '/START_LOADING'
 export const FINISH_LOADING = '/FINISH_LOADING'
 export const SHOW_LEFT_POPUP = '/SHOW_LEFT_POPUP'
 export const HIDE_LEFT_POPUP = '/HIDE_LEFT_POPUP'
+export const LOGIN = '/LOGIN'
 

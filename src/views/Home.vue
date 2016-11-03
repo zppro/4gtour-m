@@ -23,13 +23,21 @@
   import productItem from '../components/ProductItem'
   export default {
     computed: {
-      ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText']),
+      ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText', 'env']),
       ...mapGetters(['allScenicSpotsInHome', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
     },
     beforeRouteEnter (to, from, next) {
       next(vm => {
-        if (window.proxy.$needLogin()) {
-          window.proxy.$exec('autoLogin')
+        console.log(vm.env)
+        console.log(window.env)
+        if (window.env.isApiCloud) {
+          if (window.proxy.$needLogin()) {
+            window.proxy.$exec('autoLogin')
+          }
+        } else if (window.env.isWeiXin) {
+          // login by weixin
+        } else {
+          // 根据存储在localstorage中的token自动登录
         }
       })
     },

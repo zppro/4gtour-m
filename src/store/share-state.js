@@ -1,4 +1,5 @@
 export default {
+  env: window.env, // 串联env.js
   loading: false,
   preLoadingMillisecond: 200,
   routerTransiting: false,
