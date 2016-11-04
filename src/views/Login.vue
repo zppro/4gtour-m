@@ -4,20 +4,40 @@
       .login-icon
         i.fa.fa-user(aria-hidden="true")
       .login-value
-        input(type="text" placeholder="用户名/手机号")
+        input(type="text" placeholder="用户名/手机号" v-model="username")
     .password.login-field
       .login-icon
         i.fa.fa-lock(aria-hidden="true")
       .login-value
-        input(type="password" placeholder="密码")
-    a.btn.btn-login(@click="authMember") 登录
+        input(type="password" placeholder="密码" v-model="password")
+    a.btn.btn-login(@click="authMember({username, password, category: 3})") 登录
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   export default {
+    data () {
+      return {
+        username: '',
+        password: ''
+      }
+    },
+    computed: {
+      ...mapGetters(['isLogined', 'memberInfo'])
+    },
     methods: {
       ...mapActions(['authMember'])
+    },
+    watch: {
+      isLogined: function (newIsLogined) {
+        if (newIsLogined) {
+          if (this.$route.query.redirect) {
+            this.$router.push({path: this.$route.query.redirect})
+          } else {
+            this.$router.push({path: '/'})
+          }
+        }
+      }
     }
   }
 </script>

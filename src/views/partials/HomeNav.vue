@@ -2,6 +2,7 @@
   nav#nav-header-home
     a.nav-item.nav-item-left(@click="showLeft")
       i.fa.fa-user(aria-hidden="true")
+      .circle-badge.circle-point(v-if="isLogined && memberHaveUnreadOrders")
     a.nav-item.nav-item-center
       h1 {{title}}
         <!--i.fa.fa-caret-down(aria-hidden="true")-->
@@ -45,6 +46,7 @@
         width:40px;
         font-size:1.2rem;
         margin-left:0.2rem;
+        position: relative;
       }
       > .nav-item-right{
         flex: 0.1;
@@ -53,16 +55,25 @@
         font-size:1.2rem;
         margin-right:0.2rem;
       }
+      .circle-point{
+        background-color: #f44336;
+        position: absolute;
+        right: 0.3rem;
+        bottom: 0.3rem;
+      }
     }
 </style>
 <script>
-  import { mapMutations, mapActions } from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import { $GLOABL_PREFIX$, SHOW_LEFT_POPUP } from '../../store/mutation-types'
   export default {
     data () {
       return {
         title: '杭州'
       }
+    },
+    computed: {
+      ...mapGetters(['isLogined', 'memberHaveUnreadOrders', 'memberUnreadOrderCount'])
     },
     methods: {
       showLeft () {

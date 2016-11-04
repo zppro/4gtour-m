@@ -28,14 +28,16 @@ const endMove = () => {
   store.state.routerTransiting = false
 }
 router.beforeEach((to, from, next) => {
-  console.log('to.auth:' + to)
-  console.log(to)
   if (to.matched.some(r => r.meta.auth)) {
     if (store.state.member.self.member_id === 'anonymity') {
       next({
         path: '/login',
         query: { redirect: to.fullPath }
       })
+    } else {
+      store.state.routerTransiting = true
+      moveId = move(0, 1, 10)
+      next()
     }
   } else {
     store.state.routerTransiting = true

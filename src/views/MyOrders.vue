@@ -23,10 +23,17 @@
   export default {
     computed: {
       ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText']),
-      ...mapGetters(['allMember$Orders', 'appendMember$OrderDiabled', 'showMember$OrderFetchIndicator', 'showMember$OrderAppendIndicator'])
+      ...mapGetters(['allMember$Orders', 'memberHaveUnreadOrders', 'appendMember$OrderDiabled', 'showMember$OrderFetchIndicator', 'showMember$OrderAppendIndicator'])
     },
     methods: {
       ...mapActions(['fetchMember$Orders', 'appendMember$Orders'])
+    },
+    created () {
+      console.log(this.allMember$Orders.length > 0)
+      console.log(this.memberHaveUnreadOrders)
+      if (this.allMember$Orders.length > 0 && this.memberHaveUnreadOrders) {
+        this.fetchMember$Orders()
+      }
     },
     components: {
       orderList,

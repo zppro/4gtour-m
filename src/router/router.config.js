@@ -1,6 +1,5 @@
 import HomeNav from '../views/partials/HomeNav'
 import Home from '../views/Home'
-import LeftPopup from '../views/partials/LeftPopup'
 import Login from '../views/Login'
 import DetailsNav from '../views/partials/ProductDetailsNav'
 import Details from '../views/ProductDetails'
@@ -16,11 +15,11 @@ export default [
   //   path: '*', component: App
   // },
   {
+    name: '首页',
     path: '/',
     components: {
       head: HomeNav,
-      body: Home,
-      leftPopup: LeftPopup
+      body: Home
     }
   },
   {
@@ -32,6 +31,7 @@ export default [
     }
   },
   {
+    name: '景点详情',
     path: '/details/:id',
     components: {
       head: DetailsNav,
@@ -39,12 +39,14 @@ export default [
     },
     children: [
       {
+        name: '景点信息',
         path: 'info',
         components: {
           info: DetailsInfo
         }
       },
       {
+        name: '景点介绍',
         path: 'intro',
         components: {
           intro: DetailsIntro

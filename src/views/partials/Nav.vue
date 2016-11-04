@@ -57,9 +57,9 @@
 </style>
 <script>
     export default {
-      data () {
-        return {
-          title: this.$route.name
+      computed: {
+        title () {
+          return this.$route.name
         }
       },
       methods: {

@@ -4,13 +4,16 @@
     router-view(name="head")
     router-view(name="body")
     mt-popup(v-model="localLeftPopupVisible",position="left" class="mint-popup-left",:modal="true", :close-on-click-modal="true")
-      router-view(name="leftPopup")
+      left-popup
 </template>
 
 <script>
-  import { mapMutations, mapState } from 'vuex'
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  import localStore from 'store'
   import { $GLOABL_PREFIX$, HIDE_LEFT_POPUP } from './store/mutation-types'
+  import { MEMBER_TOKEN } from './store/keys'
   import Home from './views/Home'
+  import LeftPopup from './views/partials/LeftPopup'
 
   export default {
     data () {
@@ -18,9 +21,11 @@
         localLeftPopupVisible: false
       }
     },
-    computed: mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight', 'leftPopupVisible']),
+    computed: {
+      ...mapState(['routerTransiting', 'routerTransitValue', 'routerTransitHeight', 'leftPopupVisible']),
+      ...mapGetters(['isLogined'])
+    },
     watch: {
-      // whenever question changes, this function will run
       leftPopupVisible: function (newLeftPopupVisible) {
         this.localLeftPopupVisible = newLeftPopupVisible
       },
@@ -28,11 +33,20 @@
         !newLocalLeftPopupVisible && this[$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]()
       }
     },
+    created () {
+      if (!this.isLogined) {
+        console.log('login...')
+        let token = localStore.get(MEMBER_TOKEN)
+        token && this.authMemberByToken(token)
+      }
+    },
     methods: {
-      ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP])
+      ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]),
+      ...mapActions(['authMemberByToken'])
     },
     components: {
-      Home
+      Home,
+      LeftPopup
     }
   }
 </script>
@@ -54,7 +68,7 @@
     }
     .mt-progress{height:1px; line-height: 1px;}
     .mint-popup-left {
-      width: 6.25rem;
+      width: 12rem;
       height: 100%;
       background-color: #fff;
     }

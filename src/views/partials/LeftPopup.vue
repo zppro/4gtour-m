@@ -1,27 +1,69 @@
 <template lang="jade">
     section.leftPopupContent
-      .user-info
-        .user-head-portrait(v-if="!headPortrait")
-          div.fa.fa-user(aria-hidden="true")
-        img.user-head-portrait(v-if="headPortrait", :src="headPortrait")
-        p
-          a.btn.btn-action(v-if="!headPortrait") 点击登录
-          a.btn.btn-action(v-if="headPortrait") 安全退出
-      .user-actions
-        mt-cell(title="我的订单")
-        mt-cell(title="关于四季游")
+      .member-info
+        .member-info-left
+          .member-head-portrait(v-if="!isLogined")
+            .fa.fa-user(aria-hidden="true")
+          img.member-head-portrait(v-if="isLogined", :src="memberInfo.head_portrait")
+          p(v-if="!isLogined")
+            router-link.btn.btn-action(to="login") 点击登录
+        .member-info-right(v-show="isLogined")
+          span.member-name {{memberInfo.member_name}}
+          .member-description.no-wrap {{memberInfo.member_description}}
+          p
+            a.btn.btn-action(@click="logout") 安全退出
+      .member-actions
+        mt-cell(title="我的订单" is-link to="/my-orders")
+          mt-badge(v-if="isLogined && memberHaveUnreadOrders" type="error" size="small") {{memberUnreadOrderCount}}
+        mt-cell(title="关于四季游" is-link)
+      .app-actions
+        a.link.link-action(@click="markMember$OrderUnread()") 标记订单刷新
 </template>
+<script>
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
+  import { $GLOABL_PREFIX$, HIDE_LEFT_POPUP } from '../../store/mutation-types'
+  export default{
+    data () {
+      return {
+        headPortrait: 'http://img2.okertrip.com/05.jpg'
+      }
+    },
+    computed: {
+      routePath () {
+        return this.$route.path
+      },
+      ...mapGetters(['isLogined', 'memberInfo', 'memberHaveUnreadOrders', 'memberUnreadOrderCount'])
+    },
+    watch: {
+      routePath (newRoutePath) {
+        this[$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]()
+      }
+    },
+    methods: {
+      ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]),
+      ...mapActions(['logout', 'markMember$OrderUnread'])
+    }
+  }
+</script>
 <style lang="less" scoped>
-    .leftPopupContent{
-      background-color: #f8f8f8;
-      box-shadow: 0.5rem 0 0.5rem #333;
-      -moz-box-shadow: 0.5rem 0 0.5rem #333;
-      -webkit-box-shadow: 0.5rem 0 0.5rem #333;
-      height: 100%;
-      .user-info{
-        color:white;
-        padding: 0.25rem 0;
-        .user-head-portrait{
+  .leftPopupContent{
+    background-color: #f8f8f8;
+    box-shadow: 0.5rem 0 0.5rem #333;
+    -moz-box-shadow: 0.5rem 0 0.5rem #333;
+    -webkit-box-shadow: 0.5rem 0 0.5rem #333;
+    height: 100%;
+    position: relative;
+    .mint-badge{
+      margin-right:1rem;
+    }
+    .member-info{
+      color:white;
+      padding: 0.25rem 0;
+      display: flex;
+      align-items: center;
+      .member-info-left{
+        flex:1;
+        .member-head-portrait{
           margin: 0 auto;
           width: 4rem;
           height: 4rem;
@@ -30,16 +72,29 @@
           border-radius: 2rem;
           background-color: #ea5513;
           > div{
+            width:100%;
+            color:white;
             font-size:2rem;
             height:100%;
             line-height:4rem;
           }
         }
-        p {
-          margin:0;
-          padding:0.2rem 0;
+      }
+      .member-info-right{
+        flex:1;
+        text-align: left;
+        .member-name{
+          color: #666;
         }
-        a.btn-action{
+        .member-description{
+          color: #ccc;
+          font-size:0.6rem;
+        }
+      }
+      p {
+        margin:0;
+        padding:0.2rem 0;
+        .btn-action{
           background-color: #ea5513;
           color:white;
           padding: 0.2rem 0.4rem;
@@ -47,13 +102,18 @@
         }
       }
     }
-</style>
-<script>
-  export default{
-    data () {
-      return {
-        headPortrait: 'http://img2.okertrip.com/05.jpg'
-      }
+    .member-actions{
+      text-align: left;
+    }
+    .app-actions {
+      position: absolute;
+      width:100%;
+      bottom: 0.1rem;
+      text-align: left;
+    }
+    .link-action{
+      padding: 0.2rem 0.4rem;
+      font-size:0.6rem;
     }
   }
-</script>
+</style>
