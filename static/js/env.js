@@ -1,20 +1,22 @@
 (function(){
   "use strict";
   var u = window.navigator.userAgent.toLowerCase();
-  function isWeiXin() {
-    if (u.match(/MicroMessenger/i) == 'micromessenger') {
+  var host = window.location.host.toLowerCase();
+  function isWeixin() {
+    if (u.match(/MicroMessenger/i) == 'micromessenger' || host == 'http://weixin.okertrip.com' || host == 'localhost:8080') {
       return true;
     } else {
       return false;
     }
   }
   function isApiCloud() {
-    if (u.match(/APICloud/i) == 'apicloud') {
+    if (u.match(/APICloud/i) == 'apicloud'  || host == 'http://ios-apicloud.okertrip.com'  || host == 'http://android-apicloud.okertrip.com') {
       return true;
     } else {
       return false;
     }
   }
+
   var browser = {
     versions: function() {
       return {//移动终端浏览器版本信息
@@ -35,7 +37,12 @@
   window.env = {
     isIOS: browser.versions.ios || browser.versions.iPhone || browser.versions.iPad,
     isAndroid: browser.versions.android,
-    isWeiXin: isWeiXin(),
+    isWeixin: isWeixin(),
     isApiCloud: isApiCloud()
+  };
+
+  if(window.env.isWeixin){
+    window.utils.loadScript('http://res.wx.qq.com/open/js/jweixin-1.0.0.js');
   }
+
 }())

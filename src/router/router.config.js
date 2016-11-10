@@ -9,6 +9,8 @@ import Nav from '../views/partials/Nav'
 import MyOrders from '../views/MyOrders'
 import TicketSelect from '../views/TicketSelect'
 import OrderConfirm from '../views/OrderConfirm'
+import WeixinAuthNav from '../views/partials/WeixinAuthNav'
+import WeixinAuth from '../views/WeixinAuth'
 
 export default [
   // {
@@ -28,6 +30,14 @@ export default [
     components: {
       head: Nav,
       body: Login
+    }
+  },
+  {
+    name: '微信认证',
+    path: '/weixin-auth',
+    components: {
+      head: WeixinAuthNav,
+      body: WeixinAuth
     }
   },
   {

@@ -34,7 +34,7 @@
           if (window.proxy.$needLogin()) {
             window.proxy.$exec('autoLogin')
           }
-        } else if (window.env.isWeiXin) {
+        } else if (window.env.isWeixin) {
           // login by weixin
         } else {
           // 根据存储在localstorage中的token自动登录

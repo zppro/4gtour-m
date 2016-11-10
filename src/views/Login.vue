@@ -11,13 +11,21 @@
       .login-value
         input(type="password" placeholder="密码" v-model="password")
     a.btn.btn-login(@click="authMember({username, password, category: 3})") 登录
+    p 其他登录
+    ul
+      li
+        a.iconfont.icon-weichat(title="微信", @click="bottomPopupVisible = true")
+    mt-popup(v-model="bottomPopupVisible" position="bottom" class="mint-popup-bottom")
+      weixin-login(v-on:closeWeixinLogin="closeWeixinLogin()")
 </template>
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
+  import WeixinLogin from './partials/WeixinLogin'
   export default {
     data () {
       return {
+        bottomPopupVisible: false,
         username: '',
         password: ''
       }
@@ -26,6 +34,9 @@
       ...mapGetters(['isLogined', 'memberInfo'])
     },
     methods: {
+      closeWeixinLogin () {
+        this.bottomPopupVisible = false
+      },
       ...mapActions(['authMember'])
     },
     watch: {
@@ -38,6 +49,9 @@
           }
         }
       }
+    },
+    components: {
+      WeixinLogin
     }
   }
 </script>
@@ -89,5 +103,17 @@
       color: white;
       padding: 0.4rem 0;
     }
+    > ul > li {
+      .icon-weichat {font-size:2rem; color:#00D20D}
+      .icon-weichat:hover{color:orange;}
+      height:1.6rem;
+    }
+    .mint-popup-bottom {
+      width: 100%;
+      max-width: 18.75rem;
+      height: 80%;
+      background-color: #fff;
+    }
+
   }
 </style>

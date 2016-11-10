@@ -3,7 +3,7 @@
     mt-progress.router-transition(v-show="routerTransiting", :value="routerTransitValue", :bar-height="routerTransitHeight")
     router-view(name="head")
     router-view(name="body")
-    mt-popup(v-model="localLeftPopupVisible",position="left" class="mint-popup-left",:modal="true", :close-on-click-modal="true")
+    mt-popup(v-model="localLeftPopupVisible",position="left" class="mint-popup-left")
       left-popup
 </template>
 

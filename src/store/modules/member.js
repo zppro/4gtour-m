@@ -15,12 +15,17 @@ const state = {
     let ret = initEmptyMemberInfo
     if (window.env.isApiCloud) {
       ret = window.proxy.member
-    } else {
-      let _member = localStore.get('member')
-      _member && (ret = _member)
     }
+    // else {
+    //   let _member = localStore.get('member')
+    //   _member && (ret = _member)
+    // }
     return ret
   }()),
+  open: {
+    weixinAppid: 'wx1c6c736837b3a396', // 以后从服务端读取
+    weixinAppsecret: 'db8bfa0a305489c461db1b302897d345' // 以后从服务端读取
+  },
   member$Orders: [],
   member$OrderUnreadCount: 0,
   member$OrderListRequestTypeAppending: true,
@@ -35,6 +40,9 @@ const getters = {
   isLogined (state) {
     // return !!state.member_id && state.member_id !== 'anonymity'
     return !!state.token
+  },
+  openWeixinAppid (state) {
+    return state.open.weixinAppid
   },
   memberHaveUnreadOrders (state) {
     return state.member$OrderUnreadCount > 0
@@ -132,6 +140,17 @@ const actions = {
       commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
+    }, rootState.preLoadingMillisecond)
+  },
+  authMemberByWeixin ({ commit, state, rootState, dispatch }, code) {
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    Indicator.open('获取AccessToken...')
+    setTimeout(() => {
+      Vue.http.get('https://api.weixin.qq.com/sns/oauth2/access_token', { appid: state.open.weixinAppid, secret: state.open.weixinAppsecret, code, grant_type: 'authorization_code' }).then(ret => {
+        console.log(ret)
+        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+        Indicator.close()
+      })
     }, rootState.preLoadingMillisecond)
   },
   fetchMember$Orders ({ commit, rootState }) {

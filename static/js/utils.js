@@ -54,8 +54,14 @@
     return pass;
   }
 
+  function loadScript(path){
+    window.document.write('<script type="text/javascript" src="' + path + '"></script>');
+  }
+
+
   window.utils = {
     isPhone:isPhone,
-    isIDNo:isIDNo
+    isIDNo:isIDNo,
+    loadScript: loadScript
   };
 }())
