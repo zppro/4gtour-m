@@ -60,7 +60,7 @@
         scope: 'snsapi_login',
         state: 'auto',
         style: '',
-        href: ''
+        href: 'http://share.okertrip.com/css/qr-w-150.css'
       })
       console.log(obj)
     },
