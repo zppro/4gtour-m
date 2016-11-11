@@ -5,6 +5,7 @@ import * as getters from './share-getters'
 import * as actions from './share-actions'
 import mutations from './share-mutations'
 import scenicSpot from './modules/scenic-spot'
+import weixinOpen from './modules/weixin-open'
 import member from './modules/member'
 
 Vue.use(Vuex)
@@ -16,7 +17,8 @@ export default new Vuex.Store({
   mutations,
   modules: {
     scenicSpot,
-    member
+    member,
+    weixinOpen
   },
   strict: false
 })

@@ -22,10 +22,6 @@ const state = {
     // }
     return ret
   }()),
-  open: {
-    weixinAppid: 'wx1c6c736837b3a396', // 以后从服务端读取
-    weixinAppsecret: 'db8bfa0a305489c461db1b302897d345' // 以后从服务端读取
-  },
   member$Orders: [],
   member$OrderUnreadCount: 0,
   member$OrderListRequestTypeAppending: true,
@@ -40,9 +36,6 @@ const getters = {
   isLogined (state) {
     // return !!state.member_id && state.member_id !== 'anonymity'
     return !!state.token
-  },
-  openWeixinAppid (state) {
-    return state.open.weixinAppid
   },
   memberHaveUnreadOrders (state) {
     return state.member$OrderUnreadCount > 0
@@ -142,16 +135,11 @@ const actions = {
       Indicator.close()
     }, rootState.preLoadingMillisecond)
   },
-  authMemberByWeixin ({ commit, state, rootState, dispatch }, code) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open('获取AccessToken...')
-    setTimeout(() => {
-      Vue.http.get('https://api.weixin.qq.com/sns/oauth2/access_token', { appid: state.open.weixinAppid, secret: state.open.weixinAppsecret, code, grant_type: 'authorization_code' }).then(ret => {
-        console.log(ret)
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      })
-    }, rootState.preLoadingMillisecond)
+  authMemberByOpenWeixinOnClient ({ commit, state, rootState, getters }) {
+    console.log('authMemberByOpenWeixinOnClient...')
+    let userInfo = getters['weixinOpenUserInfo']
+    let loginRet = { token: userInfo.openid, memberInfo: { member_id: userInfo.openid, member_name: userInfo.nickname, head_portrait: userInfo.headimgurl, member_description: '' } }
+    commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
   },
   fetchMember$Orders ({ commit, rootState }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)

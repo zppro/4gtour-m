@@ -14,7 +14,7 @@
     p 其他登录
     ul
       li
-        a.iconfont.icon-weichat(title="微信", @click="bottomPopupVisible = true")
+        a.iconfont.icon-weichat(v-show="isConfigLoaded" title="微信", @click="bottomPopupVisible = true")
     mt-popup(v-model="bottomPopupVisible" position="bottom" class="mint-popup-bottom")
       weixin-login(v-on:closeWeixinLogin="closeWeixinLogin()")
 </template>
@@ -31,7 +31,7 @@
       }
     },
     computed: {
-      ...mapGetters(['isLogined', 'memberInfo'])
+      ...mapGetters(['isConfigLoaded', 'isLogined', 'memberInfo'])
     },
     methods: {
       closeWeixinLogin () {

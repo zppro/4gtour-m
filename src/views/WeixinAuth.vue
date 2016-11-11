@@ -1,7 +1,7 @@
 <template lang="jade">
   .weixin-auth
     p 正在认证...
-    a.btn.btn-return(@click="authMemberByWeixin(code)") 认证
+    a.btn.btn-return(@click="weixinOpen$GetUserInfo(code)") 认证
     router-link.btn.btn-return(to="/") 返回首页
 </template>
 
@@ -15,13 +15,18 @@
     },
     created () {
 //      console.log(this.$route.query)
-      this.code = '031MazMj05tPcl1AdDJj0kZzMj0MazMT'
+      this.code = this.$route.query.code
+      if (this.code) {
+        this.weixinOpen$GetUserInfo()
+      } else {
+        this.$router.replace({path: '/'})
+      }
     },
     computed: {
       ...mapGetters(['isLogined'])
     },
     methods: {
-      ...mapActions(['authMemberByWeixin'])
+      ...mapActions(['weixinOpen$GetUserInfo'])
     }
   }
 </script>

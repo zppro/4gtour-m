@@ -31,9 +31,15 @@ Vue.http.options.credentials = httpOption.credentials
 Vue.http.interceptors.push(httpOption.interceptor)
 
 // 时间戳：console.log(Math.round(new Date().getTime() / 1000))
+
+// 配置微信开放平台数据
+!store.state.env.isWeixin && store.dispatch('weixinOpen$getConfig')
+
 new Vue({
   el: '#app',
   store,
   router,
   render: h => h(App)
 })
+console.log('store:')
+console.log(store)

@@ -49,14 +49,14 @@
       }
     },
     computed: {
-      ...mapGetters(['openWeixinAppid'])
+      ...mapGetters(['weixinOpenAppid', 'weixinOpenRedirectUrl'])
     },
     mounted () {
-      console.log(this.openWeixinAppid)
+      console.log(this.weixinOpenAppid)
       var obj = new window.WxLogin({
         id: 'weixin-qr',
-        appid: this.openWeixinAppid,
-        redirect_uri: encodeURIComponent('http://weixin.okertrip.com/#/weixin-auth'),
+        appid: this.weixinOpenAppid,
+        redirect_uri: encodeURIComponent(this.weixinOpenRedirectUrl),
         scope: 'snsapi_login',
         state: 'auto',
         style: '',

@@ -3,7 +3,7 @@
   var u = window.navigator.userAgent.toLowerCase();
   var host = window.location.host.toLowerCase();
   function isWeixin() {
-    if (u.match(/MicroMessenger/i) == 'micromessenger' || host == 'http://weixin.okertrip.com' || host == 'localhost:8080') {
+    if (u.match(/MicroMessenger/i) == 'micromessenger' || host == 'http://weixin.okertrip.com') {
       return true;
     } else {
       return false;
