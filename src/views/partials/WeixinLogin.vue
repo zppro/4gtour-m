@@ -49,10 +49,12 @@
       }
     },
     computed: {
-      ...mapGetters(['weixinOpenAppid', 'weixinOpenRedirectUrl'])
+      ...mapGetters(['weixinOpenAppid', 'weixinOpenRedirectUrl', 'weixinOpenQrCssHref'])
     },
     mounted () {
       console.log(this.weixinOpenAppid)
+//      let href = 'https://www.2ciyun.com/css/weixin.css'
+      console.log(this.weixinOpenQrCssHref)
       var obj = new window.WxLogin({
         id: 'weixin-qr',
         appid: this.weixinOpenAppid,
@@ -60,7 +62,7 @@
         scope: 'snsapi_login',
         state: 'auto',
         style: '',
-        href: 'http://share.okertrip.com/css/qr-w-150.css'
+        href: this.weixinOpenQrCssHref
       })
       console.log(obj)
     },

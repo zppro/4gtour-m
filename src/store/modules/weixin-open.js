@@ -28,6 +28,9 @@ const getters = {
   weixinOpenRedirectUrl (state) {
     return state.config.redirect_uri
   },
+  weixinOpenQrCssHref (state) {
+    return state.config.qr_css_href
+  },
   weixinOpenUserInfo (state) {
     return state.userInfo
   }
