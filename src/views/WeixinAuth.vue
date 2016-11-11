@@ -7,6 +7,7 @@
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
+  import Vue from 'vue'
   export default {
     data () {
       return {
@@ -16,11 +17,14 @@
     created () {
 //      console.log(this.$route.query)
       this.code = this.$route.query.code
-      if (this.code) {
-        this.weixinOpen$GetUserInfo()
-      } else {
-        this.$router.replace({path: '/'})
-      }
+      console.log(this.code)
+      Vue.nextTick(() => {
+        if (this.code) {
+          this.weixinOpen$GetUserInfo()
+        } else {
+          this.$router.replace({path: '/'})
+        }
+      })
     },
     computed: {
       ...mapGetters(['isLogined'])
