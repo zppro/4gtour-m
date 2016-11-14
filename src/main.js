@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
+import { sync } from 'vuex-router-sync'
 import { Progress, Spinner, Popup, Cell, Field, Badge, InfiniteScroll } from 'mint-ui'
 
 import { chinesePhone } from './patchs/vee-validate/rules'
@@ -9,6 +10,7 @@ import router from './router'
 import * as httpOption from './config/http-option'
 import App from './App'
 
+sync(store, router)
 // load resource plugin
 Vue.use(VueResource)
 /* eslint-disable no-new */
@@ -34,6 +36,7 @@ Vue.http.interceptors.push(httpOption.interceptor)
 
 // 配置微信开放平台数据
 !store.state.env.isWeixin && store.dispatch('weixinOpen$getConfig')
+// !store.state.env.isWeixin && window.utils.loadScript('http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=YOUR APPKEY&debug=true')
 
 new Vue({
   el: '#app',

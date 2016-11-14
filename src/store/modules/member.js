@@ -135,11 +135,27 @@ const actions = {
       Indicator.close()
     }, rootState.preLoadingMillisecond)
   },
-  authMemberByOpenWeixinOnClient ({ commit, state, rootState, getters }) {
+  authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
     console.log('authMemberByOpenWeixinOnClient...')
     let userInfo = getters['weixinOpenUserInfo']
-    let loginRet = { token: userInfo.openid, memberInfo: { member_id: userInfo.openid, member_name: userInfo.nickname, head_portrait: userInfo.headimgurl, member_description: '' } }
-    commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+    let p = Promise.resolve({ token: userInfo.openid, memberInfo: { member_id: userInfo.openid, member_name: userInfo.nickname, head_portrait: userInfo.headimgurl, member_description: '' } })
+    if (!window.env.isApiCloud) {
+      console.log('isApiCloud')
+      p = Vue.http.post('api/proxyLoginByWeiXinOpenIdSyncToAPICloud', userInfo).then(ret => {
+        if (ret.data.success) {
+          return ret.data.ret
+          // todo: 通知apiCloud
+        } else {
+          dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+          commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
+          return null
+        }
+      })
+    }
+    p.then((loginRet) => {
+      loginRet && commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+    })
+    return p
   },
   fetchMember$Orders ({ commit, rootState }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)

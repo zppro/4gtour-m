@@ -17,10 +17,11 @@
     created () {
 //      console.log(this.$route.query)
       this.code = this.$route.query.code
-      console.log(this.code)
+//      this.code = '001WRvvI1l8zH60iaqtI1QIwvI1WRvvG'
+//      console.log(Vue)
       Vue.nextTick(() => {
         if (this.code) {
-          this.weixinOpen$GetUserInfo()
+          this.weixinOpen$GetUserInfo(this.code)
         } else {
           this.$router.replace({path: '/'})
         }

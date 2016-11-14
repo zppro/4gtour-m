@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { sync } from 'vuex-router-sync'
 import VeeValidate from 'vee-validate'
 import veeValidateOption from '../config/vee-validate-option'
 import routes from './router.config'
@@ -54,7 +53,5 @@ router.afterEach(route => {
   }
   route.name === '填写订单' && Vue.use(VeeValidate, veeValidateOption)
 })
-
-sync(store, router)
 
 export default router

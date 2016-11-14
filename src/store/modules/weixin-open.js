@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { Indicator } from 'mint-ui'
 import localStore from 'store'
+import router from '../../router'
 import * as mutationTypes from '../mutation-types'
 import { WEIXIN_OPEN_REFRESH_TOKEN } from '../keys'
 
@@ -18,7 +19,7 @@ const state = {
 
 // getters
 const getters = {
-  isConfigLoaded (state) {
+  isWeixinConfigLoaded (state) {
     // return !!state.member_id && state.member_id !== 'anonymity'
     return !!(state.config.appid && state.config.secret && state.config.redirect_uri)
   },
@@ -105,7 +106,7 @@ const actions = {
     })
   },
   weixinOpen$GetUserInfo ({ commit, state, rootState, dispatch }, code) {
-    var p = Promise.resolve(true)
+    let p = Promise.resolve(true)
     if (!state.accessTokenData.access_token) {
       p = dispatch('weixinOpen$RequestAccessToken', code)
     }
@@ -122,7 +123,10 @@ const actions = {
               const userInfoRet = ret.data.ret
               commit(ENTITY_NAME + USER_INFO_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, userInfoRet)
               dispatch('authMemberByOpenWeixinOnClient').then(() => {
-                dispatch('toast', {msg: '微信登录成功', option: {iconClass: 'fa fa-check'}})
+                dispatch('toast', {msg: '微信登录成功', option: {iconClass: 'fa fa-check'}}).then(() => {
+                  console.log(124)
+                  router.replace({path: '/'})
+                })
               })
             } else {
               if (ret.data.code === 42001) {

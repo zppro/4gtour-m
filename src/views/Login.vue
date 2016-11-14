@@ -14,7 +14,8 @@
     p 其他登录
     ul
       li
-        a.iconfont.icon-weichat(v-show="isConfigLoaded" title="微信", @click="bottomPopupVisible = true")
+        a.iconfont.icon-weichat(v-show="isWeixinConfigLoaded" title="微信", @click="bottomPopupVisible = true")
+        a.iconfont.icon-xinlang(v-show="true" title="新浪微博" @click="WeiBoLogin")
     mt-popup(v-model="bottomPopupVisible" position="bottom" class="mint-popup-bottom")
       weixin-login(v-on:closeWeixinLogin="closeWeixinLogin()")
 </template>
@@ -31,11 +32,15 @@
       }
     },
     computed: {
-      ...mapGetters(['isConfigLoaded', 'isLogined', 'memberInfo'])
+      ...mapGetters(['isWeixinConfigLoaded', 'isLogined', 'memberInfo'])
     },
     methods: {
       closeWeixinLogin () {
         this.bottomPopupVisible = false
+      },
+      WeiBoLogin () {
+        console.log(345)
+        console.log(window.WB2)
       },
       ...mapActions(['authMember'])
     },
@@ -104,8 +109,10 @@
       padding: 0.4rem 0;
     }
     > ul > li {
-      .icon-weichat {font-size:2rem; color:#00D20D}
-      .icon-weichat:hover{color:orange;}
+      a  {font-size:2rem;}
+      a:hover{color:orange;}
+      .icon-weichat {color:#00D20D}
+      .icon-xinlang { color: #F56467}
       height:1.6rem;
     }
     .mint-popup-bottom {
