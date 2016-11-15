@@ -3,6 +3,7 @@ import { Indicator } from 'mint-ui'
 import localStore from 'store'
 import * as mutationTypes from '../mutation-types'
 import { MEMBER_TOKEN } from '../keys'
+import { APICLOUD_LOGIN, APICLOUD_LOGOUT } from '../share-apicloud-event-names'
 
 export const ENTITY_NAME = 'MEMBER'
 export const ORDER_NAME = '$ORDER'
@@ -11,17 +12,7 @@ const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', hea
 // initial state
 const state = {
   token: '',
-  self: (function () {
-    let ret = initEmptyMemberInfo
-    if (window.env.isApiCloud) {
-      ret = window.proxy.member
-    }
-    // else {
-    //   let _member = localStore.get('member')
-    //   _member && (ret = _member)
-    // }
-    return ret
-  }()),
+  self: initEmptyMemberInfo,
   member$Orders: [],
   member$OrderUnreadCount: 0,
   member$OrderListRequestTypeAppending: true,
@@ -67,6 +58,11 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.LOGIN_FAIL] (state) {
     state.self = initEmptyMemberInfo
     state.token = ''
+    // localStore.set(MEMBER_TOKEN, '')
+  },
+  [ENTITY_NAME + mutationTypes.LOGIN_OUT] (state) {
+    state.self = initEmptyMemberInfo
+    state.token = ''
     localStore.set(MEMBER_TOKEN, '')
   },
   [ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
@@ -101,6 +97,7 @@ const actions = {
         if (ret.data.success) {
           const loginRet = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+          rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGIN, eventData: {token: loginRet.token} })
         } else {
           dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
         }
@@ -126,25 +123,25 @@ const actions = {
       })
     }, rootState.preLoadingMillisecond)
   },
-  logout ({ commit, rootState }) {
+  logout ({ commit, rootState, dispatch }, isMannual = true) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open('安全退出...')
     setTimeout(() => {
-      commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
+      commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
+      rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
     }, rootState.preLoadingMillisecond)
   },
   authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
-    console.log('authMemberByOpenWeixinOnClient...')
     let userInfo = getters['weixinOpenUserInfo']
     let p = Promise.resolve({ token: userInfo.openid, memberInfo: { member_id: userInfo.openid, member_name: userInfo.nickname, head_portrait: userInfo.headimgurl, member_description: '' } })
     if (!window.env.isApiCloud) {
       console.log('isApiCloud')
       p = Vue.http.post('api/proxyLoginByWeiXinOpenIdSyncToAPICloud', userInfo).then(ret => {
         if (ret.data.success) {
+          rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: 'login', eventData: ret.data.ret.token })
           return ret.data.ret
-          // todo: 通知apiCloud
         } else {
           dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
           commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)

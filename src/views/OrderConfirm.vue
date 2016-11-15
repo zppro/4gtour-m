@@ -37,11 +37,12 @@
 
 <script>
   import Vue from 'vue'
-  import { mapGetters, mapActions } from 'vuex'
-  import quantityRegulator from '../components/QuantityRegulator'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   import datePicker from 'vue-datepicker'
   import moment from 'moment'
+  import quantityRegulator from '../components/QuantityRegulator'
   import defaultDateOption from '../config/datepicker-option'
+  import { APICLOUD_OPEN_LOGIN_WIN, APICLOUD_PAY, APICLOUD_PAY_SUCCESS, APICLOUD_PAY_FAIL } from '../store/share-apicloud-event-names'
   export default {
     data () {
       return {
@@ -81,16 +82,45 @@
           time: this.order.travel_date
         }
       },
-      ...mapGetters(['infoPreparedToOrder'])
+      ...mapState(['env']),
+      ...mapGetters(['infoPreparedToOrder', 'isLogined'])
+    },
+    mounted () {
+      console.log('mounted...')
+      let self = this
+      if (this.env.isApiCloud && window.api) {
+        window.api.addEventListener({ name: APICLOUD_PAY_SUCCESS }, (eventRet, err) => {
+          self.$http.put('api/order/' + self.order.orderId, Object.assign({local_status: 'A0003'}, eventRet.value)).then(ret => {
+            self.finishLoading()
+            if (ret.data.success) {
+              self.toast({msg: '支付成功', option: {iconClass: 'fa fa-check'}})
+      //              window.proxy.order_info.link_man = self.order.link_man
+      //              window.proxy.order_info.link_phone = self.order.link_phone
+              self.$router.replace({path: '/'})
+            } else {
+              self.toast(ret.data)
+            }
+          })
+        })
+        window.api.addEventListener({ name: APICLOUD_PAY_FAIL }, (eventRet, err) => {
+          self.finishLoading()
+          self.toast({msg: eventRet.value.msg, option: {iconClass: 'fa fa-close'}})
+        })
+      }
     },
     created () {
-      window.proxy.paySuccess = this.paySuccess
+//      window.proxy.paySuccess = this.paySuccess
+      console.log('created...')
       this.ensureScenicSpot().then(() => {
-        this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder, this.$route.params, (window.proxy.order_info || {}))
+        this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder)
       })
     },
     beforeDestroy () {
-      window.proxy.paySuccess = null
+//      window.proxy.paySuccess = null
+      if (this.env.isApiCloud && window.api) {
+        window.api.removeEventListener({ name: APICLOUD_PAY_SUCCESS })
+        window.api.removeEventListener({ name: APICLOUD_PAY_FAIL })
+      }
       console.log('before destroy')
     },
     methods: {
@@ -104,67 +134,60 @@
         this.order.quantity++
       },
       orderAndPay () {
-        console.log(this.errors.first('link_man'))
+        let self = this
         this.validateAll(this).then((b) => {
           if (!b) {
             return
           }
-          if (!window.proxy.$isLogin()) {
-  //          window.alert('需要登录')
-            window.proxy.$exec('openLogin')
+          if (!this.isLogined) {
+            // window.proxy.$exec('openLogin') 通过代理openLogin已经过时
+            if (this.env.isApiCloud) {
+              this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
+            } else {
+              this.$router.push({path: '/login'})
+            }
           } else {
-            if (!this.order.link_man) {
-              window.alert('[联系人姓名]必须填写')
-              return
-            }
-            if (!this.order.link_man) {
-              window.alert('[联系人手机]必须填写')
-              return
-            }
-            if (!window.utils.isPhone(this.order.link_phone)) {
-              window.alert('[联系人手机]格式不正确')
-              return
-            }
-  //          window.alert('开始支付')
-  //          window.alert('in webapp:' + JSON.stringify(this.order))
+            this.startLoading('支付中...')
             if (!this.order.orderId) {
               this.$http.post('api/order', this.order).then(ret => {
                 if (ret.data.success) {
                   var r = ret.data.ret
-                  this.order.orderId = r._id
-                  this.order.code = r.code
+                  self.order.orderId = r._id
+                  self.order.code = r.code
                   let info = {code: r.code, amount: r.amount, order_link_man: r.link_man, order_link_phone: r.link_phone}
-                  window.proxy.$exec('pay', info)
+                  if (self.env.isApiCloud) {
+                    // window.proxy.$exec('pay', info)  通过代理支付已经过时
+                    self.sendEventToApiCloud({ eventName: APICLOUD_PAY, eventData: info })
+                  } else {
+                    // 判断是否在微信公众号内
+                    this.finishLoading()
+                  }
                 } else {
-                  window.alert(ret.data.msg)
+                  self.toast(ret.data)
+                  this.finishLoading()
                 }
               })
             } else {
               this.$http.put('api/order/' + this.order.orderId, {quantity: this.order.quantity, amount: this.orderAmount, link_man: this.order.link_man, link_phone: this.order.link_phone, travel_date: this.order.travel_date}).then(ret => {
                 if (ret.data.success) {
-                  let info = {code: this.order.code, amount: this.orderAmount, order_link_man: this.order.link_man, order_link_phone: this.order.link_phone}
-                  window.proxy.$exec('pay', info)
+                  let info = {code: self.order.code, amount: self.orderAmount, order_link_man: self.order.link_man, order_link_phone: self.order.link_phone}
+                  if (self.env.isApiCloud) {
+                    // window.proxy.$exec('pay', info)  通过代理支付已经过时
+                    self.sendEventToApiCloud({ eventName: APICLOUD_PAY, eventData: info })
+                  } else {
+                    // 判断是否在微信公众号内
+                    this.finishLoading()
+                  }
                 } else {
-                  window.alert(ret.data.msg)
+                  self.toast(ret.data)
+                  this.finishLoading()
                 }
               })
             }
           }
         })
       },
-      paySuccess (payRet) {
-        this.$http.put('api/order/' + this.order.orderId, Object.assign({local_status: 'A0003'}, payRet)).then(ret => {
-          if (ret.data.success) {
-            window.alert('支付成功')
-            window.proxy.order_info.link_man = this.order.link_man
-            window.proxy.order_info.link_phone = this.order.link_phone
-            this.$router.replace({path: '/'})
-          } else {
-            console.log(ret.data.msg)
-          }
-        })
-      },
-      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'validateAll'])
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'validateAll', 'sendEventToApiCloud', 'startLoading', 'finishLoading'])
     },
     components: {
       quantityRegulator,

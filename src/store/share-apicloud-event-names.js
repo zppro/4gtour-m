@@ -1,0 +1,7 @@
+export const APICLOUD_LOGIN = 'login'
+export const APICLOUD_LOGOUT = 'logout'
+export const APICLOUD_OPEN_LOGIN_WIN = 'openLoginWin'
+export const APICLOUD_PAY = 'pay'
+export const APICLOUD_PAY_SUCCESS = 'paySuccess'
+export const APICLOUD_PAY_FAIL = 'payFail'
+export const APICLOUD_SHARE_WEIXIN = 'shareWeixin'

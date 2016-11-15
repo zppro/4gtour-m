@@ -15,7 +15,7 @@
     }
     return ret;
   }
-  
+
   window.proxy= {
     auto_login_retry_count: 0,
     auto_login_retry_max: 2,
@@ -70,5 +70,5 @@
     }
   };
   window.proxy.$init();
-  window.proxy.$exec('remote-proxy');
+  // window.proxy.$exec('remote-proxy');
 }())

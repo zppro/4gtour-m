@@ -74,7 +74,7 @@ export default [
   },
   {
     name: '填写订单',
-    path: '/order-confirm/:id,:quantity',
+    path: '/order/:id,:quantity',
     components: {
       head: Nav,
       body: OrderConfirm

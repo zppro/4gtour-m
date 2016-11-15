@@ -15,7 +15,7 @@
       div(slot="travel-guide") {{product.travel_guide}}
     .product-actions
       <!--a.btn.shopping-cart 加入购物车-->
-      a.btn.order-now(@click="confirmOrder") 立即购买
+      a.btn.order-now(@click="doOrder()") 立即购买
     .product-padding-bottom
 </template>
 
@@ -37,14 +37,12 @@
         } else {
           return false
         }
-      },
-      comfirmOrderPath: function () {
-        return '/order-confirm/' + this.product.id + ',' + this.product.buy_quantity
       }
     },
     methods: {
-      confirmOrder () {
-        this.$router.push(this.comfirmOrderPath)
+      doOrder () {
+        const url = '/order/' + this.product.id + ',' + this.product.buy_quantity
+        this.$router.push({path: url})
       },
       ...mapActions(['minusQuantity', 'plusQuantity'])
     },

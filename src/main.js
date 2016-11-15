@@ -37,6 +37,7 @@ Vue.http.interceptors.push(httpOption.interceptor)
 // 配置微信开放平台数据
 !store.state.env.isWeixin && store.dispatch('weixinOpen$getConfig')
 // !store.state.env.isWeixin && window.utils.loadScript('http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=YOUR APPKEY&debug=true')
+store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloud')
 
 new Vue({
   el: '#app',
@@ -44,5 +45,3 @@ new Vue({
   router,
   render: h => h(App)
 })
-console.log('store:')
-console.log(store)

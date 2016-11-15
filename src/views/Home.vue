@@ -26,21 +26,6 @@
       ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText', 'env']),
       ...mapGetters(['allScenicSpotsInHome', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
     },
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        console.log(vm.env)
-        console.log(window.env)
-        if (window.env.isApiCloud) {
-          if (window.proxy.$needLogin()) {
-            window.proxy.$exec('autoLogin')
-          }
-        } else if (window.env.isWeixin) {
-          // login by weixin
-        } else {
-          // 根据存储在localstorage中的token自动登录
-        }
-      })
-    },
     methods: {
       ...mapActions(['appendScenicSpots'])
     },

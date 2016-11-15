@@ -39,7 +39,7 @@
         this.bottomPopupVisible = false
       },
       WeiBoLogin () {
-        console.log(345)
+        console.log(14523)
         console.log(window.WB2)
       },
       ...mapActions(['authMember'])

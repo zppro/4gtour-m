@@ -6,7 +6,7 @@
       a.tab-header.tab-header-active(@click="switchTab(0)") 景点
       a.tab-header(@click="switchTab(1)") 详情
     a.nav-item.nav-item-right
-      i.fa.fa-external-link(aria-hidden="true")
+      i.fa.fa-external-link(aria-hidden="true" @click="share")
 </template>
 <style lang="less" scoped>
     #nav-header-product-details{
@@ -55,12 +55,17 @@
     }
 </style>
 <script>
+  import { mapState, mapGetters, mapActions } from 'vuex'
   let $ = window.$
   export default {
     data () {
       return {
         title: '...'
       }
+    },
+    computed: {
+      ...mapState(['env']),
+      ...mapGetters(['scenicSpotInDetails'])
     },
     methods: {
       back () {
@@ -74,7 +79,16 @@
         // console.log(this.$router)
         this.$router.replace({path: '/details/' + this.$route.params.id + '/' + subDetails})
         console.log('success')
-      }
+      },
+      share () {
+        if (this.env.isApiCloud) {
+          // window.proxy.$exec('pay', info)  通过代理支付已经过时
+          this.shareToWeixinOnApiCloud({title: this.scenicSpotInDetails.selected_ticket_name, description: ' ￥(' + this.scenicSpotInDetails.selected_ticket_price + ')', thumbUrl: this.scenicSpotInDetails.img, contentUrl: window.location.href})
+        } else {
+          // 判断是否在微信公众号内
+        }
+      },
+      ...mapActions(['shareToWeixinOnApiCloud'])
     }
   }
 </script>
