@@ -13,6 +13,8 @@
         slot(name="buy-quantity")
       .product-level
         slot(name="level")
+      .product-actions
+        router-link.btn.order-now(:to="orderRoute") 立即购买
     .product-block.product-block-ticket
       .product-ticket
         slot(name="ticket")
@@ -37,7 +39,7 @@
       return {
       }
     },
-    props: ['showChangeTicket', 'selectTicketRoute'],
+    props: ['showChangeTicket', 'selectTicketRoute', 'orderRoute'],
     methods: {
       changeTicket () {
         this.$emit('changeTicket')
@@ -110,14 +112,40 @@
         font-size:1rem;
       }
       .product-level{
-        position: absolute;
-        right:0.6rem;
-        bottom:0.6rem;
         font-size:1.2rem;
         color:#ea5513;
         display: inline-block;
-        width:4.25rem;
+        width:5rem;
         text-align: right;
+      }
+      .product-actions{
+        text-align:center;
+        margin: 0 auto;
+        padding: 0.8rem;
+        max-width: 18.75rem;
+        width: 18.75rem;
+        height:4rem;
+        line-height:4rem;
+        position: relative;
+        .btn{
+          position: absolute;
+          bottom:0;
+          right:1.3rem;
+          opacity: 0.8;
+          color:white;
+          width: 8rem;
+          font-size:1rem;
+          height:3rem;
+          line-height:3rem;
+          border:none;
+          cursor: pointer;
+        }
+        .shopping-cart{
+          background-color: #000;
+        }
+        .order-now{
+          background-color: #ea5513;
+        }
       }
     }
     .product-block-ticket{

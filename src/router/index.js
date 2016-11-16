@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VeeValidate from 'vee-validate'
-import veeValidateOption from '../config/vee-validate-option'
 import routes from './router.config'
 import store from '../store'
 
@@ -51,7 +49,6 @@ router.afterEach(route => {
   } else {
     move(store.state.routerTransitValue, 5, 1, endMove)
   }
-  route.name === '填写订单' && Vue.use(VeeValidate, veeValidateOption)
 })
 
 export default router

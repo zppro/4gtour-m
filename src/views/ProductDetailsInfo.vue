@@ -1,6 +1,6 @@
 <template lang="jade">
   .product-details-info
-    product-info(:show-change-ticket="showChangeTicket", :select-ticket-route="selectTicketRoute")
+    product-info(:show-change-ticket="showChangeTicket", :select-ticket-route="selectTicketRoute", :order-route="orderRoute")
       img(:src="product.img" slot="img")
       span(slot="title") {{product.title}}
       span(slot="price") ¥{{product.selected_ticket_price}}
@@ -13,9 +13,9 @@
       div(slot="runtime" v-html="product.runtime")
       div(slot="tip") {{product.tip}}
       div(slot="travel-guide") {{product.travel_guide}}
-    .product-actions
+
       <!--a.btn.shopping-cart 加入购物车-->
-      a.btn.order-now(@click="doOrder()") 立即购买
+
     .product-padding-bottom
 </template>
 
@@ -31,6 +31,9 @@
         // `this` points to the vm instance
         return '/ticket-select/' + this.product.id
       },
+      orderRoute: function () {
+        return '/order/' + this.product.id + ',' + this.product.buy_quantity
+      },
       showChangeTicket: function () {
         if (this.product) {
           return this.product.tickets_count > 1
@@ -41,8 +44,8 @@
     },
     methods: {
       doOrder () {
-        const url = '/order/' + this.product.id + ',' + this.product.buy_quantity
-        this.$router.push({path: url})
+        // const url = '/order/' + this.product.id + ',' + this.product.buy_quantity
+        this.$router.push({path: '/fuck/1'})
       },
       ...mapActions(['minusQuantity', 'plusQuantity'])
     },
@@ -57,32 +60,7 @@
 <style lang="less" scoped>
   .product-details-info {
     width:100%;
-    .product-actions{
-      text-align:center;
-      margin: 0 auto;
-      pading: 0;
-      max-width: 18.75rem;
-      width: 18.75rem;
-      position: fixed;
-      bottom:0;
-      .btn{
-        display: inline-block;
-        opacity: 0.8;
-        color:white;
-        width: 100%;
-        font-size:1.1rem;
-        height:3rem;
-        line-height:3rem;
-        border:none;
-        cursor: pointer;
-      }
-      .shopping-cart{
-        background-color: #000;
-      }
-      .order-now{
-        background-color: #ea5513;
-      }
-    }
+
     .product-padding-bottom{
       height:3rem;
     }

@@ -62,7 +62,8 @@
     data () {
       return {
         title: '...',
-        sheetVisible: false
+        sheetVisible: false,
+        shareActions: []
       }
     },
     computed: {

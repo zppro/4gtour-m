@@ -11,24 +11,26 @@
       .order-info-item
         span.item-title 金额:
         .item-value ￥{{orderAmount}}
-    .order-info-block
       .order-info-item
         span.item-title 出 游 日 期:
         .item-value.field-travel_date
-          date-picker(:date="travel_date", :option="date_option", :limit="date_limit")
+          input.disabled(v-model="travel_date",placeholder="选择出游日期", readonly,  onfocus="this.blur();", data-as="出游日期" data-rules="required")
           a.primary(@click="triggerDatePicker")
             i.fa.fa-calendar(aria-hidden="true")
+          a.warning(v-show="!travel_date" @click="toast({msg:'出游日期是必须的'})")
+            i.fa.fa-warning(aria-hidden="true")
+          mt-datetime-picker(ref="travelDatePicker" type="date" v-model="order.travel_date" @confirm="")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
-          input(v-model="link_man",placeholder="填写联系人姓名",v-validate="link_man", data-as="联系人姓名" data-rules="required")
-          a.warning(v-show="errors.has('link_man')" @click="toast({msg:errors.first('link_man')})")
+          input(v-model="link_man",placeholder="填写联系人姓名")
+          a.warning(v-show="!link_man" @click="toast({msg:'联系人姓名是必须的'})")
             i.fa.fa-warning(aria-hidden="true")
       .order-info-item
         span.item-title 联系人手机:
         .item-value
-          input(v-model="link_phone",placeholder="填写联系人手机",v-validate="link_phone",data-as="联系人手机" data-rules="required|chinese-phone")
-          a.warning(v-show="errors.has('link_phone')" @click="toast({msg:errors.first('link_phone')})")
+          input(v-model="link_phone",placeholder="填写联系人手机")
+          a.warning(v-show="!link_phone || !validMobileNo" @click="showErrorOfMobileNo")
             i.fa.fa-warning(aria-hidden="true")
     .order-actions
       a.btn.pay-now(@click="orderAndPay") 生成订单并支付
@@ -38,21 +40,14 @@
 <script>
   import Vue from 'vue'
   import { mapState, mapGetters, mapActions } from 'vuex'
-  import datePicker from 'vue-datepicker'
   import moment from 'moment'
   import quantityRegulator from '../components/QuantityRegulator'
-  import defaultDateOption from '../config/datepicker-option'
   import { APICLOUD_OPEN_LOGIN_WIN, APICLOUD_PAY, APICLOUD_PAY_SUCCESS, APICLOUD_PAY_FAIL } from '../store/share-apicloud-event-names'
   export default {
     data () {
       return {
         order: {},
-        date_now: moment().format('YYYY-MM-DD'),
-        date_option: defaultDateOption,
-        date_limit: [{
-          type: 'fromto',
-          from: moment().format('YYYY-MM-DD')
-        }]
+        date_now: moment().format('YYYY-MM-DD')
       }
     },
     computed: {
@@ -72,15 +67,19 @@
           Vue.set(this.order, 'link_phone', newValue)
         }
       },
+      travel_date () {
+        return moment(this.order.travel_date).format('YYYY-MM-DD')
+      },
       // a computed getter
       orderAmount: function () {
         // `this` points to the vm instance
         return this.order.quantity * this.order.p_price
       },
-      travel_date: function () {
-        return {
-          time: this.order.travel_date
-        }
+      validMobileNo: function () {
+        return window.utils.isPhone(this.order.link_phone)
+      },
+      allValid: function () {
+        return !!(this.link_man && this.link_phone && this.validMobileNo)
       },
       ...mapState(['env']),
       ...mapGetters(['infoPreparedToOrder', 'isLogined'])
@@ -125,7 +124,12 @@
     },
     methods: {
       triggerDatePicker () {
-        window.$('.field-travel_date input').click()
+        this.$refs.travelDatePicker.open()
+      },
+      showErrorOfMobileNo () {
+        let msg = this.link_phone ? '联系人手机是必须是一个有效的手机号码' : '联系人手机是必须的'
+        console.log(msg)
+        this.toast({msg})
       },
       minus () {
         this.order.quantity > 1 && this.order.quantity--
@@ -135,20 +139,20 @@
       },
       orderAndPay () {
         let self = this
-        this.validateAll(this).then((b) => {
-          if (!b) {
-            return
-          }
-          if (!this.isLogined) {
-            // window.proxy.$exec('openLogin') 通过代理openLogin已经过时
-            if (this.env.isApiCloud) {
-              this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
-            } else {
-              this.$router.push({path: '/login'})
-            }
+        if (!this.isLogined) {
+          // window.proxy.$exec('openLogin') 通过代理openLogin已经过时
+          if (this.env.isApiCloud) {
+            this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
           } else {
+            this.$router.push({path: '/login'})
+          }
+        } else {
+          console.log(this.allValid)
+          if (this.allValid) {
             this.startLoading('支付中...')
             if (!this.order.orderId) {
+              window.alert(JSON.stringify(this.order))
+              console.log('123')
               this.$http.post('api/order', this.order).then(ret => {
                 if (ret.data.success) {
                   var r = ret.data.ret
@@ -184,25 +188,32 @@
                 }
               })
             }
+          } else {
+            this.toast({msg: '点击警告图标查看错误'})
           }
-        })
+        }
       },
-      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'validateAll', 'sendEventToApiCloud', 'startLoading', 'finishLoading'])
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'sendEventToApiCloud', 'startLoading', 'finishLoading'])
     },
     components: {
-      quantityRegulator,
-      datePicker
+      quantityRegulator
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less" >
   .order-details {
     width: 100%;
+    .disabled{
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: not-allowed;
+    }
     .order-info-block{
       background-color: white;
-      margin-top:0.6rem;autoLogin
+      margin-top:0.6rem;
       padding: 0.2rem;
       border-top: solid 1px lightgray;
       border-bottom: solid 1px lightgray;

@@ -17,14 +17,6 @@ export const finishLoading = ({ commit }) => {
 export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
-export const validateAll = ({ dispatch }, { $validator, errors }) => {
-  $validator.validateAll()
-  if (errors.any()) {
-    dispatch('toast', errors.errors[0])
-    return false
-  }
-  return true
-}
 export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
   return Promise.resolve(true).then(() => {
     window.apiready = function () {

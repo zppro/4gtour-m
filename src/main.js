@@ -1,10 +1,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
-import VeeValidate from 'vee-validate'
 import { sync } from 'vuex-router-sync'
-import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, InfiniteScroll } from 'mint-ui'
-
-import { chinesePhone } from './patchs/vee-validate/rules'
+import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, InfiniteScroll } from 'mint-ui'
 import store from './store'
 import router from './router'
 import * as httpOption from './config/http-option'
@@ -22,10 +19,9 @@ Vue.component(Cell.name, Cell)
 Vue.component(Field.name, Field)
 Vue.component(Badge.name, Badge)
 Vue.component(Actionsheet.name, Actionsheet)
+Vue.component(DatetimePicker.name, DatetimePicker)
 Vue.use(InfiniteScroll)
-
-// extend vee custom validate rules
-VeeValidate.Validator.extend('chinese-phone', chinesePhone)
+// Vue.use(VeeValidate, veeValidateOption)
 
 // 'http://192.168.101.3:3002/me-services' 'http://192.168.255.100:3002/me-services'
 Vue.http.options.root = httpOption.root
