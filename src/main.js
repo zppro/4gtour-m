@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
 import { sync } from 'vuex-router-sync'
-import { Progress, Spinner, Popup, Cell, Field, Badge, InfiniteScroll } from 'mint-ui'
+import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, InfiniteScroll } from 'mint-ui'
 
 import { chinesePhone } from './patchs/vee-validate/rules'
 import store from './store'
@@ -21,6 +21,7 @@ Vue.component(Popup.name, Popup)
 Vue.component(Cell.name, Cell)
 Vue.component(Field.name, Field)
 Vue.component(Badge.name, Badge)
+Vue.component(Actionsheet.name, Actionsheet)
 Vue.use(InfiniteScroll)
 
 // extend vee custom validate rules

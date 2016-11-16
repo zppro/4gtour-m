@@ -45,8 +45,7 @@ export const sendEventToApiCloud = ({ dispatch }, { eventName, eventData = null 
     window.api && window.api.sendEvent({name: eventName, extra: eventData})
   })
 }
-export const shareToWeixinOnApiCloud = ({ dispatch }, { scene = 'timeline', contentType = 'web_page', title, description, thumbUrl, contentUrl }) => {
-  window.alert('shareToWeixinOnApiCloud...')
+export const shareToWeixinOnApiCloud = ({ dispatch }, { scene, title, description, thumbUrl, contentUrl, contentType = 'web_page' }) => {
   dispatch('startLoading', {msg: '分享中...'}).then(() => {
     dispatch('sendEventToApiCloud', {eventName: APICLOUD_SHARE_WEIXIN, eventData: {scene, contentType, title, description, thumbUrl, contentUrl}}).then(() => {
       dispatch('finishLoading')

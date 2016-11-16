@@ -6,7 +6,8 @@
       a.tab-header.tab-header-active(@click="switchTab(0)") 景点
       a.tab-header(@click="switchTab(1)") 详情
     a.nav-item.nav-item-right
-      i.fa.fa-external-link(aria-hidden="true" @click="share")
+      i.fa.fa-external-link(aria-hidden="true" @click="showShareAction")
+    mt-actionsheet(:actions="shareActions" v-model="sheetVisible")
 </template>
 <style lang="less" scoped>
     #nav-header-product-details{
@@ -60,12 +61,22 @@
   export default {
     data () {
       return {
-        title: '...'
+        title: '...',
+        sheetVisible: false
       }
     },
     computed: {
       ...mapState(['env']),
       ...mapGetters(['scenicSpotInDetails'])
+    },
+    mounted () {
+      this.shareActions = [{
+        name: '分享到微信朋友圈',
+        method: this.shareWeixinTimeline
+      }, {
+        name: '发送给微信好友',
+        method: this.shareWeixinSession
+      }]
     },
     methods: {
       back () {
@@ -80,13 +91,26 @@
         this.$router.replace({path: '/details/' + this.$route.params.id + '/' + subDetails})
         console.log('success')
       },
-      share () {
+      showShareAction () {
+        this.sheetVisible = true
+      },
+      shareWeixinTimeline () {
         if (this.env.isApiCloud) {
           // window.proxy.$exec('pay', info)  通过代理支付已经过时
-          this.shareToWeixinOnApiCloud({title: this.scenicSpotInDetails.selected_ticket_name, description: ' ￥(' + this.scenicSpotInDetails.selected_ticket_price + ')', thumbUrl: this.scenicSpotInDetails.img, contentUrl: window.location.href})
+          this.shareToWeixinOnApiCloud({scene: 'timeline', title: this.scenicSpotInDetails.selected_ticket_name, description: ' ￥(' + this.scenicSpotInDetails.selected_ticket_price + ')', thumbUrl: this.scenicSpotInDetails.img, contentUrl: window.location.href})
         } else {
           // 判断是否在微信公众号内
         }
+        this.sheetVisible = false
+      },
+      shareWeixinSession () {
+        if (this.env.isApiCloud) {
+          // window.proxy.$exec('pay', info)  通过代理支付已经过时
+          this.shareToWeixinOnApiCloud({scene: 'session', title: this.scenicSpotInDetails.selected_ticket_name, description: ' ￥(' + this.scenicSpotInDetails.selected_ticket_price + ')', thumbUrl: this.scenicSpotInDetails.img, contentUrl: window.location.href})
+        } else {
+          // 判断是否在微信公众号内
+        }
+        this.sheetVisible = false
       },
       ...mapActions(['shareToWeixinOnApiCloud'])
     }
