@@ -3,20 +3,17 @@
     product-info(:show-change-ticket="showChangeTicket", :select-ticket-route="selectTicketRoute", :order-route="orderRoute")
       img(:src="product.img" slot="img")
       span(slot="title") {{product.title}}
+      span(slot="ticket-title") {{product.selected_ticket_name}}
       span(slot="price") ¥{{product.selected_ticket_price}}
       span(slot="bid-price") ¥{{product.selected_ticket_bid_price}}
       span(slot="buy-quantity")
         quantity-regulator(:q-value="product.buy_quantity", v-on:minus="minusQuantity({size: 1})", v-on:plus="plusQuantity({size: 1})")
       span(slot="level") {{product.level}}
-      span(slot="ticket") {{product.selected_ticket_name}}
+      div(slot="validate") {{validateInfo}}
       div(slot="address" ) {{product.address}}
       div(slot="runtime" v-html="product.runtime")
       div(slot="tip") {{product.tip}}
       div(slot="travel-guide") {{product.travel_guide}}
-
-      <!--a.btn.shopping-cart 加入购物车-->
-
-    .product-padding-bottom
 </template>
 
 <script>
@@ -27,19 +24,22 @@
     props: ['product'],
     computed: {
       // a computed getter
-      selectTicketRoute: function () {
+      selectTicketRoute () {
         // `this` points to the vm instance
         return '/ticket-select/' + this.product.id
       },
-      orderRoute: function () {
+      orderRoute () {
         return '/order/' + this.product.id + ',' + this.product.buy_quantity
       },
-      showChangeTicket: function () {
+      showChangeTicket () {
         if (this.product) {
           return this.product.tickets_count > 1
         } else {
           return false
         }
+      },
+      validateInfo () {
+        return this.product.selected_ticket_delay_days === '0' ? '限当天使用' : `自购买之日起${this.product.selected_ticket_delay_days}天内使用`
       }
     },
     methods: {
@@ -60,9 +60,5 @@
 <style lang="less" scoped>
   .product-details-info {
     width:100%;
-
-    .product-padding-bottom{
-      height:3rem;
-    }
   }
 </style>

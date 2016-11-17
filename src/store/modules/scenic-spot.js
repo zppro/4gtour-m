@@ -1,5 +1,7 @@
 import Vue from 'vue'
+import localStore from 'store'
 import * as mutationTypes from '../mutation-types'
+import { ORDER_LINK_MAN, ORDER_LINK_PHONE, ORDER_TOURIST_ID_NO } from '../keys'
 
 const ENTITY_NAME = 'SCENIC-SPOT'
 
@@ -37,7 +39,16 @@ const getters = {
       UUid: state.current.selected_ticket_uuid,
       p_price: state.current.selected_ticket_price,
       quantity: state.current.buy_quantity,
-      p_name: state.current.selected_ticket_name
+      p_name: state.current.selected_ticket_name,
+      delay_days: state.current.selected_ticket_delay_days,
+      buy_days_in_advance: state.current.selected_ticket_buy_days_in_advance,
+      buy_hour_in_advance: state.current.selected_ticket_buy_hour_in_advance,
+      buy_limit_up: state.current.selected_ticket_buy_limit_up,
+      buy_limit_low: state.current.selected_ticket_buy_limit_low,
+      tourist_IDNo_flag: state.current.selected_ticket_tourist_IDNo_flag,
+      link_man: localStore.get(ORDER_LINK_MAN),
+      link_phone: localStore.get(ORDER_LINK_PHONE),
+      tourist_id_no: localStore.get(ORDER_TOURIST_ID_NO)
     }
   },
   appendDiabled (state, getters, rootState) {
@@ -85,6 +96,12 @@ const mutations = {
         Vue.set(state.current, 'selected_ticket_price', ticket.ticket_price)
         Vue.set(state.current, 'selected_ticket_bid_price', ticket.ticket_bid_price)
         Vue.set(state.current, 'selected_ticket_name', ticket.ticket_name)
+        Vue.set(state.current, 'delay_days', ticket.ticket_delay_days)
+        Vue.set(state.current, 'buy_days_in_advance', ticket.ticket_buy_days_in_advance)
+        Vue.set(state.current, 'buy_hour_in_advance', ticket.ticket_buy_hour_in_advance)
+        Vue.set(state.current, 'buy_limit_up', ticket.ticket_buy_limit_up)
+        Vue.set(state.current, 'buy_limit_low', ticket.ticket_buy_limit_low)
+        Vue.set(state.current, 'tourist_IDNo_flag', ticket.ticket_tourist_IDNo_flag)
       }
     }
   },

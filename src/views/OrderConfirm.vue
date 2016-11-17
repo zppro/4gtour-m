@@ -19,7 +19,7 @@
             i.fa.fa-calendar(aria-hidden="true")
           a.warning(v-show="!travel_date" @click="toast({msg:'出游日期是必须的'})")
             i.fa.fa-warning(aria-hidden="true")
-          mt-datetime-picker(ref="travelDatePicker" type="date" v-model="order.travel_date" @confirm="")
+          mt-datetime-picker(ref="travelDatePicker" type="date" v-model="order.travel_date", :start-date="start_date" @confirm="")
       .order-info-item
         span.item-title 联系人姓名:
         .item-value.field-link-man
@@ -32,6 +32,12 @@
           input(v-model="link_phone",placeholder="填写联系人手机")
           a.warning(v-show="!link_phone || !validMobileNo" @click="showErrorOfMobileNo")
             i.fa.fa-warning(aria-hidden="true")
+      .order-info-item(v-if="needTouristIDNo")
+        span.item-title 身 份 证:
+        .item-value
+          input.tourist_id_no(v-model="tourist_id_no",placeholder="填写联系人身份证")
+          a.warning(v-show="!tourist_id_no || !validIDNo" @click="showErrorOfIDNo")
+            i.fa.fa-warning(aria-hidden="true")
     .order-actions
       a.btn.pay-now(@click="orderAndPay") 生成订单并支付
     .order-padding-bottom
@@ -39,15 +45,16 @@
 
 <script>
   import Vue from 'vue'
+  import localStore from 'store'
   import { mapState, mapGetters, mapActions } from 'vuex'
   import moment from 'moment'
   import quantityRegulator from '../components/QuantityRegulator'
   import { APICLOUD_OPEN_LOGIN_WIN, APICLOUD_PAY, APICLOUD_PAY_SUCCESS, APICLOUD_PAY_FAIL } from '../store/share-apicloud-event-names'
+  import { ORDER_LINK_MAN, ORDER_LINK_PHONE, ORDER_TOURIST_ID_NO } from '../store/keys'
   export default {
     data () {
       return {
-        order: {},
-        date_now: moment().format('YYYY-MM-DD')
+        order: {travel_date: new Date()}
       }
     },
     computed: {
@@ -67,8 +74,34 @@
           Vue.set(this.order, 'link_phone', newValue)
         }
       },
+      tourist_id_no: {
+        get () {
+          return this.order.tourist_id_no
+        },
+        set (newValue) {
+          Vue.set(this.order, 'tourist_id_no', newValue)
+        }
+      },
       travel_date () {
         return moment(this.order.travel_date).format('YYYY-MM-DD')
+      },
+      start_date () {
+        if (this.order.buy_days_in_advance === 0) {
+          let now = moment()
+          if (now.diff(moment(now.format('YYYY-MM-DD') + ' ' + this.order.buy_hour_in_advance)) >= 0) {
+            return now.add(1, 'day').toDate()
+          } else {
+            return now.toDate()
+          }
+        } else {
+          return moment().add(this.order.buy_days_in_advance, 'day').toDate()
+        }
+      },
+      needTouristIDNo () {
+        return this.order.tourist_IDNo_flag > 0
+      },
+      validIDNo: function () {
+        return window.utils.isIDNo(this.order.tourist_id_no)
       },
       // a computed getter
       orderAmount: function () {
@@ -79,7 +112,7 @@
         return window.utils.isPhone(this.order.link_phone)
       },
       allValid: function () {
-        return !!(this.link_man && this.link_phone && this.validMobileNo)
+        return !!(this.link_man && this.link_phone && this.validMobileNo && (!this.needTouristIDNo || this.needTouristIDNo && (this.tourist_id_no && this.validIDNo)))
       },
       ...mapState(['env']),
       ...mapGetters(['infoPreparedToOrder', 'isLogined'])
@@ -111,7 +144,7 @@
 //      window.proxy.paySuccess = this.paySuccess
       console.log('created...')
       this.ensureScenicSpot().then(() => {
-        this.order = window.$.extend({travel_date: this.date_now}, this.infoPreparedToOrder)
+        this.order = window.$.extend({travel_date: new Date()}, this.infoPreparedToOrder)
       })
     },
     beforeDestroy () {
@@ -126,9 +159,12 @@
       triggerDatePicker () {
         this.$refs.travelDatePicker.open()
       },
+      showErrorOfIDNo () {
+        let msg = this.tourist_id_no ? '身份证号码是必须是一个有效二代证' : '联系人身份证是必须的'
+        this.toast({msg})
+      },
       showErrorOfMobileNo () {
         let msg = this.link_phone ? '联系人手机是必须是一个有效的手机号码' : '联系人手机是必须的'
-        console.log(msg)
         this.toast({msg})
       },
       minus () {
@@ -147,12 +183,13 @@
             this.$router.push({path: '/login'})
           }
         } else {
-          console.log(this.allValid)
           if (this.allValid) {
             this.startLoading('支付中...')
             if (!this.order.orderId) {
               window.alert(JSON.stringify(this.order))
-              console.log('123')
+              localStore.set(ORDER_LINK_MAN, this.order.link_man)
+              localStore.set(ORDER_LINK_PHONE, this.order.link_phone)
+              this.needTouristIDNo && this.order.tourist_id_no && localStore.set(ORDER_TOURIST_ID_NO, this.order.tourist_id_no)
               this.$http.post('api/order', this.order).then(ret => {
                 if (ret.data.success) {
                   var r = ret.data.ret
@@ -239,6 +276,9 @@
           }
           input:active,input:focus{
             border:none;
+          }
+          .tourist_id_no {
+            width:12rem;
           }
         }
         .field-title{

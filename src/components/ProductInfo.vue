@@ -5,6 +5,8 @@
     .product-block.product-block-title-price-quantity-level
       .product-title
         slot(name="title")
+      .product-ticket-title
+        slot(name="ticket-title")
       .product-price
         slot(name="price")
       .product-bid-price
@@ -15,20 +17,19 @@
         slot(name="level")
       .product-actions
         router-link.btn.order-now(:to="orderRoute") 立即购买
-    .product-block.product-block-ticket
-      .product-ticket
-        slot(name="ticket")
-      router-link(v-show="showChangeTicket", :to="selectTicketRoute")
-        i.fa.fa-ellipsis-h(aria-hidden="true")
-    .product-block.product-block-address
-      .label-title 详细地址
-      slot(name="address")
-    .product-block.product-block-runtime
-      .label-title 营业时间
-      slot(name="runtime")
+        router-link.btn.changeTicket(v-show="showChangeTicket", :to="selectTicketRoute") 其他价格
+    .product-block.product-block-validate
+      .label-title 有效期
+      slot(name="validate")
     .product-block.product-block-tip
       .label-title 相关说明
       slot(name="tip")
+    .product-block.product-block-runtime
+      .label-title 营业时间
+      slot(name="runtime")
+    .product-block.validate-block-address
+      .label-title 详细地址
+      slot(name="address")
     .product-block.product-block-travel-guide
       .label-title 交通指南
       slot(name="travel-guide")
@@ -67,7 +68,6 @@
       padding:0.4rem;
       border-top:solid 1px #4f4f4f;
       background-color: white;
-
       .label-title{
         font-size:0.9rem;
         color:#000;
@@ -115,66 +115,44 @@
         font-size:1.2rem;
         color:#ea5513;
         display: inline-block;
-        width:5rem;
         text-align: right;
+        text-indent: 1rem;
       }
       .product-actions{
         text-align:center;
         margin: 0 auto;
-        padding: 0.8rem;
+        padding: 0.2rem;
         max-width: 18.75rem;
-        width: 18.75rem;
         height:4rem;
         line-height:4rem;
         position: relative;
         .btn{
-          position: absolute;
-          bottom:0;
           right:1.3rem;
           opacity: 0.8;
           color:white;
           width: 8rem;
           font-size:1rem;
-          height:3rem;
-          line-height:3rem;
+          height:2rem;
+          line-height:2rem;
           border:none;
           cursor: pointer;
+          margin:0 0.25rem;
         }
         .shopping-cart{
           background-color: #000;
+        }
+        .changeTicket{
+          background-color: lightskyblue;
         }
         .order-now{
           background-color: #ea5513;
         }
       }
     }
-    .product-block-ticket{
-      display: flex;
-      align-items: center;
-      width:100%;
-      > span{
-        width: 1px!important;
-        flex: 0.05;
-        color:#7f7d7d;
-        cursor:pointer;
-        justify-content: center;
-      }
-      .product-ticket{
-        padding-left:0!important;
-        :before {
-          content: '门票';
-          font-size:0.9rem;
-          color:#000;
-          padding-right:0.6rem;
-        }
-        flex:1;
-        -moz-box-flex: 1;
-        font-size:0.7rem;
-        color:#4f4f4f;
-        display: inline-block;
-        padding-left:0.2rem;
+    .product-block-validate{
+      div{
+        color: #ea5513;
       }
     }
-
   }
 </style>
