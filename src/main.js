@@ -38,7 +38,6 @@ store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloud')
 
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
 console.log(Vue.config.devtools)
-
 new Vue({
   el: '#app',
   store,
