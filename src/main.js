@@ -36,6 +36,9 @@ Vue.http.interceptors.push(httpOption.interceptor)
 // !store.state.env.isWeixin && window.utils.loadScript('http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=YOUR APPKEY&debug=true')
 store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloud')
 
+Vue.config.devtools = process.env.NODE_ENV !== 'production'
+console.log(Vue.config.devtools)
+
 new Vue({
   el: '#app',
   store,
