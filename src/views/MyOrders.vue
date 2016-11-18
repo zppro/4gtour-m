@@ -3,8 +3,8 @@
     p(v-show="showMember$OrderFetchIndicator" class="page-refresh-loading")
       mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataFetchText}}
-    order-list.order-list(v-for="order in allMember$Orders")
-      order-item
+    order-list.order-list
+      order-item(v-for="order in allMember$Orders", :order-id="order.id")
         span(slot="title", :title="order.p_name") {{order.p_name}}
         span(slot="status")
           span(:class="{'order-status-not-pay': order.local_status === 'A0001', 'order-status-pay-success': order.local_status === 'A0003','order-status-gen-ticket-success': order.local_status === 'A0003'}") {{order.local_status_name}}

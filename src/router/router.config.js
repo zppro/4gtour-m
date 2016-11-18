@@ -7,6 +7,7 @@ import DetailsInfo from '../views/ProductDetailsInfo'
 import DetailsIntro from '../views/ProductDetailsIntro'
 import Nav from '../views/partials/Nav'
 import MyOrders from '../views/MyOrders'
+import OrderDetails from '../views/OrderDetails'
 import TicketSelect from '../views/TicketSelect'
 import OrderConfirm from '../views/OrderConfirm'
 import WeixinAuthNav from '../views/partials/WeixinAuthNav'
@@ -87,6 +88,15 @@ export default [
     components: {
       head: Nav,
       body: MyOrders
+    }
+  },
+  {
+    name: '订单详情',
+    meta: { auth: true },
+    path: '/order-details/:id',
+    components: {
+      head: Nav,
+      body: OrderDetails
     }
   }
 ]

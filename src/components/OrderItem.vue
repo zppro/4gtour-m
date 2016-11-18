@@ -1,5 +1,5 @@
 <template lang="jade">
-  .order-item
+  router-link.order-item(:to="itemUrl")
     .order-line-top
       span.order-title.no-wrap
         slot(name="title")
@@ -61,3 +61,13 @@
   }
 }
 </style>
+<script>
+  export default {
+    props: ['orderId'],
+    computed: {
+      itemUrl () {
+        return {path: '/order-details/' + this.orderId}
+      }
+    }
+  }
+</script>
