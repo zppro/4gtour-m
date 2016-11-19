@@ -16,7 +16,11 @@ const state = {
   member$Orders: [],
   member$OrderUnreadCount: 0,
   member$OrderListRequestTypeAppending: true,
-  member$OrderNoMore: false
+  member$OrderNoMore: false,
+  member$OrderCurrent: {
+    orderInfo: {},
+    scenicSpotInfo: {}
+  }
 }
 
 // getters
@@ -45,6 +49,9 @@ const getters = {
   },
   showMember$OrderAppendIndicator (state, getters, rootState) {
     return rootState.loading && state.member$OrderListRequestTypeAppending
+  },
+  member$OrderInDetails (state) {
+    return state.member$OrderCurrent
   }
 }
 
@@ -73,6 +80,9 @@ const mutations = {
   },
   [ENTITY_NAME + ORDER_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { member$Orders }) {
     state.member$Orders = state.member$Orders.concat(member$Orders)
+  },
+  [ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { member$Order }) {
+    state.member$OrderCurrent = member$Order
   },
   [ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE] (state, { member$OrderRecordCount, size }) {
     state.member$OrderNoMore = member$OrderRecordCount < size
@@ -183,6 +193,21 @@ const actions = {
         commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       })
     }, rootState.preLoadingMillisecond)
+  },
+  fetchMember$OrderInfo ({commit, rootState}, { id }) {
+    return Vue.http.get('api/order-details/' + id).then(ret => {
+      if (ret.data.success) {
+        const member$Order = ret.data.ret
+        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, { member$Order })
+        return member$Order
+      }
+    })
+  },
+  ensureMember$OrderInfo ({ commit, state, rootState, dispatch }) {
+    if (!state.member$OrderCurrent.id || state.member$OrderCurrent.id !== rootState.route.params.id) {
+      return dispatch('fetchMember$OrderInfo', rootState.route.params)
+    }
+    return dispatch('noop')
   },
   markMember$OrderUnread ({ commit }) {
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.ADD_UNREADED, 1)

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import moment from 'moment'
 import VueResource from 'vue-resource'
 import { sync } from 'vuex-router-sync'
 import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, InfiniteScroll } from 'mint-ui'
@@ -6,6 +7,7 @@ import store from './store'
 import router from './router'
 import * as httpOption from './config/http-option'
 import App from './App'
+// import filters from './filters/datetime-filters'
 
 sync(store, router)
 // load resource plugin
@@ -37,10 +39,16 @@ Vue.http.interceptors.push(httpOption.interceptor)
 store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloud')
 
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
-console.log(Vue.config.devtools)
+
 new Vue({
   el: '#app',
   store,
   router,
+  filters: {
+    formatDate: function (value, formatString) {
+      formatString = formatString || 'YYYY-MM-DD HH:mm:ss'
+      return moment(value).format(formatString)
+    }
+  },
   render: h => h(App)
 })

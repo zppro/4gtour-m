@@ -1,3 +1,4 @@
+import filters from '../config/vue-filter-option'
 import HomeNav from '../views/partials/HomeNav'
 import Home from '../views/Home'
 import Login from '../views/Login'
@@ -12,6 +13,12 @@ import TicketSelect from '../views/TicketSelect'
 import OrderConfirm from '../views/OrderConfirm'
 import WeixinAuthNav from '../views/partials/WeixinAuthNav'
 import WeixinAuth from '../views/WeixinAuth'
+
+function attachFilters (component, filterOption) {
+  component.filters = component.filters || {}
+  Object.assign(component.filters, filters)
+  return component
+}
 
 export default [
   // {
@@ -87,7 +94,7 @@ export default [
     path: '/my-orders',
     components: {
       head: Nav,
-      body: MyOrders
+      body: attachFilters(MyOrders, filters)
     }
   },
   {
@@ -96,7 +103,7 @@ export default [
     path: '/order-details/:id',
     components: {
       head: Nav,
-      body: OrderDetails
+      body: attachFilters(OrderDetails, filters)
     }
   }
 ]

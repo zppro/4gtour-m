@@ -9,7 +9,7 @@
         span(slot="status")
           span(:class="{'order-status-not-pay': order.local_status === 'A0001', 'order-status-pay-success': order.local_status === 'A0003','order-status-gen-ticket-success': order.local_status === 'A0003'}") {{order.local_status_name}}
         span(slot="code") {{order.code}}
-        span(slot="time") {{order.check_in_time}}
+        span(slot="time") {{order.check_in_time | formatDate }}
         span(slot="amount") ¥{{order.amount}}
     p(v-show="showMember$OrderAppendIndicator" class="page-append-loading")
       mt-spinner(type="fading-circle" color="#ea5513")
@@ -47,7 +47,6 @@
   .my-orders {
     width: 100%;
     .order-list {
-      background-color: white;
     }
     .order-status-not-pay {
       color: red;
