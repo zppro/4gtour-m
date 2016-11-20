@@ -127,10 +127,9 @@
         line-height:4rem;
         position: relative;
         .btn{
-          right:1.3rem;
           opacity: 0.8;
           color:white;
-          width: 8rem;
+          width: 7rem;
           font-size:1rem;
           height:2rem;
           line-height:2rem;

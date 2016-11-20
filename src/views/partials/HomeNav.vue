@@ -2,7 +2,7 @@
   nav#nav-header-home
     a.nav-item.nav-item-left(@click="showLeft")
       i.fa.fa-user(aria-hidden="true")
-      .circle-badge.circle-point(v-if="isLogined && memberHaveUnreadOrders")
+      .circle-badge.circle-point(v-if="isLogined && memberHaveUnpayAndValidOrders")
     a.nav-item.nav-item-center
       h1 {{title}}
         <!--i.fa.fa-caret-down(aria-hidden="true")-->
@@ -73,7 +73,7 @@
       }
     },
     computed: {
-      ...mapGetters(['isLogined', 'memberHaveUnreadOrders', 'memberUnreadOrderCount'])
+      ...mapGetters(['isLogined', 'memberHaveUnpayAndValidOrders'])
     },
     methods: {
       showLeft () {

@@ -7,7 +7,7 @@
       order-item(v-for="order in allMember$Orders", :order-id="order.id")
         span(slot="title", :title="order.p_name") {{order.p_name}}
         span(slot="status")
-          span(:class="{'order-status-not-pay': order.local_status === 'A0001', 'order-status-pay-success': order.local_status === 'A0003','order-status-gen-ticket-success': order.local_status === 'A0003'}") {{order.local_status_name}}
+          span(:class="{'order-status-not-pay': order.local_status === 'A0001', 'order-status-pay-success': order.local_status === 'A0003','order-status-gen-ticket-success': order.local_status === 'A0005', 'order-status-gen-ticket-fail': order.local_status === 'A0007' , 'order-status-ticket-refunding': order.local_status === 'A0009' , 'order-status-ticket-refund-success': order.local_status === 'A0011'}") {{order.local_status_name}}
         span(slot="code") {{order.code}}
         span(slot="time") {{order.check_in_time | formatDate }}
         span(slot="amount") ¥{{order.amount}}
@@ -29,11 +29,7 @@
       ...mapActions(['fetchMember$Orders', 'appendMember$Orders'])
     },
     created () {
-      console.log(this.allMember$Orders.length > 0)
-      console.log(this.memberHaveUnreadOrders)
-      if (this.allMember$Orders.length > 0 && this.memberHaveUnreadOrders) {
-        this.fetchMember$Orders()
-      }
+      this.fetchMember$Orders()
     },
     components: {
       orderList,
@@ -48,7 +44,10 @@
     width: 100%;
     .order-list {
     }
-    .order-status-not-pay {
+    .order-status-not-pay,.order-status-ticket-refunding{
+      color: #ccc;
+    }
+    .order-status-ticket-refund-success, .order-status-gen-ticket-faild{
       color: red;
     }
     .order-status-pay-success {

@@ -14,10 +14,10 @@
             a.btn.btn-action(@click="logout") 安全退出
       .member-actions
         mt-cell(title="我的订单" is-link to="/my-orders")
-          mt-badge(v-if="isLogined && memberHaveUnreadOrders" type="error" size="small") {{memberUnreadOrderCount}}
+          mt-badge(v-if="isLogined && memberHaveUnpayAndValidOrders" type="error" size="small") {{memberHaveUnpayAndValidCount}}
         mt-cell(title="关于四季游" is-link)
       .app-actions
-        a.link.link-action(@click="markMember$OrderUnread()") 标记订单刷新
+        a.link.link-action(@click="")
 </template>
 <script>
   import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
@@ -34,7 +34,7 @@
         return this.$route.path
       },
       ...mapState(['env']),
-      ...mapGetters(['isLogined', 'memberInfo', 'memberHaveUnreadOrders', 'memberUnreadOrderCount'])
+      ...mapGetters(['isLogined', 'memberInfo', 'memberHaveUnpayAndValidOrders', 'memberHaveUnpayAndValidCount'])
     },
     watch: {
       routePath (newRoutePath) {
@@ -51,7 +51,7 @@
         }
       },
       ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]),
-      ...mapActions(['logout', 'markMember$OrderUnread', 'sendEventToApiCloud'])
+      ...mapActions(['logout', 'sendEventToApiCloud'])
     }
   }
 </script>

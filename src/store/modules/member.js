@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import moment from 'moment'
 import { Indicator } from 'mint-ui'
 import localStore from 'store'
 import * as mutationTypes from '../mutation-types'
@@ -14,7 +15,6 @@ const state = {
   token: '',
   self: initEmptyMemberInfo,
   member$Orders: [],
-  member$OrderUnreadCount: 0,
   member$OrderListRequestTypeAppending: true,
   member$OrderNoMore: false,
   member$OrderCurrent: {
@@ -32,11 +32,13 @@ const getters = {
     // return !!state.member_id && state.member_id !== 'anonymity'
     return !!state.token
   },
-  memberHaveUnreadOrders (state) {
-    return state.member$OrderUnreadCount > 0
+  memberHaveUnpayAndValidOrders (state, getters) {
+    return getters['memberHaveUnpayAndValidCount'] > 0
   },
-  memberUnreadOrderCount (state) {
-    return state.member$OrderUnreadCount
+  memberHaveUnpayAndValidCount (state) {
+    return state.member$Orders.filter((r) => {
+      return r.local_status === 'A0001' && moment().isBefore(r.last_pay_time)
+    }).length
   },
   memberInfo (state) {
     return state.self
@@ -86,15 +88,6 @@ const mutations = {
   },
   [ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE] (state, { member$OrderRecordCount, size }) {
     state.member$OrderNoMore = member$OrderRecordCount < size
-  },
-  [ENTITY_NAME + ORDER_NAME + mutationTypes.ADD_UNREADED] (state, quantity) {
-    state.member$OrderUnreadCount = state.member$OrderUnreadCount + quantity
-  },
-  [ENTITY_NAME + ORDER_NAME + mutationTypes.REMOVE_UNREADED] (state, quantity) {
-    state.member$OrderUnreadCount - quantity >= 0 ? (state.member$OrderUnreadCount = state.member$OrderUnreadCount - quantity) : (state.member$OrderUnreadCount = 0)
-  },
-  [ENTITY_NAME + ORDER_NAME + mutationTypes.CLEAR_UNREADED] (state) {
-    state.member$OrderUnreadCount = 0
   }
 }
 // actions
@@ -164,43 +157,46 @@ const actions = {
     })
     return p
   },
-  fetchMember$Orders ({ commit, rootState }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+  fetchMember$Orders ({ commit, rootState }, noLoading) {
+    if (!noLoading) {
+      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+      Indicator.open('数据读取中...')
+    }
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    setTimeout(() => {
-      Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
-        if (ret.data.success) {
-          const member$Orders = ret.data.rows
-          commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_LIST_SUCCESS, { member$Orders })
-          commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
-          commit(ENTITY_NAME + ORDER_NAME + mutationTypes.CLEAR_UNREADED)
-        }
+    Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+      if (ret.data.success) {
+        const member$Orders = ret.data.rows
+        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_LIST_SUCCESS, { member$Orders })
+        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { member$OrderRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
+      }
+      if (!noLoading) {
         commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      })
-    }, rootState.preLoadingMillisecond)
+        Indicator.close()
+      }
+    })
   },
   appendMember$Orders ({ commit, state, rootState }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    setTimeout(() => {
-      Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: state.member$Orders.length}}).then(ret => {
-        if (ret.data.success) {
-          const member$Orders = ret.data.rows
-          member$Orders.length > 0 && commit(ENTITY_NAME + ORDER_NAME + mutationTypes.APPEND_LIST_SUCCESS, { member$Orders })
-          commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { member$OrderRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
-          commit(ENTITY_NAME + ORDER_NAME + mutationTypes.CLEAR_UNREADED)
-        }
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      })
-    }, rootState.preLoadingMillisecond)
+    Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: state.member$Orders.length}}).then(ret => {
+      if (ret.data.success) {
+        const member$Orders = ret.data.rows
+        member$Orders.length > 0 && commit(ENTITY_NAME + ORDER_NAME + mutationTypes.APPEND_LIST_SUCCESS, { member$Orders })
+        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { member$OrderRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
+      }
+      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+    })
   },
   fetchMember$OrderInfo ({commit, rootState}, { id }) {
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    Indicator.open('数据读取中...')
     return Vue.http.get('api/order-details/' + id).then(ret => {
       if (ret.data.success) {
         const member$Order = ret.data.ret
-        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, { member$Order })
-        return member$Order
+        commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {member$Order})
       }
+      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+      Indicator.close()
     })
   },
   ensureMember$OrderInfo ({ commit, state, rootState, dispatch }) {
@@ -208,9 +204,6 @@ const actions = {
       return dispatch('fetchMember$OrderInfo', rootState.route.params)
     }
     return dispatch('noop')
-  },
-  markMember$OrderUnread ({ commit }) {
-    commit(ENTITY_NAME + ORDER_NAME + mutationTypes.ADD_UNREADED, 1)
   }
 }
 

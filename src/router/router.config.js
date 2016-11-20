@@ -7,7 +7,9 @@ import Details from '../views/ProductDetails'
 import DetailsInfo from '../views/ProductDetailsInfo'
 import DetailsIntro from '../views/ProductDetailsIntro'
 import Nav from '../views/partials/Nav'
+import MyOrdersNav from '../views/partials/MyOrdersNav'
 import MyOrders from '../views/MyOrders'
+import OrderDetailsNav from '../views/partials/OrderDetailsNav'
 import OrderDetails from '../views/OrderDetails'
 import TicketSelect from '../views/TicketSelect'
 import OrderConfirm from '../views/OrderConfirm'
@@ -93,7 +95,7 @@ export default [
     meta: { auth: true },
     path: '/my-orders',
     components: {
-      head: Nav,
+      head: MyOrdersNav,
       body: attachFilters(MyOrders, filters)
     }
   },
@@ -102,7 +104,7 @@ export default [
     meta: { auth: true },
     path: '/order-details/:id',
     components: {
-      head: Nav,
+      head: OrderDetailsNav,
       body: attachFilters(OrderDetails, filters)
     }
   }

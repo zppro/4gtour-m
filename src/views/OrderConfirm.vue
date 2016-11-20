@@ -128,7 +128,7 @@
               self.toast({msg: '支付成功', option: {iconClass: 'fa fa-check'}})
       //              window.proxy.order_info.link_man = self.order.link_man
       //              window.proxy.order_info.link_phone = self.order.link_phone
-              self.$router.replace({path: '/'})
+              self.$router.replace({path: '/order-details/' + self.order.orderId})
             } else {
               self.toast(ret.data)
             }
@@ -137,6 +137,7 @@
         window.api.addEventListener({ name: APICLOUD_PAY_FAIL }, (eventRet, err) => {
           self.finishLoading()
           self.toast({msg: eventRet.value.msg, option: {iconClass: 'fa fa-close'}})
+          this.fetchMember$Orders(true)
         })
       }
     },
@@ -186,7 +187,7 @@
           if (this.allValid) {
             this.startLoading('支付中...')
             if (!this.order.orderId) {
-              window.alert(JSON.stringify(this.order))
+//              window.alert(JSON.stringify(this.order))
               localStore.set(ORDER_LINK_MAN, this.order.link_man)
               localStore.set(ORDER_LINK_PHONE, this.order.link_phone)
               this.needTouristIDNo && this.order.tourist_id_no && localStore.set(ORDER_TOURIST_ID_NO, this.order.tourist_id_no)
@@ -230,7 +231,7 @@
           }
         }
       },
-      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'sendEventToApiCloud', 'startLoading', 'finishLoading'])
+      ...mapActions(['minusQuantity', 'plusQuantity', 'ensureScenicSpot', 'toast', 'sendEventToApiCloud', 'startLoading', 'finishLoading', 'fetchMember$Orders'])
     },
     components: {
       quantityRegulator
