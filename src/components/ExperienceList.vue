@@ -1,12 +1,11 @@
 <template lang="jade">
-  .product
+  .experience-list
     slot
 </template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
-.product {
+<style lang="less">
+.experience-list {
   width:100%;
-  background-color: white;
 }
 </style>

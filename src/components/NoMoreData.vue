@@ -1,6 +1,6 @@
 <template lang="jade">
   .no-more-data
-    h1.text-muted {{msg}}
+    h3.text-muted {{msg}}
 </template>
 
 <script>
@@ -18,9 +18,10 @@ export default {
   .no-more-data{
     width:100%;
     height:30.15rem;
-    padding:0;
+    padding-top:0.15rem;
     margin:0;
     background-color: white;
+    h3{font-style: italic;}
   }
 
 </style>
