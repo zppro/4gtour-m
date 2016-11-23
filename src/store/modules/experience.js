@@ -13,6 +13,7 @@ const MAX_HOT_COUNT = 100
 // initial state
 const state = {
   hot: [],
+  currentIndexOfMine: 0,
   myTweeted: [],
   myStared: [],
   current: {},
@@ -26,6 +27,9 @@ const state = {
 const getters = {
   experiencesHot (state) {
     return state.hot
+  },
+  currentIndexInExperiencesOfMine (state) {
+    return state.currentIndexOfMine
   },
   experiencesMyTweeted (state) {
     return state.myTweeted
@@ -87,6 +91,12 @@ const mutations = {
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
     state.noMoreOfMyStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
+  },
+  [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT] (state) {
+    state.currentIndexOfMine = 0
+  },
+  [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
+    state.currentIndexOfMine = 1
   }
 }
 
@@ -128,7 +138,7 @@ const actions = {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
@@ -199,6 +209,14 @@ const actions = {
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
     })
+  },
+  setMyTweetedOfMine ({commit, dispatch}) {
+    commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT)
+    return state.myTweeted.length === 0 ? dispatch('fetchMyTweetedList') : dispatch('noop')
+  },
+  setMyStaredOfMine ({commit, dispatch}) {
+    commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT)
+    return state.myStared.length === 0 ? dispatch('fetchMyStaredList') : dispatch('noop')
   },
   ensureExperience ({ state, rootState, dispatch }) {
     if (!state.current.id) {

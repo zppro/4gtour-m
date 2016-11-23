@@ -3,9 +3,9 @@
     a.nav-item.nav-item-left
       i.fa(aria-hidden="true")
     a.nav-item.nav-item-center
-      a.tab-header(@click="switchTab(0)") 关注
-      a.tab-header.tab-header-active(@click="switchTab(1)") 热门
-      a.tab-header(@click="switchTab(2)") 我的
+      a.tab-header(:class='{"tab-header-active":tabIndex===0}' @click="switchTab(0)") 关注
+      a.tab-header(:class='{"tab-header-active":tabIndex===1}' @click="switchTab(1)") 热门
+      a.tab-header(:class='{"tab-header-active":tabIndex===2}' @click="switchTab(2)") 我的
     a.nav-item.nav-item-right
       i.fa.fa-camera(aria-hidden="true" @click="tweetExperience")
     mt-actionsheet(:actions="shareActions" v-model="sheetVisible")
@@ -68,6 +68,15 @@
       }
     },
     computed: {
+      tabIndex () {
+        if (this.$route.path === '/experience/follow') {
+          return 0
+        } else if (this.$route.path === '/experience/hot') {
+          return 1
+        } else if (this.$route.path === '/experience/mine') {
+          return 2
+        }
+      },
       ...mapState(['env']),
       ...mapGetters(['scenicSpotInDetails'])
     },
