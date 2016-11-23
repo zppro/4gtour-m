@@ -1,11 +1,10 @@
 <template lang="jade">
-  nav.nav-header
+  nav.nav-header.header-color
     a.nav-item.nav-item-center
       h1 {{title}}
 </template>
 <style lang="less" scoped>
     .nav-header{
-      background-color:#ea5513;
       height:3.2rem;
       text-align: center;
       display:flex;

@@ -15,6 +15,11 @@ import TicketSelect from '../views/TicketSelect'
 import OrderConfirm from '../views/OrderConfirm'
 import WeixinAuthNav from '../views/partials/WeixinAuthNav'
 import WeixinAuth from '../views/WeixinAuth'
+import ExperienceNav from '../views/partials/ExperienceNav'
+import Experience from '../views/Experience'
+import ExperienceFollowedList from '../views/ExperienceFollowedList'
+import ExperienceHotList from '../views/ExperienceHotList'
+import ExperienceMineList from '../views/ExperienceMineList'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -107,5 +112,36 @@ export default [
       head: OrderDetailsNav,
       body: attachFilters(OrderDetails, filters)
     }
+  },
+  {
+    name: '见闻',
+    path: '/experience',
+    components: {
+      head: ExperienceNav,
+      body: Experience
+    },
+    children: [
+      {
+        name: '关注',
+        path: 'follow',
+        components: {
+          follow: ExperienceFollowedList
+        }
+      },
+      {
+        name: '热门',
+        path: 'hot',
+        components: {
+          hot: ExperienceHotList
+        }
+      },
+      {
+        name: '我的',
+        path: 'mine',
+        components: {
+          mine: ExperienceMineList
+        }
+      }
+    ]
   }
 ]

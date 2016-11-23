@@ -2,7 +2,7 @@
   .home(v-infinite-scroll="appendScenicSpots", infinite-scroll-disabled="appendDiabled", infinite-scroll-distance="infiniteScrollDistance")
     p(v-show="showFetchIndicator" class="page-refresh-loading")
       mt-spinner(type="triple-bounce" color="#ea5513")
-      | {{dataFetchText}}
+      | {{dataRefreshText}}
     product-list
       product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
         .product-img(slot="img")
@@ -23,7 +23,7 @@
   import productItem from '../components/ProductItem'
   export default {
     computed: {
-      ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText', 'env']),
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'env']),
       ...mapGetters(['allScenicSpotsInHome', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
     },
     methods: {

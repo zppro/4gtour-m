@@ -160,7 +160,7 @@ const actions = {
   fetchMember$Orders ({ commit, rootState }, noLoading) {
     if (!noLoading) {
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-      Indicator.open('数据读取中...')
+      Indicator.open(rootState.dataFetchText)
     }
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
     Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
@@ -189,7 +189,7 @@ const actions = {
   },
   fetchMember$OrderInfo ({commit, rootState}, { id }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open('数据读取中...')
+    Indicator.open(rootState.dataFetchText)
     return Vue.http.get('api/order-details/' + id).then(ret => {
       if (ret.data.success) {
         const member$Order = ret.data.ret
@@ -199,7 +199,7 @@ const actions = {
       Indicator.close()
     })
   },
-  ensureMember$OrderInfo ({ commit, state, rootState, dispatch }) {
+  ensureMember$OrderInfo ({ state, rootState, dispatch }) {
     if (!state.member$OrderCurrent.id || state.member$OrderCurrent.id !== rootState.route.params.id) {
       return dispatch('fetchMember$OrderInfo', rootState.route.params)
     }

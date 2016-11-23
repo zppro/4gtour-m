@@ -2,7 +2,7 @@
   .my-orders(v-infinite-scroll="appendMember$Orders", infinite-scroll-disabled="appendMember$OrderDiabled", infinite-scroll-distance="infiniteScrollDistance")
     p(v-show="showMember$OrderFetchIndicator" class="page-refresh-loading")
       mt-spinner(type="triple-bounce" color="#ea5513")
-        | {{dataFetchText}}
+        | {{dataRefreshText}}
     order-list.order-list
       order-item(v-for="order in allMember$Orders", :order-id="order.id")
         span(slot="title", :title="order.p_name") {{order.p_name}}
@@ -22,8 +22,8 @@
   import orderItem from '../components/OrderItem'
   export default {
     computed: {
-      ...mapState(['infiniteScrollDistance', 'dataFetchText', 'dataAppendText']),
-      ...mapGetters(['allMember$Orders', 'memberHaveUnreadOrders', 'appendMember$OrderDiabled', 'showMember$OrderFetchIndicator', 'showMember$OrderAppendIndicator'])
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText']),
+      ...mapGetters(['allMember$Orders', 'appendMember$OrderDiabled', 'showMember$OrderFetchIndicator', 'showMember$OrderAppendIndicator'])
     },
     methods: {
       ...mapActions(['fetchMember$Orders', 'appendMember$Orders'])

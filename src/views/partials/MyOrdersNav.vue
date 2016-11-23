@@ -1,5 +1,5 @@
 <template lang="jade">
-  nav.nav-header
+  nav.nav-header.header-color
     a.nav-item.nav-item-left(@click="back")
       i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
@@ -9,7 +9,6 @@
 </template>
 <style lang="less" scoped>
   .nav-header{
-    background-color:#ea5513;
     height:3.2rem;
     text-align: center;
     display:flex;

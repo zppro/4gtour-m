@@ -1,5 +1,5 @@
 <template lang="jade">
-  nav#nav-header-home
+  nav#nav-header-home.header-color
     a.nav-item.nav-item-left(@click="showLeft")
       i.fa.fa-user(aria-hidden="true")
       .circle-badge.circle-point(v-if="isLogined && memberHaveUnpayAndValidOrders")
@@ -11,7 +11,6 @@
 </template>
 <style lang="less" scoped>
     #nav-header-home{
-      background-color:#ea5513;
       height:3.2rem;
       text-align: center;
       display:flex;

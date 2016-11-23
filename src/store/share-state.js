@@ -7,7 +7,8 @@ export default {
   routerTransitHeight: 1,
   dataFetchingSize: 9,
   infiniteScrollDistance: 10,
-  dataFetchText: '刷新中...',
+  dataRefreshText: '刷新中...',
+  dataFetchText: '数据读取中...',
   dataAppendText: '加载中...',
   leftPopupVisible: false
 }

@@ -171,7 +171,7 @@ const actions = {
   chooseTicket ({ commit }, { ticketId }) {
     commit(ENTITY_NAME + CHOOSE_TICKET, { ticketId })
   },
-  ensureScenicSpot ({ commit, state, rootState, dispatch }) {
+  ensureScenicSpot ({ state, rootState, dispatch }) {
     if (!state.current.id) {
       return dispatch('fetchScenicSpotInfo', rootState.route.params)
     }
