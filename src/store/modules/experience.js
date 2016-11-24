@@ -103,6 +103,7 @@ const mutations = {
 // actions
 const actions = {
   fetchHotList ({ commit, rootState }) {
+    console.log('fetchHotList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
@@ -119,6 +120,7 @@ const actions = {
     })
   },
   appendHotList ({ commit, state, rootState }) {
+    console.log('appendHotList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
@@ -135,6 +137,7 @@ const actions = {
     })
   },
   fetchMyTweetedList ({ commit, rootState }) {
+    console.log('fetchMyTweetedList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
@@ -151,6 +154,7 @@ const actions = {
     })
   },
   appendMyTweetedList ({ commit, state, rootState }) {
+    console.log('appendMyTweetedList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
@@ -167,6 +171,7 @@ const actions = {
     })
   },
   fetchMyStaredList ({ commit, rootState }) {
+    console.log('fetchMyStaredList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
@@ -183,6 +188,7 @@ const actions = {
     })
   },
   appendMyStaredList ({ commit, state, rootState }) {
+    console.log('appendMyStaredList')
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })

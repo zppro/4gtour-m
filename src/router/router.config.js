@@ -16,7 +16,7 @@ import OrderConfirm from '../views/OrderConfirm'
 import WeixinAuthNav from '../views/partials/WeixinAuthNav'
 import WeixinAuth from '../views/WeixinAuth'
 import ExperienceNav from '../views/partials/ExperienceNav'
-import Experience from '../views/Experience'
+// import Experience from '../views/Experience'
 import ExperienceFollowedList from '../views/ExperienceFollowedList'
 import ExperienceHotList from '../views/ExperienceHotList'
 import ExperienceMineList from '../views/ExperienceMineList'
@@ -114,34 +114,27 @@ export default [
     }
   },
   {
-    name: '见闻',
-    path: '/experience',
+    name: '关注见闻',
+    path: '/experience/follow',
     components: {
       head: ExperienceNav,
-      body: Experience
-    },
-    children: [
-      {
-        name: '关注',
-        path: 'follow',
-        components: {
-          follow: ExperienceFollowedList
-        }
-      },
-      {
-        name: '热门',
-        path: 'hot',
-        components: {
-          hot: ExperienceHotList
-        }
-      },
-      {
-        name: '我的',
-        path: 'mine',
-        components: {
-          mine: ExperienceMineList
-        }
-      }
-    ]
+      body: ExperienceFollowedList
+    }
+  },
+  {
+    name: '热门见闻',
+    path: '/experience/hot',
+    components: {
+      head: ExperienceNav,
+      body: ExperienceHotList
+    }
+  },
+  {
+    name: '我的见闻',
+    path: '/experience/mine',
+    components: {
+      head: ExperienceNav,
+      body: ExperienceMineList
+    }
   }
 ]

@@ -8,6 +8,8 @@
         slot(name="member_name")
       .time-description
         slot(name="time_description")
+      .category
+        slot(name="category")
       .content
         slot(name="content")
       .imgs
@@ -52,6 +54,7 @@
       }
     }
     .item-right{
+      position:relative;
       clear:left;
       display: inline-block;
       width: 15.15rem;
@@ -64,6 +67,12 @@
         margin-top:0.1rem;
         font-size: 0.5rem;
         color:#7c7b7b;
+      }
+      .category{
+        position: absolute;
+        right:0.5rem;
+        top: 0;
+        font-size: 0.6rem;
       }
       .content{
         margin-top:0.225rem;
@@ -124,7 +133,8 @@
     props: ['experienceId'],
     computed: {
       itemUrl () {
-        return {path: '/experience-details/' + this.experienceId}
+        return '/'
+//        return {path: '/experience-details/' + this.experienceId}
       }
     }
   }

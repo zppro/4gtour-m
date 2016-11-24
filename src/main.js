@@ -2,7 +2,7 @@ import Vue from 'vue'
 import moment from 'moment'
 import VueResource from 'vue-resource'
 import { sync } from 'vuex-router-sync'
-import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, InfiniteScroll } from 'mint-ui'
+import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, Swipe, SwipeItem, InfiniteScroll } from 'mint-ui'
 import store from './store'
 import router from './router'
 import * as httpOption from './config/http-option'
@@ -22,6 +22,8 @@ Vue.component(Field.name, Field)
 Vue.component(Badge.name, Badge)
 Vue.component(Actionsheet.name, Actionsheet)
 Vue.component(DatetimePicker.name, DatetimePicker)
+Vue.component(Swipe.name, Swipe)
+Vue.component(SwipeItem.name, SwipeItem)
 Vue.use(InfiniteScroll)
 // Vue.use(VeeValidate, veeValidateOption)
 

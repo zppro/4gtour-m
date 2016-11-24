@@ -1,7 +1,7 @@
 <template lang="jade">
   .hot-list-c
     no-more-data(v-if="experiencesHot.length === 0")
-    .hot-list(v-if="experiencesHot.length > 0" v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance")
+    .hot-list(v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance",v-show="experiencesHot.length > 0" )
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
@@ -10,6 +10,7 @@
           img(:src="experience.member_head_portrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
+          i.fa.fa-car(aria-hidden="true" slot="category" v-if="experience.category === 'A0003'")
           span(slot="content") {{experience.content}}
           .img-list(slot="imgs")
             img(v-for="img in experience.imgs", :src="img" @click="zoomIn")
@@ -34,7 +35,7 @@
     },
     methods: {
       zoomIn () {
-        console.log(123)
+        console.log(11)
       },
       ...mapActions(['fetchHotList', 'appendHotList'])
     },
@@ -53,6 +54,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .hot-list-c{
+    width: 100%;
     .hot-list {
       width: 100%;
       .experience-list{}

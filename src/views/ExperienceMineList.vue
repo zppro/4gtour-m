@@ -4,20 +4,24 @@
       .switch-block
         a.switch-btn(:class='{"switch-tweeted":currentIndexInExperiencesOfMine!==0, "switch-tweeted-active":currentIndexInExperiencesOfMine===0}' @click="setMyTweetedOfMine")
           .i-wrapper
-            i.fa.fa-paper-plane-o
+            i.fa.fa-paper-plane-o(aria-hidden="true")
           span 我发布的
       .switch-block
         a.switch-btn(:class='{"switch-stared":currentIndexInExperiencesOfMine!==1, "switch-stared-active":currentIndexInExperiencesOfMine===1}' @click="setMyStaredOfMine")
           .i-wrapper
-            i.fa.fa-star-o
+            i.fa.fa-star-o(aria-hidden="true")
           span 我收藏的
     no-more-data(v-if="currentExperiences.length === 0")
-    .mine-list(v-if="currentExperiences.length > 0")
+    .mine-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0")
+      p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
+        mt-spinner(type="triple-bounce" color="#ea5513")
+        | {{dataRefreshText}}
       experience-list.experience-list
         experience-item(v-for="experience in currentExperiences", :experience-id="experience.id")
           img(:src="experience.member_head_portrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
+          i.fa.fa-car(aria-hidden="true" slot="category" v-if="experience.category === 'A0003'")
           span(slot="content") {{experience.content}}
           .img-list(slot="imgs")
             img(v-for="img in experience.imgs", :src="img" @click="zoomIn")
@@ -25,6 +29,9 @@
           span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
           span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
           span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
+      p(v-show="showExperienceAppendIndicator" class="page-append-loading")
+        mt-spinner(type="fading-circle" color="#ea5513")
+        | {{dataAppendText}}
 </template>
 
 <script>
@@ -45,7 +52,7 @@
     },
     methods: {
       zoomIn () {
-        console.log(123)
+        console.log(1244)
       },
       appendCurrentList () {
         this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedList() : this.appendMyStaredList()

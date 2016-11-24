@@ -86,7 +86,6 @@
         $($('.tab-header').get(index)).addClass('tab-header-active')
         let subView = index === 0 ? 'follow' : index === 1 ? 'hot' : 'mine'
         this.$router.replace({path: '/experience/' + subView})
-        console.log('success')
       },
       tweetExperience () {
         if (this.env.isApiCloud) {

@@ -1,6 +1,6 @@
 import store from '../store'
 // 'http://192.168.101.7:3002/me-services' 'http://192.168.255.112:3002/me-services'
-export const root = process.env.NODE_ENV === 'development' ? 'http://192.168.101.7:3002/me-services' : 'http://sh.okertrip.com/me-services'
+export const root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.112:3002/me-services' : 'http://sh.okertrip.com/me-services'
 // Vue.http.options.emulateJSON = true
 export const credentials = true
 export const interceptor = (request, next) => {
@@ -21,7 +21,7 @@ export const interceptor = (request, next) => {
   let sHeader = JSON.stringify(oHeader)
   let sPayload = JSON.stringify(oPayload)
   let sJWT = window.KJUR.jws.JWS.sign('HS256', sHeader, sPayload, salt)
-  console.log(JSON.stringify(oPayload))
+  // console.log(JSON.stringify(oPayload))
   request.headers.set('Authorization', 'Bearer ' + sJWT) // 'Bearer or Basic: '
   next()
 }
