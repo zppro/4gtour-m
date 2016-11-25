@@ -31,7 +31,7 @@
         -webkit-flex: 1;
         .tab-header{
           font-size: 1rem;
-          width: 33%;
+          width: 30%;
           display: inline-block;
           height:2rem;
           line-height:2rem;
