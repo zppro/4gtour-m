@@ -10,8 +10,9 @@
           img(:src="experience.member_head_portrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
-          i.fa.fa-car(aria-hidden="true" slot="category" v-if="experience.category === 'A0003'")
+          i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
           span(slot="content") {{experience.content}}
+          span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
           .img-list(slot="imgs")
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
           span(slot="location") {{experience.location}}
@@ -46,6 +47,9 @@
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText']),
       ...mapGetters(['experiencesHot', 'appendHotDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
+    created () {
+      this.fetchHotList()
+    },
     methods: {
       zoomIn (allImages, currentImage) {
         this.allImages = allImages
@@ -55,11 +59,10 @@
         this.allImages = []
         this.currentImage = ''
       },
+      isExperienceRoute: function (experience) {
+        return experience.category === 'A0003'
+      },
       ...mapActions(['fetchHotList', 'appendHotList'])
-    },
-    created () {
-      console.log('hot created')
-      this.fetchHotList()
     },
     components: {
       ExperienceList,

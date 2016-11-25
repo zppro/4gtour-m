@@ -5,8 +5,8 @@
     a.nav-item.nav-item-center
       a.tab-header.tab-header-active(@click="switchTab(0)") 景点
       a.tab-header(@click="switchTab(1)") 详情
-    a.nav-item.nav-item-right
-      i.fa.fa-external-link(aria-hidden="true" @click="showShareAction")
+    a.nav-item.nav-item-right(@click="showShareAction")
+      i.fa.fa-external-link(aria-hidden="true")
     mt-actionsheet(:actions="shareActions" v-model="sheetVisible")
 </template>
 <style lang="less" scoped>

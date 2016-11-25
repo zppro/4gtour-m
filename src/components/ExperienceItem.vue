@@ -1,10 +1,10 @@
 <template lang="jade">
   .experience-item
     .item-left
-      router-link.member-head-portrait(:to="itemUrl")
+      router-link.member-head-portrait(:to="memberInfoUrl")
         slot(name="member_head_portrait")
     .item-right
-      router-link.member-name.text-danger(:to="itemUrl")
+      router-link.member-name.text-danger(:to="memberInfoUrl")
         slot(name="member_name")
       .time-description
         slot(name="time_description")
@@ -12,6 +12,8 @@
         slot(name="category")
       .content
         slot(name="content")
+        router-link(:to="itemUrl")
+          slot(name="details-link")
       .imgs
         slot(name="imgs")
         .clear
@@ -79,6 +81,12 @@
         margin-bottom:0.225rem;
         font-size: 0.65rem;
         color:#000;
+        a{
+          span{
+            margin-left: 0.2rem;
+            text-decoration: underline;
+          }
+        }
       }
       .imgs{
         width: 100%;
@@ -132,9 +140,11 @@
   export default {
     props: ['experienceId'],
     computed: {
-      itemUrl () {
+      memberInfoUrl () {
         return '/'
-//        return {path: '/experience-details/' + this.experienceId}
+      },
+      itemUrl () {
+        return {path: '/experience-details/' + this.experienceId}
       }
     }
   }

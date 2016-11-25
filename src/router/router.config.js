@@ -16,10 +16,13 @@ import OrderConfirm from '../views/OrderConfirm'
 import WeixinAuthNav from '../views/partials/WeixinAuthNav'
 import WeixinAuth from '../views/WeixinAuth'
 import ExperienceNav from '../views/partials/ExperienceNav'
-// import Experience from '../views/Experience'
 import ExperienceFollowedList from '../views/ExperienceFollowedList'
 import ExperienceHotList from '../views/ExperienceHotList'
 import ExperienceMineList from '../views/ExperienceMineList'
+import ExperienceDetailsNav from '../views/partials/ExperienceDetailsNav'
+import ExperienceDetails from '../views/ExperienceDetails'
+import ExperienceDetailsFeeling from '../views/ExperienceDetailsFeeling'
+import ExperienceDetailsRoute from '../views/ExperienceDetailsRoute'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -135,6 +138,28 @@ export default [
     components: {
       head: ExperienceNav,
       body: ExperienceMineList
+    }
+  },
+  {
+    name: '见闻详情',
+    path: '/experience-details/:id',
+    components: {
+      head: ExperienceDetailsNav,
+      body: ExperienceDetails
+    }
+  },
+  {
+    name: '见闻-感受',
+    path: '/default',
+    components: {
+      feeling: ExperienceDetailsFeeling
+    }
+  },
+  {
+    name: '见闻-路线',
+    path: '/route',
+    components: {
+      route: ExperienceDetailsRoute
     }
   }
 ]
