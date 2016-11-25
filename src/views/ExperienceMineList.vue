@@ -24,7 +24,7 @@
           i.fa.fa-car(aria-hidden="true" slot="category" v-if="experience.category === 'A0003'")
           span(slot="content") {{experience.content}}
           .img-list(slot="imgs")
-            img(v-for="img in experience.imgs", :src="img" @click="zoomIn")
+            image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
           span(slot="location") {{experience.location}}
           span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
           span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
@@ -32,6 +32,8 @@
       p(v-show="showExperienceAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
         | {{dataAppendText}}
+    mt-popup(v-model="showImageSwiper",position="bottom" class="mint-popup-bottom")
+      image-swiper.full-screen(:all-images="allImages", :current-image="currentImage", v-on:restore="zoomOut", v-if="showImageSwiper")
 </template>
 
 <script>
@@ -39,7 +41,15 @@
   import ExperienceList from '../components/ExperienceList.vue'
   import ExperienceItem from '../components/ExperienceItem.vue'
   import NoMoreData from '../components/NoMoreData.vue'
+  import ImageCollection from '../components/ImageCollection.vue'
+  import ImageSwiper from '../components/ImageSwiper.vue'
   export default {
+    data () {
+      return {
+        allImages: [],
+        currentImage: ''
+      }
+    },
     computed: {
       currentExperiences () {
         return this.currentIndexInExperiencesOfMine === 0 ? this.experiencesMyTweeted : this.experiencesMyStared
@@ -47,12 +57,20 @@
       appendCurrentDiabled () {
         return this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedDiabled : this.appendMyStaredDiabled
       },
+      showImageSwiper () {
+        return this.allImages.length > 0
+      },
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText']),
       ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     methods: {
-      zoomIn () {
-        console.log(1244)
+      zoomIn (allImages, currentImage) {
+        this.allImages = allImages
+        this.currentImage = currentImage
+      },
+      zoomOut () {
+        this.allImages = []
+        this.currentImage = ''
       },
       appendCurrentList () {
         this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedList() : this.appendMyStaredList()
@@ -66,7 +84,9 @@
     components: {
       ExperienceList,
       ExperienceItem,
-      NoMoreData
+      NoMoreData,
+      ImageCollection,
+      ImageSwiper
     }
   }
 </script>
@@ -137,6 +157,19 @@
     }
     .mine-list{
       width:100%;
+    }
+    .full-screen{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width:100%;
+      height:100%;
+    }
+    .mint-popup-bottom {
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      backface-visibility: hidden;
     }
   }
 </style>
