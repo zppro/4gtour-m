@@ -146,20 +146,22 @@ export default [
     components: {
       head: ExperienceDetailsNav,
       body: ExperienceDetails
-    }
-  },
-  {
-    name: '见闻-感受',
-    path: '/default',
-    components: {
-      feeling: ExperienceDetailsFeeling
-    }
-  },
-  {
-    name: '见闻-路线',
-    path: '/route',
-    components: {
-      route: ExperienceDetailsRoute
-    }
+    },
+    children: [
+      {
+        name: '见闻-感受',
+        path: 'feeling',
+        components: {
+          feeling: ExperienceDetailsFeeling
+        }
+      },
+      {
+        name: '见闻-路线',
+        path: 'route',
+        components: {
+          route: ExperienceDetailsRoute
+        }
+      }
+    ]
   }
 ]

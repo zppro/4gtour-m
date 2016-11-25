@@ -210,7 +210,7 @@ const actions = {
     return Vue.http.get('trv/experience/' + id).then(ret => {
       if (ret.data.success) {
         const experience = ret.data.ret
-        commit(ENTITY_NAME + HOT_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+        commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
       }
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()

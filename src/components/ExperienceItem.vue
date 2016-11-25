@@ -12,7 +12,7 @@
         slot(name="category")
       .content
         slot(name="content")
-        router-link(:to="itemUrl")
+        router-link(:to="routeItemUrl")
           slot(name="details-link")
       .imgs
         slot(name="imgs")
@@ -143,8 +143,8 @@
       memberInfoUrl () {
         return '/'
       },
-      itemUrl () {
-        return {path: '/experience-details/' + this.experienceId}
+      routeItemUrl () {
+        return {path: '/experience-details/' + this.experienceId + '/route'}
       }
     }
   }
