@@ -46,7 +46,7 @@
       callLogin () {
         if (this.env.isApiCloud) {
           // 呼出登录窗体
-          this.env.isApiCloud && this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
+          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
         } else {
           this.$router.replace({path: '/login'})
         }

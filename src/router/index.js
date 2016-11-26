@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import routes from './router.config'
 import store from '../store'
+import { APICLOUD_OPEN_LOGIN_WIN } from '../store/share-apicloud-event-names'
 
 Vue.use(VueRouter)
 
@@ -27,10 +28,17 @@ const endMove = () => {
 router.beforeEach((to, from, next) => {
   if (to.matched.some(r => r.meta.auth)) {
     if (store.state.member.self.member_id === 'anonymity') {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
+      if (store.state.env.isApiCloud) {
+        console.log('call apicloud login')
+        store.dispatch('sendEventToApiCloud', { eventName: APICLOUD_OPEN_LOGIN_WIN })
+        next(false)
+      } else {
+        console.log('transfer to login')
+        next({
+          path: '/login',
+          query: { redirect: to.fullPath }
+        })
+      }
     } else {
       store.state.routerTransiting = true
       moveId = move(0, 1, 10)

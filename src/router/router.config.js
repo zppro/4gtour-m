@@ -23,6 +23,8 @@ import ExperienceDetailsNav from '../views/partials/ExperienceDetailsNav'
 import ExperienceDetails from '../views/ExperienceDetails'
 import ExperienceDetailsFeeling from '../views/ExperienceDetailsFeeling'
 import ExperienceDetailsRoute from '../views/ExperienceDetailsRoute'
+import ExperienceDetailsFeelingAddNav from '../views/partials/ExperienceDetailsFeelingAddNav.vue'
+import ExperienceDetailsFeelingAdd from '../views/ExperienceDetailsFeelingAdd.vue'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -134,6 +136,7 @@ export default [
   },
   {
     name: '我的见闻',
+    meta: { auth: true },
     path: '/experience/mine',
     components: {
       head: ExperienceNav,
@@ -163,5 +166,14 @@ export default [
         }
       }
     ]
+  },
+  {
+    name: '新增见闻',
+    // meta: { auth: true },
+    path: '/experience-add/feeling',
+    components: {
+      head: ExperienceDetailsFeelingAddNav,
+      body: ExperienceDetailsFeelingAdd
+    }
   }
 ]

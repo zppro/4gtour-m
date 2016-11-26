@@ -6,8 +6,8 @@
       a.tab-header(:class='{"tab-header-active":tabIndex===0}' @click="switchTab(0)") 关注
       a.tab-header(:class='{"tab-header-active":tabIndex===1}' @click="switchTab(1)") 热门
       a.tab-header(:class='{"tab-header-active":tabIndex===2}' @click="switchTab(2)") 我的
-    a.nav-item.nav-item-right
-      i.fa.fa-camera(aria-hidden="true" @click="tweetExperience")
+    a.nav-item.nav-item-right(@click="showAddAction")
+      i.fa.fa-camera(aria-hidden="true")
     mt-actionsheet(:actions="shareActions" v-model="sheetVisible")
 </template>
 <style lang="less" scoped>
@@ -57,7 +57,7 @@
     }
 </style>
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
+  import { mapState, mapGetters } from 'vuex'
   let $ = window.$
   export default {
     data () {
@@ -80,6 +80,15 @@
       ...mapState(['env']),
       ...mapGetters(['scenicSpotInDetails'])
     },
+    mounted () {
+      this.shareActions = [{
+        name: '照片',
+        method: this.addFeeling
+      }, {
+        name: '路线',
+        method: this.addRoute
+      }]
+    },
     methods: {
       switchTab (index) {
         $('.tab-header').removeClass('tab-header-active')
@@ -87,16 +96,15 @@
         let subView = index === 0 ? 'follow' : index === 1 ? 'hot' : 'mine'
         this.$router.replace({path: '/experience/' + subView})
       },
-      tweetExperience () {
-        if (this.env.isApiCloud) {
-          // window.proxy.$exec('pay', info)  通过代理支付已经过时
-          this.shareToWeixinOnApiCloud({scene: 'timeline', title: this.scenicSpotInDetails.selected_ticket_name, description: ' ￥(' + this.scenicSpotInDetails.selected_ticket_price + ')', thumbUrl: this.scenicSpotInDetails.img, contentUrl: window.location.href})
-        } else {
-          // 判断是否在微信公众号内
-        }
-        this.sheetVisible = false
+      showAddAction () {
+        this.sheetVisible = true
       },
-      ...mapActions(['shareToWeixinOnApiCloud'])
+      addFeeling () {
+        this.$router.push({path: '/experience-add/feeling'})
+      },
+      addRoute () {
+        this.$router.push({path: '/experience-add/route'})
+      }
     }
   }
 </script>

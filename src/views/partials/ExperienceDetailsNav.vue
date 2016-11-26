@@ -4,8 +4,8 @@
       i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-    a.nav-item.nav-item-right(@click="refreshOrderDetails")
-      i.fa.fa-external-link(aria-hidden="true" @click="showShareAction")
+    a.nav-item.nav-item-right(@click="showShareAction")
+      i.fa.fa-external-link(aria-hidden="true")
     mt-actionsheet(:actions="shareActions" v-model="sheetVisible")
 </template>
 <style lang="less" scoped>
@@ -98,9 +98,6 @@
       },
       showShareAction () {
         this.sheetVisible = true
-      },
-      refreshOrderDetails () {
-        this.fetchMember$OrderInfo(this.$route.params)
       },
       shareWeixinTimeline () {
         if (this.env.isApiCloud) {

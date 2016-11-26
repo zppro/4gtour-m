@@ -7,6 +7,7 @@ const ENTITY_NAME = 'EXPERIENCE'
 export const HOT_NAME = '$HOT'
 export const MY_TWEETED_NAME = '$MY_TWEETED'
 export const MY_STARED_NAME = '$MY_STARED'
+export const FEELING_NAME = '$FEELING_NAME'
 
 const MAX_HOT_COUNT = 100
 
@@ -20,7 +21,8 @@ const state = {
   listRequestTypeAppending: true,
   noMoreOfHot: false,
   noMoreOfMyTweeted: false,
-  noMoreOfMyStared: false
+  noMoreOfMyStared: false,
+  newFeeling: {}
 }
 
 // getters
@@ -54,6 +56,9 @@ const getters = {
   },
   showExperienceAppendIndicator (state, getters, rootState) {
     return rootState.loading && state.listRequestTypeAppending
+  },
+  experienceInAddFeeling (state) {
+    return state.newFeeling
   }
 }
 
@@ -97,6 +102,11 @@ const mutations = {
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 1
+  },
+  [ENTITY_NAME + FEELING_NAME + mutationTypes.EDIT_DETAILS] (state, { content, imgs, location }) {
+    content && Vue.set(state.newFeeling, 'content', content)
+    imgs && Vue.set(state.newFeeling, 'imgs', imgs)
+    location && Vue.set(state.newFeeling, 'location', location)
   }
 }
 
@@ -229,6 +239,12 @@ const actions = {
       return dispatch('fetchExperienceInfo', rootState.route.params)
     }
     return dispatch('noop')
+  },
+  addExperienceAsFeeling ({state, commit, dispatch}, feelingExperience) {
+    return dispatch('noop').then(() => {
+      commit(ENTITY_NAME + FEELING_NAME + mutationTypes.EDIT_DETAILS, feelingExperience)
+      return state.newFeeling
+    })
   }
 }
 
