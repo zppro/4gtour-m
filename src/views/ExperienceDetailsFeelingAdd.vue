@@ -3,7 +3,7 @@
     .experience-content
       textarea(v-model="newExperience.content" placeholder="这一刻的想法...")
     .experience-imgs
-      image-uploader(:all-images="newExperience.imgs")
+      image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
     div {{experienceInDetails.content}}
 </template>
 
@@ -58,6 +58,10 @@
       }
     },
     methods: {
+      onUploaded (imgUrl) {
+        console.log(imgUrl)
+        this.newExperience.imgs.push(imgUrl)
+      },
       ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling'])
     },
     components: {

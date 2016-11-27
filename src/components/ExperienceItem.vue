@@ -1,15 +1,16 @@
 <template lang="jade">
   .experience-item
-    .item-left
+    .item-head
       router-link.member-head-portrait(:to="memberInfoUrl")
         slot(name="member_head_portrait")
-    .item-right
-      router-link.member-name.text-danger(:to="memberInfoUrl")
-        slot(name="member_name")
-      .time-description
-        slot(name="time_description")
+      .name-time
+        router-link.member-name.text-danger(:to="memberInfoUrl")
+          slot(name="member_name")
+        .time-description
+          slot(name="time_description")
       .category
         slot(name="category")
+    .item-body
       .content
         slot(name="content")
         router-link(:to="routeItemUrl")
@@ -17,6 +18,7 @@
       .imgs
         slot(name="imgs")
         .clear
+    .item-foot
       .location
         i.fa.fa-map-marker(aria-hidden="true")
         slot(name="location")
@@ -29,7 +31,8 @@
           slot(name="stars")
         .action.likes
           i.fa.fa-thumbs-o-up(aria-hidden="true")
-            slot(name="likes")
+          slot(name="likes")
+      .clear
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
@@ -40,8 +43,8 @@
     /*min-height:16.425rem;*/
     margin-bottom: 0.05rem;
     padding:0.75rem;
-    .item-left{
-      width: 2.1rem;
+    .item-head{
+      width: 100%;
       float:left;
       display: inline-block;
       .member-head-portrait{
@@ -54,21 +57,19 @@
           border-radius: 0.875rem;
         }
       }
-    }
-    .item-right{
-      position:relative;
-      clear:left;
-      display: inline-block;
-      width: 15.15rem;
-      height:100%;
-      a.member-name{
-        display: block;
-        font-size: 0.6rem;
-      }
-      .time-description{
-        margin-top:0.1rem;
-        font-size: 0.5rem;
-        color:#7c7b7b;
+      .name-time{
+        display: inline-block;
+        margin-left:0.4rem;
+        a.member-name{
+          display: block;
+          font-size: 0.8rem;
+          margin-bottom: 0.2rem;
+        }
+        .time-description{
+          margin-top:0.1rem;
+          font-size: 0.5rem;
+          color:#7c7b7b;
+        }
       }
       .category{
         position: absolute;
@@ -76,6 +77,13 @@
         top: 0;
         font-size: 0.6rem;
       }
+    }
+    .item-body{
+      position:relative;
+      clear:left;
+      display: inline-block;
+      padding-left:2.15rem;
+      width: 100%;
       .content{
         margin-top:0.225rem;
         margin-bottom:0.225rem;
@@ -90,28 +98,24 @@
       }
       .imgs{
         width: 100%;
-        img{
-          float:left;
-          width:4.75rem;
-          height:4.75rem;
-          margin-top:0.225rem;
-          margin-right:0.225rem;
-        }
-        .clear{clear:left;}
+        .clear{clear:both;}
       }
+    }
+    .item-foot{
+      height:1.2rem;
+      margin-top:0.45rem;
       .location{
         display: inline-block;
-        margin-top:0.45rem;
-        width:6.4rem;
+        width:2.4rem;
+        height:1.2rem;
         font-size: 0.5rem;
         color:#7c7b7b;
         span{margin-left:0.225rem;}
       }
       .actions{
-        margin-top:0.6rem;
+        float:right;
         display: inline-block;
         background-color: #efeff4;
-        width:8.3rem;
         height:1.2rem;
         font-size:0.5rem;
         .action{

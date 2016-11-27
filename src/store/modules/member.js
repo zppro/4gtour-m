@@ -8,6 +8,7 @@ import { APICLOUD_LOGIN, APICLOUD_LOGOUT } from '../share-apicloud-event-names'
 
 export const ENTITY_NAME = 'MEMBER'
 export const ORDER_NAME = '$ORDER'
+export const UPLOAD_TOKEN = '$UPLOAD_TOKEN'
 
 const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', head_portrait: '', member_description: '' }
 // initial state
@@ -20,7 +21,8 @@ const state = {
   member$OrderCurrent: {
     orderInfo: {},
     scenicSpotInfo: {}
-  }
+  },
+  member$UploadTokenCurrent: ''
 }
 
 // getters
@@ -54,6 +56,9 @@ const getters = {
   },
   member$OrderInDetails (state) {
     return state.member$OrderCurrent
+  },
+  member$UploadToken (state) {
+    return state.member$UploadTokenCurrent
   }
 }
 
@@ -88,6 +93,12 @@ const mutations = {
   },
   [ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE] (state, { member$OrderRecordCount, size }) {
     state.member$OrderNoMore = member$OrderRecordCount < size
+  },
+  [ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.SET] (state, uploadToken) {
+    state.member$UploadTokenCurrent = uploadToken
+  },
+  [ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR] (state) {
+    state.member$UploadTokenCurrent = ''
   }
 }
 // actions
@@ -131,6 +142,7 @@ const actions = {
     Indicator.open('安全退出...')
     setTimeout(() => {
       commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
+      commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
       rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
@@ -202,6 +214,22 @@ const actions = {
   ensureMember$OrderInfo ({ state, rootState, dispatch }) {
     if (!state.member$OrderCurrent.id || state.member$OrderCurrent.id !== rootState.route.params.id) {
       return dispatch('fetchMember$OrderInfo', rootState.route.params)
+    }
+    return dispatch('noop')
+  },
+  fetchMember$UploadToken ({commit, dispatch}) {
+    return Vue.http.get('qiniu/open/uploadToken/').then(ret => {
+      if (ret.data.success) {
+        const uploadToken = ret.data.ret
+        commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.SET, uploadToken)
+      } else {
+        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+      }
+    })
+  },
+  ensureMember$UploadToken ({ state, dispatch }) {
+    if (!state.member$UploadTokenCurrent) {
+      return dispatch('fetchMember$UploadToken')
     }
     return dispatch('noop')
   }

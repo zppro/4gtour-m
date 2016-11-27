@@ -1,5 +1,7 @@
 export const $GLOABL_PREFIX$ = 'GLOBAL'
 
+export const SET = '/SET'
+export const CLEAR = '/CLEAR'
 export const SET_LIST_REQUEST_TYPE = '/SET_LIST_REQUEST_TYPE'
 export const SET_NO_MORE = '/SET_NO_MORE'
 export const SET_CURRENT = '/SET_CURRENT'
@@ -18,3 +20,4 @@ export const LOGIN_OUT = '/LOGIN_OUT'
 export const SUBMIT_FORM = '/SUBMIT_FORM'
 export const SUBMIT_FORM_SUCCESS = '/SUBMIT_FORM_SUCCESS'
 export const SUBMIT_FORM_FAIL = '/SUBMIT_FORM_FAIL'
+

@@ -1,20 +1,73 @@
 <template lang="jade">
   .img-uploader
-    img(v-for="img in allImages", :src="img" @click="select(img)")
-    a.addImage
-      .cross.cross-lt
-      .cross.cross-rt
-      .cross.cross-lb
-      .cross.cross-rb
+    img(v-for="img in allImages", :src="format(img)" @click="select(img)")
+    #img-uploader-container
+      a#addImage(@click="callUploader" )
+        .cross.cross-lt
+        .cross.cross-rt
+        .cross.cross-lb
+        .cross.cross-rb
     .clear
 </template>
 <script>
+  import { mapState, mapGetters, mapActions } from 'vuex'
   export default {
+    data () {
+      return {
+        uploader: null
+      }
+    },
     props: ['allImages'],
+    computed: {
+      ...mapState(['env']),
+      ...mapGetters(['member$UploadToken'])
+    },
+    created () {
+      let self = this
+      this.ensureMember$UploadToken().then(() => {
+        self.uploader = window.Qiniu.uploader({
+          runtimes: 'html5,flash,html4',
+          browse_button: 'addImage',
+          uptoken: self.member$UploadToken,
+          unique_names: true,
+          domain: 'http://img2.okertrip.com/',
+          get_new_uptoken: false,
+          container: 'img-uploader-container',
+          max_file_size: '20mb',
+          flash_swf_url: '/static/js/plupload/Moxie.swf',
+          max_retries: 3,
+          chunk_size: '4mb',
+          auto_start: true,
+          init: {
+            'FileUploaded': function (up, file, info) {
+              window.alert('FileUploaded')
+              const res = JSON.parse(info)
+              let uploadedImageUrl = up.getOption('domain') + res.key
+              self.$emit('uploaded', uploadedImageUrl)
+            },
+            'Error': function (up, err, errTip) {
+              window.alert(errTip)
+              console.log(errTip)
+            }
+          }
+        })
+      })
+    },
     methods: {
+      format: function (img) {
+        return window.utils.qiniuImageView(img, window.utils.rem2px(3.75), window.utils.rem2px(3.75))
+      },
       select (img) {
         this.$emit('select', this.allImages, img)
-      }
+      },
+      callUploader () {
+        if (this.env.isApiCloud) {
+          // 目前还是和h5一样
+        } else {
+          // 判断是否在微信公众号内
+        }
+      },
+      ...mapActions(['ensureMember$UploadToken'])
     }
   }
 </script>
@@ -25,18 +78,23 @@
     padding-bottom:0.225rem;
     img{
        float:left;
-       width:4.75rem;
-       height:4.75rem;
+       width:3.75rem;
+       height:3.75rem;
        margin-top:0.225rem;
        margin-right:0.225rem;
      }
-    a.addImage{
+    #img-uploader-container{
       float:left;
       display: inline-block;
       width:3.75rem;
       height:3.75rem;
       margin-top:0.225rem;
       margin-right:0.225rem;
+    }
+    a#addImage{
+      display: inline-block;
+      width:3.75rem;
+      height:3.75rem;
       border: solid #c8c8c8 1px;
       padding:0.3rem;
       .cross{

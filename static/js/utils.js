@@ -1,4 +1,4 @@
-(function(){
+(function(doc, win){
   "use strict";
 
   function isPhone(aPhone) {
@@ -58,10 +58,36 @@
     window.document.write('<script type="text/javascript" src="' + path + '"></script>');
   }
 
+  function rem2px (rem) {
+    var width = window.$('html').width();
+    var px1;
+    if(width > 640 ){
+      px1 = 40;
+    } else if (width> 568 && width <= 640) {
+      px1 = 35;
+    } else if (width> 480 && width <= 568) {
+      px1 = 30;
+    } else if (width> 427 && width <= 480) {
+      px1 = 26.75;
+    } else if (width> 400 && width <= 427) {
+      px1 = 25;
+    } else {
+      px1 = 20;
+    }
+    return (px1 * rem).toFixed(0);
+  }
+
+  function qiniuImageView (img, w, h, mode) {
+    console.log(w)
+    return img + '?imageView2/' + (mode || 1) + '/w/' + w + '/h/' + h
+  }
+
 
   window.utils = {
     isPhone:isPhone,
     isIDNo:isIDNo,
-    loadScript: loadScript
+    loadScript: loadScript,
+    rem2px: rem2px,
+    qiniuImageView: qiniuImageView
   };
 }())
