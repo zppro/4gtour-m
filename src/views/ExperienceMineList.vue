@@ -18,7 +18,7 @@
         | {{dataRefreshText}}
       experience-list.experience-list
         experience-item(v-for="experience in currentExperiences", :experience-id="experience.id")
-          img(:src="experience.member_head_portrait" slot="member_head_portrait")
+          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
           i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
@@ -61,11 +61,12 @@
       showImageSwiper () {
         return this.allImages.length > 0
       },
-      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText']),
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait']),
       ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     created () {
-      this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyTweetedList()
+      console.log('experiencemine list created')
+      this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyStaredList()
     },
     methods: {
       zoomIn (allImages, currentImage) {

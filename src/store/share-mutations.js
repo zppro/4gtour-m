@@ -12,5 +12,14 @@ export default {
   },
   [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.HIDE_LEFT_POPUP] (state) {
     state.leftPopupVisible = false
+  },
+  [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM] (state) {
+    state.submitingForm = true
+  },
+  [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM_SUCCESS] (state) {
+    state.submitingForm = false
+  },
+  [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM_FAIL] (state) {
+    state.submitingForm = false
   }
 }

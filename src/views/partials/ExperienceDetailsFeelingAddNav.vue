@@ -4,7 +4,7 @@
       i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-    a.nav-item.nav-item-right(@click="sendExperienceFeeling")
+    a.nav-item.nav-item-right(@click="submitForm")
       a.btn-send 发送
 </template>
 <style lang="less" scoped>
@@ -76,10 +76,7 @@
       back () {
         this.$router.replace('/experience/mine')
       },
-      sendExperienceFeeling () {
-        console.log('sendExperienceFeeling')
-      },
-      ...mapActions(['shareToWeixinOnApiCloud'])
+      ...mapActions(['submitForm'])
     }
   }
 </script>

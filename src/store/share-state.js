@@ -10,5 +10,8 @@ export default {
   dataRefreshText: '刷新中...',
   dataFetchText: '数据读取中...',
   dataAppendText: '加载中...',
-  leftPopupVisible: false
+  dataSaveText: '数据保存中...',
+  leftPopupVisible: false,
+  submitingForm: false,
+  defaultMemberHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png?imageView2/1/w/70/h/70'
 }

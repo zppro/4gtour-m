@@ -1,10 +1,10 @@
 <template lang="jade">
   .experience-details-feeling-add
     .experience-content
-      textarea(:value="feelingContent" @input="" placeholder="这一刻的想法...")
+      textarea(v-model="newExperience.content" placeholder="这一刻的想法...")
     .experience-imgs
-      image-uploader(:all-images="imgs")
-    div {{experienceInAddFeeling.content}}
+      image-uploader(:all-images="newExperience.imgs")
+    div {{experienceInDetails.content}}
 </template>
 
 <script>
@@ -13,22 +13,52 @@
   export default {
     data () {
       return {
-        feelingContent: '',
-        imgs: []
+        newExperience: {
+          category: 'A0001',
+          content: '',
+          imgs: [],
+          location: '杭州'
+        }
       }
     },
     computed: {
       title () {
         return ''
       },
-      ...mapState(['env']),
-      ...mapGetters(['experienceInAddFeeling'])
+      validation: function () {
+        return {
+          content$required: !!this.newExperience.content.trim()
+        }
+      },
+      isValid: function () {
+        var validation = this.validation
+        return Object.keys(validation).every(function (key) {
+          return validation[key]
+        })
+      },
+      ...mapState(['env', 'submitingForm']),
+      ...mapGetters(['experienceInDetails'])
+    },
+    watch: {
+      submitingForm: function (newSubmitingForm) {
+        var self = this
+        if (newSubmitingForm) {
+          if (this.isValid) {
+            this.saveExperienceAsFeeling(this.newExperience).then(() => {
+              self.$router.replace('/experience/mine')
+            })
+          } else {
+            this.submitFormFail().then(() => {
+              if (!self.validation.content$required) {
+                self.toast({msg: '内容是必须的'})
+              }
+            })
+          }
+        }
+      }
     },
     methods: {
-      update: (v) => {
-        this.addExperienceAsFeeling({content: v})
-      },
-      ...mapActions(['addExperienceAsFeeling'])
+      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling'])
     },
     components: {
       ImageUploader

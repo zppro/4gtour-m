@@ -37,7 +37,7 @@
     width:100%;
     background-color: white;
     text-align: left;
-    min-height:16.425rem;
+    /*min-height:16.425rem;*/
     margin-bottom: 0.05rem;
     padding:0.75rem;
     .item-left{

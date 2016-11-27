@@ -21,8 +21,7 @@ const state = {
   listRequestTypeAppending: true,
   noMoreOfHot: false,
   noMoreOfMyTweeted: false,
-  noMoreOfMyStared: false,
-  newFeeling: {}
+  noMoreOfMyStared: false
 }
 
 // getters
@@ -56,9 +55,6 @@ const getters = {
   },
   showExperienceAppendIndicator (state, getters, rootState) {
     return rootState.loading && state.listRequestTypeAppending
-  },
-  experienceInAddFeeling (state) {
-    return state.newFeeling
   }
 }
 
@@ -103,10 +99,13 @@ const mutations = {
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 1
   },
+  [ENTITY_NAME + FEELING_NAME + mutationTypes.ADD_DETAILS] (state, { content, imgs, location }) {
+    state.current = { content, imgs, location }
+  },
   [ENTITY_NAME + FEELING_NAME + mutationTypes.EDIT_DETAILS] (state, { content, imgs, location }) {
-    content && Vue.set(state.newFeeling, 'content', content)
-    imgs && Vue.set(state.newFeeling, 'imgs', imgs)
-    location && Vue.set(state.newFeeling, 'location', location)
+    content && Vue.set(state.current, 'content', content)
+    imgs && Vue.set(state.current, 'imgs', imgs)
+    location && Vue.set(state.current, 'location', location)
   }
 }
 
@@ -242,9 +241,45 @@ const actions = {
   },
   addExperienceAsFeeling ({state, commit, dispatch}, feelingExperience) {
     return dispatch('noop').then(() => {
-      commit(ENTITY_NAME + FEELING_NAME + mutationTypes.EDIT_DETAILS, feelingExperience)
-      return state.newFeeling
+      commit(ENTITY_NAME + FEELING_NAME + mutationTypes.ADD_DETAILS, feelingExperience)
+      return state.current
     })
+  },
+  editExperienceAsFeeling ({state, commit, dispatch}, feelingExperience) {
+    return dispatch('noop').then(() => {
+      commit(ENTITY_NAME + FEELING_NAME + mutationTypes.EDIT_DETAILS, feelingExperience)
+      return state.current
+    })
+  },
+  saveExperienceAsFeeling ({state, rootState, commit, dispatch}, feelingExperience) {
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    Indicator.open(rootState.dataSaveText)
+    if (!feelingExperience._id) {
+      return Vue.http.post('trv/experience', feelingExperience).then(ret => {
+        if (ret.data.success) {
+          const experience = ret.data.ret
+          commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+          dispatch('submitFormSuccess').then(() => {
+            dispatch('toast', {msg: '保存成功', option: {iconClass: 'fa fa-check'}})
+          })
+        } else {
+          dispatch('submitFormFail').then(() => {
+            dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+          })
+        }
+        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+        Indicator.close()
+      })
+    } else {
+      return Vue.http.put('trv/experience/' + feelingExperience._id, feelingExperience).then(ret => {
+        if (ret.data.success) {
+          const experience = ret.data.ret
+          commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+        }
+        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+        Indicator.close()
+      })
+    }
   }
 }
 

@@ -14,6 +14,15 @@ export const finishLoading = ({ commit }) => {
   Indicator.close()
   return Promise.resolve(true)
 }
+export const submitForm = ({ commit }) => {
+  commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM)
+}
+export const submitFormSuccess = ({ commit }) => {
+  commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM_SUCCESS)
+}
+export const submitFormFail = ({ commit }) => {
+  commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM_FAIL)
+}
 export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
