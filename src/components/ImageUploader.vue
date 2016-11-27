@@ -2,7 +2,7 @@
   .img-uploader
     img(v-for="img in allImages", :src="format(img)" @click="select(img)")
     #img-uploader-container
-      a#addImage(@click="callUploader" )
+      a#addImage
         .cross.cross-lt
         .cross.cross-rt
         .cross.cross-lb
@@ -11,6 +11,7 @@
 </template>
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
+  import { Indicator } from 'mint-ui'
   export default {
     data () {
       return {
@@ -39,15 +40,20 @@
           chunk_size: '4mb',
           auto_start: true,
           init: {
+            'FilesAdded': function (up, files) {
+              Indicator.open('上传中...')
+            },
             'FileUploaded': function (up, file, info) {
-              window.alert('FileUploaded')
               const res = JSON.parse(info)
               let uploadedImageUrl = up.getOption('domain') + res.key
               self.$emit('uploaded', uploadedImageUrl)
             },
+            'UploadComplete': function () {
+              Indicator.close()
+            },
             'Error': function (up, err, errTip) {
               window.alert(errTip)
-              console.log(errTip)
+              Indicator.close()
             }
           }
         })
@@ -59,13 +65,6 @@
       },
       select (img) {
         this.$emit('select', this.allImages, img)
-      },
-      callUploader () {
-        if (this.env.isApiCloud) {
-          // 目前还是和h5一样
-        } else {
-          // 判断是否在微信公众号内
-        }
       },
       ...mapActions(['ensureMember$UploadToken'])
     }

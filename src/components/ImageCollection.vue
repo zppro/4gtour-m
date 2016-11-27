@@ -7,7 +7,11 @@
     props: ['allImages'],
     methods: {
       format: function (img) {
-        return window.utils.qiniuImageView(img, window.utils.rem2px(4.75), window.utils.rem2px(4.75))
+        if (this.allImages.length === 1) {
+          return window.utils.qiniuImageView(img, window.utils.rem2px(9.775), window.utils.rem2px(9.775))
+        } else {
+          return window.utils.qiniuImageView(img, window.utils.rem2px(4.75), window.utils.rem2px(4.75))
+        }
       },
       select (img) {
         this.$emit('select', this.allImages, img)
@@ -30,6 +34,13 @@
   .one-image{
     max-width:12.5rem;
     max-height:12.5rem;
+    img{
+      float:left;
+      width:9.775rem;
+      height:9.775rem;
+      margin-top:0.225rem;
+      margin-right:0.225rem;
+    }
   }
   .four-images {
     max-width:10rem;
