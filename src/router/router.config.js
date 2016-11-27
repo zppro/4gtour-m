@@ -169,7 +169,7 @@ export default [
   },
   {
     name: '新增见闻',
-    // meta: { auth: true },
+    meta: { auth: true },
     path: '/experience-add/feeling',
     components: {
       head: ExperienceDetailsFeelingAddNav,
