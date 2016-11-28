@@ -8,15 +8,20 @@ export const HOT_NAME = '$HOT'
 export const MY_TWEETED_NAME = '$MY_TWEETED'
 export const MY_STARED_NAME = '$MY_STARED'
 export const FEELING_NAME = '$FEELING_NAME'
+export const LIKES_NAME = '$LIKES'
+export const STARS_NAME = '$STARS'
 
 const MAX_HOT_COUNT = 100
 
 // initial state
 const state = {
   hot: [],
+  hotFirstLoaded: false,
   currentIndexOfMine: 0,
   myTweeted: [],
+  myTweetedFirstLoaded: false,
   myStared: [],
+  myStaredFirstLoaded: false,
   current: {},
   listRequestTypeAppending: true,
   noMoreOfHot: false,
@@ -42,13 +47,13 @@ const getters = {
     return state.current
   },
   appendHotDiabled (state, getters, rootState) {
-    return rootState.loading || state.noMoreOfHot
+    return rootState.loading || state.noMoreOfHot || !state.hotFirstLoaded
   },
   appendMyTweetedDiabled (state, getters, rootState) {
-    return rootState.loading || state.noMoreOfMyTweeted
+    return rootState.loading || state.noMoreOfMyTweeted || !state.myTweetedFirstLoaded
   },
   appendMyStaredDiabled (state, getters, rootState) {
-    return rootState.loading || state.noMoreOfMyStared
+    return rootState.loading || state.noMoreOfMyStared || !state.myStaredFirstLoaded
   },
   showExperienceFetchIndicator (state, getters, rootState) {
     return rootState.loading && !state.listRequestTypeAppending
@@ -65,18 +70,21 @@ const mutations = {
   },
   [ENTITY_NAME + HOT_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
     state.hot = experiences
+    state.hotFirstLoaded = true
   },
   [ENTITY_NAME + HOT_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.hot = state.hot.concat(experiences)
   },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
     state.myTweeted = experiences
+    state.myTweetedFirstLoaded = true
   },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.myTweeted = state.myTweeted.concat(experiences)
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
     state.myStared = experiences
+    state.myStaredFirstLoaded = true
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.myStared = state.myStared.concat(experiences)
@@ -106,6 +114,40 @@ const mutations = {
     content && Vue.set(state.current, 'content', content)
     imgs && Vue.set(state.current, 'imgs', imgs)
     location && Vue.set(state.current, 'location', location)
+  },
+  [ENTITY_NAME + LIKES_NAME + mutationTypes.SET] (state, {id, likes, liked}) {
+    let theOne = state.hot.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'likes', likes)
+      Vue.set(theOne, 'liked', liked)
+    }
+    theOne = state.myTweeted.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'likes', likes)
+      Vue.set(theOne, 'liked', liked)
+    }
+    theOne = state.myStared.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'likes', likes)
+      Vue.set(theOne, 'liked', liked)
+    }
+  },
+  [ENTITY_NAME + STARS_NAME + mutationTypes.SET] (state, {id, stars, stared}) {
+    let theOne = state.hot.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'stars', stars)
+      Vue.set(theOne, 'stared', stared)
+    }
+    theOne = state.myTweeted.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'stars', stars)
+      Vue.set(theOne, 'stared', stared)
+    }
+    theOne = state.myStared.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'stars', stars)
+      Vue.set(theOne, 'stared', stared)
+    }
   }
 }
 
@@ -251,10 +293,10 @@ const actions = {
       return state.current
     })
   },
-  saveExperienceAsFeeling ({state, rootState, commit, dispatch}, feelingExperience) {
+  saveExperienceAsFeeling ({rootState, commit, dispatch}, feelingExperience) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataSaveText)
-    if (!feelingExperience._id) {
+    if (!feelingExperience.id) {
       return Vue.http.post('trv/experience', feelingExperience).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
@@ -271,7 +313,7 @@ const actions = {
         Indicator.close()
       })
     } else {
-      return Vue.http.put('trv/experience/' + feelingExperience._id, feelingExperience).then(ret => {
+      return Vue.http.put('trv/experience/' + feelingExperience.id, feelingExperience).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
@@ -280,6 +322,30 @@ const actions = {
         Indicator.close()
       })
     }
+  },
+  toggleLikeExperience ({rootState, commit, dispatch}, {id, liked}) {
+    Indicator.open(rootState.dataSaveText)
+    return Vue.http.post('trv/' + (liked ? 'experienceUnLike/' : 'experienceLike/') + id).then(ret => {
+      if (ret.data.success) {
+        const experienceLike = ret.data.ret
+        commit(ENTITY_NAME + LIKES_NAME + mutationTypes.SET, experienceLike)
+      } else {
+        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+      }
+      Indicator.close()
+    })
+  },
+  toggleStarExperience ({rootState, commit, dispatch}, {id, stared}) {
+    Indicator.open(rootState.dataSaveText)
+    return Vue.http.post('trv/' + (stared ? 'experienceUnStar/' : 'experienceStar/') + id).then(ret => {
+      if (ret.data.success) {
+        const experienceStar = ret.data.ret
+        commit(ENTITY_NAME + STARS_NAME + mutationTypes.SET, experienceStar)
+      } else {
+        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+      }
+      Indicator.close()
+    })
   }
 }
 

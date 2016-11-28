@@ -6,7 +6,7 @@
             .fa.fa-user(aria-hidden="true")
           img.member-head-portrait(v-if="isLogined", :src="memberInfo.head_portrait")
           p(v-if="!isLogined")
-            a.btn.btn-action(@click="callLogin") 点击登录
+            a.btn.btn-action(@click="login") 点击登录
         .member-info-right(v-show="isLogined")
           span.member-name {{memberInfo.member_name}}
           .member-description.no-wrap {{memberInfo.member_description}}
@@ -21,9 +21,8 @@
         a.link.link-action(@click="")
 </template>
 <script>
-  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+  import { mapGetters, mapMutations, mapActions } from 'vuex'
   import { $GLOABL_PREFIX$, HIDE_LEFT_POPUP } from '../../store/mutation-types'
-  import { APICLOUD_OPEN_LOGIN_WIN } from '../../store/share-apicloud-event-names'
   export default{
     data () {
       return {
@@ -34,7 +33,6 @@
       routePath () {
         return this.$route.path
       },
-      ...mapState(['env']),
       ...mapGetters(['isLogined', 'memberInfo', 'memberHaveUnpayAndValidOrders', 'memberHaveUnpayAndValidCount'])
     },
     watch: {
@@ -43,16 +41,8 @@
       }
     },
     methods: {
-      callLogin () {
-        if (this.env.isApiCloud) {
-          // 呼出登录窗体
-          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
-        } else {
-          this.$router.replace({path: '/login'})
-        }
-      },
       ...mapMutations([$GLOABL_PREFIX$ + HIDE_LEFT_POPUP]),
-      ...mapActions(['logout', 'sendEventToApiCloud'])
+      ...mapActions(['login', 'logout', 'sendEventToApiCloud'])
     }
   }
 </script>

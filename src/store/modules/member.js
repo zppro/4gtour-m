@@ -106,47 +106,43 @@ const actions = {
   authMember ({ commit, rootState, dispatch }, { username, password, category }) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open('登录中...')
-    setTimeout(() => {
-      Vue.http.post('api/proxyLogin', { username, password, category }).then(ret => {
-        if (ret.data.success) {
-          const loginRet = ret.data.ret
-          commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
-          rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGIN, eventData: {token: loginRet.token} })
-        } else {
-          dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
-        }
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      })
-    }, rootState.preLoadingMillisecond)
+    return Vue.http.post('api/proxyLogin', { username, password, category }).then(ret => {
+      if (ret.data.success) {
+        const loginRet = ret.data.ret
+        commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+        rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGIN, eventData: {token: loginRet.token} })
+      } else {
+        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+      }
+      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+      Indicator.close()
+    })
   },
   authMemberByToken ({ commit, rootState, dispatch }, token) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open('登录中...')
-    setTimeout(() => {
-      Vue.http.post('api/proxyLoginByToken', { token }).then(ret => {
-        if (ret.data.success) {
-          const loginRet = ret.data.ret
-          commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
-        } else {
-          dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
-          commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
-        }
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      })
-    }, rootState.preLoadingMillisecond)
+    rootState.authMemberByTokenPromise = Vue.http.post('api/proxyLoginByToken', { token }).then(ret => {
+      if (ret.data.success) {
+        const loginRet = ret.data.ret
+        commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+      } else {
+        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
+      }
+      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+      Indicator.close()
+    })
+    return rootState.authMemberByTokenPromise
   },
   logout ({ commit, rootState, dispatch }, isMannual = true) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open('安全退出...')
-    setTimeout(() => {
-      commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
-      commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
-      rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
-    }, rootState.preLoadingMillisecond)
+    commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
+    commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
+    rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
+    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+    Indicator.close()
+    return Promise.resolve(true)
   },
   authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
     let userInfo = getters['weixinOpenUserInfo']

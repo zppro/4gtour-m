@@ -17,7 +17,7 @@
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
       experience-list.experience-list
-        experience-item(v-for="experience in currentExperiences", :experience-id="experience.id")
+        experience-item(v-for="experience in currentExperiences", :experience="experience")
           img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}

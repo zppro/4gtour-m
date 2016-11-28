@@ -26,11 +26,13 @@
         .action.retweets
           i.fa.fa-retweet(aria-hidden="true")
           slot(name="retweets")
-        .action.stars
-          i.fa.fa-star-o(aria-hidden="true")
+        .action.stars(@click="toggleStar")
+          i.fa.fa-star-o(aria-hidden="true" v-if="!experience.stared")
+          i.fa.fa-star(aria-hidden="true" v-if="experience.stared")
           slot(name="stars")
-        .action.likes
-          i.fa.fa-thumbs-o-up(aria-hidden="true")
+        .action.likes(@click="toggleLike")
+          i.fa.fa-thumbs-o-up(aria-hidden="true" v-if="!experience.liked")
+          i.fa.fa-thumbs-up(aria-hidden="true" v-if="experience.liked")
           slot(name="likes")
       .clear
 </template>
@@ -141,15 +143,34 @@
   }
 </style>
 <script>
+  import { mapGetters, mapActions } from 'vuex'
   export default {
-    props: ['experienceId'],
+    props: ['experience'],
     computed: {
       memberInfoUrl () {
         return '/'
       },
       routeItemUrl () {
-        return {path: '/experience-details/' + this.experienceId + '/route'}
-      }
+        return {path: '/experience-details/' + this.experience.id + '/route'}
+      },
+      ...mapGetters(['isLogined'])
+    },
+    methods: {
+      toggleLike () {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.toggleLikeExperience(this.experience)
+        }
+      },
+      toggleStar () {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.toggleStarExperience(this.experience)
+        }
+      },
+      ...mapActions(['login', 'toggleLikeExperience', 'toggleStarExperience'])
     }
   }
 </script>

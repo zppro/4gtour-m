@@ -13,5 +13,6 @@ export default {
   dataSaveText: '数据保存中...',
   leftPopupVisible: false,
   submitingForm: false,
-  defaultMemberHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png?imageView2/1/w/70/h/70'
+  defaultMemberHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png?imageView2/1/w/70/h/70',
+  authMemberByTokenPromise: Promise.resolve(false)
 }

@@ -1,7 +1,8 @@
 import { Toast, Indicator } from 'mint-ui'
+import router from '../router'
 import * as mutationTypes from './mutation-types'
 import { toastOption } from '../config/mint-ui-option'
-import { APICLOUD_LOGIN, APICLOUD_LOGOUT, APICLOUD_SHARE_WEIXIN } from './share-apicloud-event-names'
+import { APICLOUD_OPEN_LOGIN_WIN, APICLOUD_LOGIN, APICLOUD_LOGOUT, APICLOUD_SHARE_WEIXIN } from './share-apicloud-event-names'
 
 export const noop = () => {}
 export const startLoading = ({ commit }, {msg}) => {
@@ -26,6 +27,16 @@ export const submitFormFail = ({ commit }) => {
 export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
+
+export const login = ({ state, dispatch }) => {
+  if (state.env.isApiCloud) {
+    // 呼出登录窗体
+    dispatch('sendEventToApiCloud', { eventName: APICLOUD_OPEN_LOGIN_WIN })
+  } else {
+    router.replace({path: '/login'})
+  }
+}
+
 export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
   return Promise.resolve(true).then(() => {
     window.apiready = function () {
