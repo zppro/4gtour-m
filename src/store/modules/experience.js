@@ -255,13 +255,16 @@ const actions = {
       Indicator.close()
     })
   },
-  fetchExperienceInfo ({commit, rootState}, { id }) {
+  fetchExperienceInfo ({commit, rootState, dispatch}, {id, setCurrent = true}) {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     return Vue.http.get('trv/experience/' + id).then(ret => {
       if (ret.data.success) {
         const experience = ret.data.ret
-        commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+        setCurrent && commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+        return experience
+      } else {
+        dispatch('toastError', ret.data)
       }
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
@@ -302,11 +305,11 @@ const actions = {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
           dispatch('submitFormSuccess').then(() => {
-            dispatch('toast', {msg: '保存成功', option: {iconClass: 'fa fa-check'}})
+            dispatch('toastSuccess')
           })
         } else {
           dispatch('submitFormFail').then(() => {
-            dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+            dispatch('toastError', ret.data)
           })
         }
         commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
@@ -330,7 +333,7 @@ const actions = {
         const experienceLike = ret.data.ret
         commit(ENTITY_NAME + LIKES_NAME + mutationTypes.SET, experienceLike)
       } else {
-        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        dispatch('toastError', ret.data)
       }
       Indicator.close()
     })
@@ -342,7 +345,7 @@ const actions = {
         const experienceStar = ret.data.ret
         commit(ENTITY_NAME + STARS_NAME + mutationTypes.SET, experienceStar)
       } else {
-        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        dispatch('toastError', ret.data)
       }
       Indicator.close()
     })

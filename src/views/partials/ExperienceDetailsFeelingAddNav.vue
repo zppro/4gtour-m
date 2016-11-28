@@ -67,7 +67,7 @@
   export default {
     computed: {
       title () {
-        return ''
+        return this.$route.name
       },
       ...mapState(['env']),
       ...mapGetters(['experienceInDetails'])

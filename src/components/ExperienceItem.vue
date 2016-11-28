@@ -23,7 +23,7 @@
         i.fa.fa-map-marker(aria-hidden="true")
         slot(name="location")
       .actions
-        .action.retweets
+        .action.retweets(@click="retweet")
           i.fa.fa-retweet(aria-hidden="true")
           slot(name="retweets")
         .action.stars(@click="toggleStar")
@@ -156,6 +156,13 @@
       ...mapGetters(['isLogined'])
     },
     methods: {
+      retweet () {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.$router.replace('/experience-retweet/' + this.experience.id)
+        }
+      },
       toggleLike () {
         if (!this.isLogined) {
           this.login()

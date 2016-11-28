@@ -1,15 +1,16 @@
 <template lang="jade">
   .experience-details-feeling-add
     .experience-content
-      textarea(v-model="newExperience.content" placeholder="这一刻的想法...")
+      textarea(v-model="newExperience.content" placeholder="这一刻的想法..." cols="200" maxlength="200")
     .experience-imgs
       image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
-    div {{experienceInDetails.content}}
+    experience-retweeted-preview
 </template>
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
   import ImageUploader from '../components/ImageUploader.vue'
+  import ExperienceRetweetedPreview from '../components/ExperienceRetweetedPreview.vue'
   export default {
     data () {
       return {
@@ -36,8 +37,14 @@
           return validation[key]
         })
       },
+      isRetweet: function () {
+        return !!this.$route.params.id
+      },
       ...mapState(['env', 'submitingForm']),
       ...mapGetters(['experienceInDetails'])
+    },
+    created () {
+      this.ensureExperience()
     },
     watch: {
       submitingForm: function (newSubmitingForm) {
@@ -62,10 +69,11 @@
         console.log(imgUrl)
         this.newExperience.imgs.push(imgUrl)
       },
-      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling'])
+      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling', 'ensureExperience'])
     },
     components: {
-      ImageUploader
+      ImageUploader,
+      ExperienceRetweetedPreview
     }
   }
 </script>

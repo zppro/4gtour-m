@@ -28,6 +28,18 @@ export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
 
+export const toastSuccess = (o, {msg = '操作成功'}) => {
+  Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-check'}))
+}
+
+export const toastError = (o, {msg}) => {
+  Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-close'}))
+}
+
+export const toastInfo = (o, {msg}) => {
+  Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-info'}))
+}
+
 export const login = ({ state, dispatch }) => {
   if (state.env.isApiCloud) {
     // 呼出登录窗体

@@ -112,7 +112,7 @@ const actions = {
         commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
         rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGIN, eventData: {token: loginRet.token} })
       } else {
-        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        dispatch('toastError', ret.data)
       }
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
@@ -126,7 +126,7 @@ const actions = {
         const loginRet = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
       } else {
-        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        dispatch('toastError', ret.data)
         commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
       }
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
@@ -154,7 +154,7 @@ const actions = {
           rootState.env.isApiCloud && dispatch('sendEventToApiCloud', { eventName: 'login', eventData: ret.data.ret.token })
           return ret.data.ret
         } else {
-          dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+          dispatch('toastError', ret.data)
           commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
           return null
         }
@@ -219,7 +219,7 @@ const actions = {
         const uploadToken = ret.data.ret
         commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.SET, uploadToken)
       } else {
-        dispatch('toast', {msg: ret.data.msg, option: {iconClass: 'fa fa-close'}})
+        dispatch('toastError', ret.data)
       }
     })
   },

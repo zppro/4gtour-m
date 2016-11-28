@@ -168,9 +168,18 @@ export default [
     ]
   },
   {
-    name: '新增见闻',
+    name: '新增',
     meta: { auth: true },
     path: '/experience-add/feeling',
+    components: {
+      head: ExperienceDetailsFeelingAddNav,
+      body: ExperienceDetailsFeelingAdd
+    }
+  },
+  {
+    name: '转发',
+    meta: { auth: true },
+    path: '/experience-retweet/:id',
     components: {
       head: ExperienceDetailsFeelingAddNav,
       body: ExperienceDetailsFeelingAdd
