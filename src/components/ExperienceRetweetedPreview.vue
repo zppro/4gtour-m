@@ -7,6 +7,7 @@
         {{experience.member_name}}
       .content
         {{experience.content}}
+    .clear
 </template>
 <script>
   import { mapState } from 'vuex'
@@ -32,7 +33,11 @@
 <style lang="less" scoped>
   .experience-retweeted-preview {
     width: 100%;
+    padding: 0.4rem;
+    margin-bottom:0.2rem;
+    background-color: #f5f5f5;
     .member-head-portrait{
+      float:left;
       width:1.75rem;
       > img{
         width: 1.75rem;
@@ -43,6 +48,7 @@
       }
     }
     .name-content{
+      float:left;
       display: inline-block;
       margin-left:0.4rem;
       a.member-name{

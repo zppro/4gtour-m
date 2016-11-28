@@ -259,15 +259,17 @@ const actions = {
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     Indicator.open(rootState.dataFetchText)
     return Vue.http.get('trv/experience/' + id).then(ret => {
+      let experience
+      console.log(setCurrent)
       if (ret.data.success) {
-        const experience = ret.data.ret
+        experience = ret.data.ret
         setCurrent && commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
-        return experience
       } else {
         dispatch('toastError', ret.data)
       }
       commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
       Indicator.close()
+      return experience
     })
   },
   setMyTweetedOfMine ({commit, dispatch}) {

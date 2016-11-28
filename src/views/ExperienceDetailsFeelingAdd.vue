@@ -4,7 +4,7 @@
       textarea(v-model="newExperience.content" placeholder="这一刻的想法..." cols="200" maxlength="200")
     .experience-imgs
       image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
-    experience-retweeted-preview
+    experience-retweeted-preview(:experience="retweetedRoot")
 </template>
 
 <script>
@@ -19,7 +19,9 @@
           content: '',
           imgs: [],
           location: '杭州'
-        }
+        },
+        retweetedParent: {},
+        retweetedRoot: {}
       }
     },
     computed: {
@@ -44,7 +46,10 @@
       ...mapGetters(['experienceInDetails'])
     },
     created () {
-      this.ensureExperience()
+      this.fetchExperienceInfo(this.$route.params).then((experience) => {
+        this.retweetedParent = experience
+        this.retweetedRoot = experience
+      })
     },
     watch: {
       submitingForm: function (newSubmitingForm) {
@@ -69,7 +74,7 @@
         console.log(imgUrl)
         this.newExperience.imgs.push(imgUrl)
       },
-      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling', 'ensureExperience'])
+      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling', 'fetchExperienceInfo'])
     },
     components: {
       ImageUploader,

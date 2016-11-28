@@ -71,6 +71,7 @@ body {
   -o-text-overflow:ellipsis;
   overflow:hidden;
 }
+.clear{clear:both;}
 .text-muted,a.text-muted{color:#999;}
 .text-primary,a.text-primary{color:#428bca;}
 .text-success,a.text-success{color:#3c763d;}
