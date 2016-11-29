@@ -148,7 +148,7 @@
     props: ['experience'],
     computed: {
       memberInfoUrl () {
-        return '/'
+        return '/member-profile/' + this.experience.member_id
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/route'}

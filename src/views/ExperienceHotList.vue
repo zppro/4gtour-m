@@ -13,6 +13,7 @@
           i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
           div(slot="content" v-html="experience.content")
           span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
+          experience-item-retweet-root(:experience="experience.retweet_root" )
           .img-list(slot="imgs")
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
           span(slot="location") {{experience.location}}
@@ -30,6 +31,7 @@
   import { mapState, mapGetters, mapActions } from 'vuex'
   import ExperienceList from '../components/ExperienceList.vue'
   import ExperienceItem from '../components/ExperienceItem.vue'
+  import ExperienceItemRetweetRoot from '../components/ExperienceItemRetweetRoot.vue'
   import NoMoreData from '../components/NoMoreData.vue'
   import ImageCollection from '../components/ImageCollection.vue'
   import ImageSwiper from '../components/ImageSwiper.vue'
@@ -70,6 +72,7 @@
     components: {
       ExperienceList,
       ExperienceItem,
+      ExperienceItemRetweetRoot,
       NoMoreData,
       ImageCollection,
       ImageSwiper
