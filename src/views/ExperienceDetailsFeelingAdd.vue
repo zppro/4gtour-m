@@ -2,7 +2,6 @@
   .experience-details-feeling-add
     .experience-content
       textarea(v-model="newExperience.content" placeholder="placeHolder" cols="200" maxlength="200")
-    div {{newExperience.content}}
     .experience-imgs
       image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
     experience-retweeted-preview(:experience="retweetedRoot" v-if="isRetweet")
@@ -115,12 +114,6 @@
     .experience-content {
       width:100%;
       padding:0.2rem 0;
-      div{
-        text-align: left;
-        font-size:0.8rem;
-        height:3rem;
-        line-height:1.0rem;
-      }
       textarea{
         width:100%;
         text-align: left;
