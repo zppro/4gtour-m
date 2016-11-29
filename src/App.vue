@@ -84,5 +84,8 @@
         margin-right:0.25rem;
       }
     }
+    .member-name-link{
+      color:blue;
+    }
   }
 </style>

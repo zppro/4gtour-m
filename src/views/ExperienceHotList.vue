@@ -11,7 +11,7 @@
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
           i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
-          span(slot="content") {{experience.content}}
+          div(slot="content" v-html="experience.content")
           span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
           .img-list(slot="imgs")
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")

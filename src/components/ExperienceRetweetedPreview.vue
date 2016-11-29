@@ -3,10 +3,8 @@
     router-link.member-head-portrait(:to="memberInfoUrl")
       img(:src="experience.member_head_portrait || defaultMemberHeadPortrait")
     .name-content
-      router-link.member-name.text-danger(:to="memberInfoUrl")
-        {{experience.member_name}}
-      .content
-        {{experience.content}}
+      router-link.member-name.text-danger(:to="memberInfoUrl") {{experience.member_name}}
+      .content {{formatContent}}
     .clear
 </template>
 <script>
@@ -19,6 +17,13 @@
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/feeling'}
+      },
+      formatContent () {
+        if ((this.experience || '').length > 100) {
+          return this.experience.content.substr(0, 100) + '...'
+        } else {
+          return this.experience.content
+        }
       },
       ...mapState(['defaultMemberHeadPortrait'])
     },
@@ -48,6 +53,7 @@
       }
     }
     .name-content{
+      text-align:left;
       float:left;
       display: inline-block;
       margin-left:0.4rem;
