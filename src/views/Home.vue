@@ -6,7 +6,7 @@
     product-list
       product-item(v-for="product in allScenicSpotsInHome", :product-id="product.id")
         .product-img(slot="img")
-          img(:src="product.img")
+          img(v-lazy="product.img")
           .product-price(slot="price")
             span.unit ￥
             span {{product.price}}
@@ -44,6 +44,11 @@
     background-color:white;
     h1 {
       color: #42b983;
+    }
+    image[lazy=loading] {
+      width: 100%;
+      height: 8.75rem;
+      margin: auto;
     }
     .product-img{
       position:relative;

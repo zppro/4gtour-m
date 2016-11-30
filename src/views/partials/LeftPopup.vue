@@ -15,13 +15,13 @@
       .member-actions
         mt-cell(title="我的订单" is-link to="/my-orders")
           mt-badge(v-if="isLogined && memberHaveUnpayAndValidOrders" type="error" size="small") {{memberHaveUnpayAndValidCount}}
-        mt-cell(title="足迹测试入口" is-link to="/experience/hot")
+        mt-cell(title="足迹测试入口" is-link to="/experience/hot" v-if="!env.isApiCloud")
         mt-cell(title="关于四季游" is-link)
       .app-actions
         a.link.link-action(@click="")
 </template>
 <script>
-  import { mapGetters, mapMutations, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
   import { $GLOABL_PREFIX$, HIDE_LEFT_POPUP } from '../../store/mutation-types'
   export default{
     data () {
@@ -33,6 +33,7 @@
       routePath () {
         return this.$route.path
       },
+      ...mapState(['env']),
       ...mapGetters(['isLogined', 'memberInfo', 'memberHaveUnpayAndValidOrders', 'memberHaveUnpayAndValidCount'])
     },
     watch: {

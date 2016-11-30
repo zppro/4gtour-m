@@ -7,7 +7,7 @@
         | {{dataRefreshText}}
       experience-list.experience-list
         experience-item(v-for="experience in experiencesHot", :experience="experience")
-          img(v-lazy="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
+          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
           div(slot="content" v-html="experience.content")
