@@ -7,19 +7,19 @@
         | {{dataRefreshText}}
       experience-list.experience-list
         experience-item(v-for="experience in experiencesHot", :experience="experience")
-          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
+          img(v-lazy="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
-          i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
           div(slot="content" v-html="experience.content")
           span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
-          experience-item-retweet-root(:experience="experience.retweet_root" )
           .img-list(slot="imgs")
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
           span(slot="location") {{experience.location}}
           span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
           span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
           span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
+          div(slot="retweetRoot" v-if="experience.retweet_flag" )
+            experience-item-retweet-root(:experience="experience.retweet_root", v-on:select="zoomIn")
       p(v-show="showExperienceAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
         | {{dataAppendText}}
@@ -46,7 +46,7 @@
       showImageSwiper () {
         return this.allImages.length > 0
       },
-      ...mapState(['infiniteScrollDistance', 'authMemberByTokenPromise', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait']),
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
       ...mapGetters(['isLogined', 'experiencesHot', 'appendHotDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     created () {

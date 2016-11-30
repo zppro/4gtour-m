@@ -57,7 +57,8 @@
     }
 </style>
 <script>
-  import { mapState, mapGetters } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
+  import { APICLOUD_OPEN_LOGIN_WIN } from '../../store/share-apicloud-event-names'
   let $ = window.$
   export default {
     data () {
@@ -77,8 +78,7 @@
           return 2
         }
       },
-      ...mapState(['env']),
-      ...mapGetters(['scenicSpotInDetails'])
+      ...mapGetters(['isLogined'])
     },
     mounted () {
       this.shareActions = [{
@@ -91,6 +91,10 @@
     },
     methods: {
       switchTab (index) {
+        if (index === 2 && !this.isLogined) {
+          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
+        }
+
         $('.tab-header').removeClass('tab-header-active')
         $($('.tab-header').get(index)).addClass('tab-header-active')
         let subView = index === 0 ? 'follow' : index === 1 ? 'hot' : 'mine'
@@ -104,7 +108,8 @@
       },
       addRoute () {
         this.$router.push({path: '/experience-add/route'})
-      }
+      },
+      ...mapActions(['sendEventToApiCloud'])
     }
   }
 </script>

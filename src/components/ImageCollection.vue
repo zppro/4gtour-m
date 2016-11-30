@@ -24,11 +24,11 @@
   .img-collection {
     width: 100%;
     img{
-       float:left;
-       width:3.75rem;
-       height:3.75rem;
-       margin-top:0.225rem;
-       margin-right:0.225rem;
+      float:left;
+      max-width:3.75rem;
+      max-height:3.75rem;
+      margin-top:0.225rem;
+      margin-right:0.225rem;
      }
   }
   .one-image{
@@ -36,8 +36,8 @@
     max-height:12.5rem;
     img{
       float:left;
-      width:9.775rem;
-      height:9.775rem;
+      max-width:9.775rem;
+      max-height:9.775rem;
       margin-top:0.225rem;
       margin-right:0.225rem;
     }

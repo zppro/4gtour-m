@@ -1,11 +1,15 @@
 <template lang="jade">
   .experience-item-retweet-root
     .item-head
-      router-link.member-name.text-danger(:to="memberInfoUrl") {{'@' + experience.member_name}}
+      router-link.member-head-portrait(:to="memberInfoUrl")
+        img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" )
+      .name-time
+        router-link.member-name.text-danger(:to="memberInfoUrl") {{'@' + experience.member_name}}
+        .time-description {{experience.time_description}}
     .item-body
       .content {{experience.content}}
-        router-link(v-if="false" ,:to="routeItemUrl")
-          span.text-danger 全文
+      router-link(v-if="false" ,:to="routeItemUrl")
+        span.text-danger 全文
       .imgs
         .img-list
           image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
@@ -17,18 +21,36 @@
     width:100%;
     background-color: #f5f5f5;
     text-align: left;
-    /*min-height:16.425rem;*/
-    margin-bottom: 0.05rem;
-    padding:0.75rem;
+    padding:0.25rem;
+    -moz-border-radius: 0.2rem;
+    -webkit-border-radius: 2rem;
+    border-radius: 0.2rem;
     .item-head{
       width: 100%;
-      float:left;
-      display: inline-block;
-      a.member-name{
+      a.member-head-portrait{
+        display: inline-block;
+        width:1.75rem;
+        > img{
+          width: 1.75rem;
+          height: 1.75rem;
+          -moz-border-radius: 0.875rem;
+          -webkit-border-radius: 0.875rem;
+          border-radius: 0.875rem;
+        }
+      }
+      .name-time{
+        display: inline-block;
         margin-left:0.4rem;
-        display: block;
-        font-size: 0.8rem;
-        margin-bottom: 0.2rem;
+        a.member-name{
+          display: block;
+          font-size: 0.8rem;
+          margin-bottom: 0.2rem;
+        }
+        .time-description{
+          margin-top:0.1rem;
+          font-size: 0.5rem;
+          color:#7c7b7b;
+        }
       }
     }
     .item-body{
@@ -57,31 +79,26 @@
   }
 </style>
 <script>
+  import { mapState } from 'vuex'
+  import ImageCollection from './ImageCollection.vue'
   export default {
     props: ['experience'],
-    data () {
-      return {
-        allImages: [],
-        currentImage: ''
-      }
-    },
     computed: {
       memberInfoUrl () {
         return '/member-profile/' + this.experience.member_id
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/route'}
-      }
+      },
+      ...mapState(['defaultMemberHeadPortrait'])
     },
     methods: {
       zoomIn (allImages, currentImage) {
-        this.allImages = allImages
-        this.currentImage = currentImage
-      },
-      zoomOut () {
-        this.allImages = []
-        this.currentImage = ''
+        this.$emit('select', allImages, currentImage)
       }
+    },
+    components: {
+      ImageCollection
     }
   }
 </script>

@@ -53,7 +53,7 @@
         this.retweetedParent = parentExperience
         this.newExperience.content = '\r\n//@' + this.retweetedParent.member_name + ':' + (this.retweetedParent.pure_content || this.retweetedParent.content)
         this.newExperience.retweet_flag = true
-        this.newExperience.retweet_from = {item_id: this.retweetedParent.id, member_id: this.retweetedParent.member_id, member_name: this.retweetedParent.member_name}
+        this.newExperience.retweet_from = this.retweetedParent.id
         this.newExperience.retweet_chains = (this.retweetedParent.retweet_chains || [])
         this.newExperience.retweet_chains.push(parentExperience.id)
         let p
@@ -62,14 +62,14 @@
           p = Promise.resolve(parentExperience)
         } else {
           // 非原创转发，找到root
-          p = this.fetchExperienceInfo({id: parentExperience.retweet_root.item_id}).then(rootExperience => {
+          p = this.fetchExperienceInfo({id: parentExperience.retweet_root}).then(rootExperience => {
             return rootExperience
           })
         }
         return p
       }).then(rootExperience => {
         this.retweetedRoot = rootExperience
-        this.newExperience.retweet_root = {item_id: this.retweetedRoot.id, member_id: this.retweetedRoot.member_id, member_name: this.retweetedRoot.member_name}
+        this.newExperience.retweet_root = this.retweetedRoot.id
       })
     },
     watch: {

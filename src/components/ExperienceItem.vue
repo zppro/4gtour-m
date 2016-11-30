@@ -8,8 +8,6 @@
           slot(name="member_name")
         .time-description
           slot(name="time_description")
-      .category
-        slot(name="category")
     .item-body
       .content
         slot(name="content")
@@ -18,6 +16,8 @@
       .imgs
         slot(name="imgs")
         .clear
+    .item-retweet-root
+      slot(name="retweetRoot")
     .item-foot
       .location
         i.fa.fa-map-marker(aria-hidden="true")
@@ -73,12 +73,6 @@
           color:#7c7b7b;
         }
       }
-      .category{
-        position: absolute;
-        right:0.5rem;
-        top: 0;
-        font-size: 0.6rem;
-      }
     }
     .item-body{
       position:relative;
@@ -102,6 +96,10 @@
         width: 100%;
         .clear{clear:both;}
       }
+    }
+    .item-retweet-root{
+      width: 100%;
+      margin:0.2rem 0;
     }
     .item-foot{
       height:1.2rem;

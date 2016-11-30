@@ -21,7 +21,6 @@
           img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
-          i.fa.fa-car(aria-hidden="true" slot="category" v-if="isExperienceRoute(experience)")
           div(slot="content" v-html="experience.content")
           span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
           .img-list(slot="imgs")
@@ -30,6 +29,8 @@
           span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
           span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
           span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
+          div(slot="retweetRoot" v-if="experience.retweet_flag" )
+            experience-item-retweet-root(:experience="experience.retweet_root" )
       p(v-show="showExperienceAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
         | {{dataAppendText}}
@@ -41,6 +42,7 @@
   import { mapState, mapGetters, mapActions } from 'vuex'
   import ExperienceList from '../components/ExperienceList.vue'
   import ExperienceItem from '../components/ExperienceItem.vue'
+  import ExperienceItemRetweetRoot from '../components/ExperienceItemRetweetRoot.vue'
   import NoMoreData from '../components/NoMoreData.vue'
   import ImageCollection from '../components/ImageCollection.vue'
   import ImageSwiper from '../components/ImageSwiper.vue'
@@ -61,12 +63,13 @@
       showImageSwiper () {
         return this.allImages.length > 0
       },
-      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait']),
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
       ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     created () {
-      console.log('experiencemine list created1234')
-      this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyStaredList()
+      this.authMemberByTokenPromise.then(() => {
+        this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyStaredList()
+      })
     },
     methods: {
       zoomIn (allImages, currentImage) {
@@ -88,6 +91,7 @@
     components: {
       ExperienceList,
       ExperienceItem,
+      ExperienceItemRetweetRoot,
       NoMoreData,
       ImageCollection,
       ImageSwiper
