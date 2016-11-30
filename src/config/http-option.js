@@ -1,20 +1,14 @@
 import store from '../store'
 // 'http://192.168.101.7:3002/me-services' 'http://192.168.255.112:3002/me-services'
-export const root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.112:3002/me-services' : 'http://sh.okertrip.com/me-services'
+export const root = process.env.NODE_ENV === 'development' ? 'http://sh.okertrip.com/me-services' : 'http://sh.okertrip.com/me-services'
 // Vue.http.options.emulateJSON = true
 export const credentials = true
-export const interceptor = (request, next) => {
-  // if (request.url.toLowerCase().match(/^http/i)) {
-  //   // 临时的其他域
-  //   next()
-  //   return
-  // }
+export const auth = (request, next) => {
+  console.log('auth request.headers')
+  console.log(request.headers)
   let ts = Math.round(new Date().getTime() / 1000)
   request.headers.set('X-Custom-TS', '' + ts)
-
-  // Header
   let oHeader = {alg: 'HS256', typ: 'JWT'}
-  // Payload
   let oPayload = {}
   let salt = 'carrycheng:' + ts
   oPayload.member = store.state.member.self
@@ -23,24 +17,28 @@ export const interceptor = (request, next) => {
   let sJWT = window.KJUR.jws.JWS.sign('HS256', sHeader, sPayload, salt)
   // console.log(JSON.stringify(oPayload))
   request.headers.set('Authorization', 'Bearer ' + sJWT) // 'Bearer or Basic: '
-  next((response) => {
-    console.log(request.method)
-    console.log(request.url)
-    console.log('request.timeoutId:' + request.timeoutId)
-    clearTimeout(request.timeoutId)
-  })
+  next()
 }
-export const before = (request) => {
-  console.log(request.method)
-  if (request.method === 'OPTIONS') {
-    return
-  }
+export const before = (request, next) => {
   request.timeout && (request.timeoutId = setTimeout(() => {
-    request.cancel()
     store.dispatch('toastInfo', '您的网络似乎不太给力')
     store.state.loading && store.dispatch('finishLoading')
   }, request.timeout))
-  console.log('before:' + request.timeoutId)
+}
+
+export const loadingIndicator = (request, next) => {
+  let loadingText = 'loading...'
+  let showLoading = false
+  if (request.headers.get('loadingText')) {
+    showLoading = true
+    loadingText = store.state[request.headers.get('loadingText')]
+    request.headers.delete('loadingText')
+  }
+  showLoading && store.dispatch('startLoading', loadingText)
+  next((response) => {
+    clearTimeout(request.timeoutId)
+    showLoading && store.state.loading && store.dispatch('finishLoading')
+  })
 }
 
 export const errorCallback = (response) => {

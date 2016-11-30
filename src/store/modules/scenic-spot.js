@@ -114,9 +114,8 @@ const mutations = {
 // actions
 const actions = {
   fetchScenicSpots ({ commit, rootState }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    return Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: 'dataFetchText'}}).then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
         commit(ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS, { scenicSpots })
@@ -124,13 +123,11 @@ const actions = {
       } else {
         commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
     }, errorCallback)
   },
   appendScenicSpots ({ commit, state, rootState }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: state.all.length}}).then(ret => {
+    return Vue.http.post('api/scenicSpots', {page: {size: rootState.dataFetchingSize, skip: state.all.length}}, {headers: {loadingText: 'dataFetchText'}}).then(ret => {
       if (ret.data.success) {
         const scenicSpots = ret.data.rows
         scenicSpots.length > 0 && commit(ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS, { scenicSpots })
@@ -138,17 +135,16 @@ const actions = {
       } else {
         commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { scenicSpotRecordCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-    })
+    }, errorCallback)
   },
   fetchScenicSpotInfo ({commit, rootState}, { id }) {
-    return Vue.http.get('api/scenicSpot/' + id).then(ret => {
+    return Vue.http.get('api/scenicSpot/' + id, {headers: {loadingText: 'dataFetchText'}}).then(ret => {
       if (ret.data.success) {
         const scenicSpot = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, { scenicSpot })
         return scenicSpot
       }
-    })
+    }, errorCallback)
   },
   minusQuantity ({ commit }, { size = 1 }) {
     commit(ENTITY_NAME + MINUS_QUANTITY, { size })
@@ -157,13 +153,13 @@ const actions = {
     commit(ENTITY_NAME + PLUS_QUANTITY, { size })
   },
   listTickets ({ commit }, { id }) {
-    return Vue.http.get('api/tickets/' + id).then(ret => {
+    return Vue.http.get('api/tickets/' + id, {headers: {loadingText: 'dataFetchText'}}).then(ret => {
       if (ret.data.success) {
         const tickets = ret.data.rows
         commit(ENTITY_NAME + LIST_TICKETS, { tickets })
         return tickets
       }
-    })
+    }, errorCallback)
   },
   chooseTicket ({ commit }, { ticketId }) {
     commit(ENTITY_NAME + CHOOSE_TICKET, { ticketId })

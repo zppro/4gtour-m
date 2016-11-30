@@ -5,7 +5,7 @@ import { toastOption } from '../config/mint-ui-option'
 import { APICLOUD_OPEN_LOGIN_WIN, APICLOUD_LOGIN, APICLOUD_LOGOUT, APICLOUD_SHARE_WEIXIN } from './share-apicloud-event-names'
 
 export const noop = () => {}
-export const startLoading = ({ commit }, {msg}) => {
+export const startLoading = ({ commit }, msg) => {
   commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
   Indicator.open(msg)
   return Promise.resolve(true)
@@ -70,7 +70,7 @@ export const sendEventToApiCloud = ({ dispatch }, { eventName, eventData = null 
   })
 }
 export const shareToWeixinOnApiCloud = ({ dispatch }, { scene, title, description, thumbUrl, contentUrl, contentType = 'web_page' }) => {
-  dispatch('startLoading', {msg: '分享中...'}).then(() => {
+  dispatch('startLoading', '分享中...').then(() => {
     dispatch('sendEventToApiCloud', {eventName: APICLOUD_SHARE_WEIXIN, eventData: {scene, contentType, title, description, thumbUrl, contentUrl}}).then(() => {
       dispatch('finishLoading')
     })
