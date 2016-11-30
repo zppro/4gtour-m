@@ -32,6 +32,8 @@ Vue.use(Lazyload)
 Vue.http.options.root = httpOption.root
 // Vue.http.options.emulateJSON = true
 Vue.http.options.credentials = httpOption.credentials
+Vue.http.options.timeout = store.state.loadingTimeout * 1000
+Vue.http.options.before = httpOption.before
 Vue.http.interceptors.push(httpOption.interceptor)
 
 // 时间戳：console.log(Math.round(new Date().getTime() / 1000))

@@ -1,7 +1,7 @@
 export default {
   env: window.env, // 串联env.js
   loading: false,
-  preLoadingMillisecond: 200,
+  loadingTimeout: 10, // 秒
   routerTransiting: false,
   routerTransitValue: 0,
   routerTransitHeight: 1,

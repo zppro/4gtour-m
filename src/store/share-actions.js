@@ -36,7 +36,7 @@ export const toastError = (o, {msg}) => {
   Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-close'}))
 }
 
-export const toastInfo = (o, {msg}) => {
+export const toastInfo = (o, msg) => {
   Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-info'}))
 }
 

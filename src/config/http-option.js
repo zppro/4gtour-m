@@ -23,5 +23,26 @@ export const interceptor = (request, next) => {
   let sJWT = window.KJUR.jws.JWS.sign('HS256', sHeader, sPayload, salt)
   // console.log(JSON.stringify(oPayload))
   request.headers.set('Authorization', 'Bearer ' + sJWT) // 'Bearer or Basic: '
-  next()
+  next((response) => {
+    console.log(request.method)
+    console.log(request.url)
+    console.log('request.timeoutId:' + request.timeoutId)
+    clearTimeout(request.timeoutId)
+  })
+}
+export const before = (request) => {
+  console.log(request.method)
+  if (request.method === 'OPTIONS') {
+    return
+  }
+  request.timeout && (request.timeoutId = setTimeout(() => {
+    request.cancel()
+    store.dispatch('toastInfo', '您的网络似乎不太给力')
+    store.state.loading && store.dispatch('finishLoading')
+  }, request.timeout))
+  console.log('before:' + request.timeoutId)
+}
+
+export const errorCallback = (response) => {
+  console.log(response)
 }

@@ -94,7 +94,7 @@ const actions = {
         commit(ENTITY_NAME + ACCESS_TOKEN_DATA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, accessTokenDataRet)
       } else {
         if (ret.data.code === 42002) {
-          dispatch('toastInfo', {msg: 'refresh_token已经超时需要用户重新授权'})
+          dispatch('toastInfo', 'refresh_token已经超时需要用户重新授权')
           // todo:此处稍后需要实现重定向到授权页面
         } else {
           dispatch('toastError', ret.data)
@@ -118,36 +118,34 @@ const actions = {
       if (state.accessTokenData.access_token) {
         commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
         Indicator.open('获取微信开放平台用户数据...')
-        setTimeout(() => {
-          Vue.http.get('weixin/open/getUserInfo/' + state.accessTokenData.access_token + ',' + state.accessTokenData.openid).then(ret => {
-            if (ret.data.success) {
-              const userInfoRet = ret.data.ret
-              commit(ENTITY_NAME + USER_INFO_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, userInfoRet)
-              dispatch('authMemberByOpenWeixinOnClient').then(() => {
-                dispatch('toastSuccess', {msg: '微信登录成功'}).then(() => {
-                  console.log(124)
-                  router.replace({path: '/'})
-                })
+        Vue.http.get('weixin/open/getUserInfo/' + state.accessTokenData.access_token + ',' + state.accessTokenData.openid).then(ret => {
+          if (ret.data.success) {
+            const userInfoRet = ret.data.ret
+            commit(ENTITY_NAME + USER_INFO_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, userInfoRet)
+            dispatch('authMemberByOpenWeixinOnClient').then(() => {
+              dispatch('toastSuccess', {msg: '微信登录成功'}).then(() => {
+                console.log(124)
+                router.replace({path: '/'})
               })
-            } else {
-              if (ret.data.code === 42001) {
-                let refreshToken = localStore.get(WEIXIN_OPEN_REFRESH_TOKEN)
-                if (refreshToken) {
-                  p = dispatch('weixinOpen$RefreshAccessToken', refreshToken).then(() => {
-                    dispatch('toastInfo', {msg: '点击认证按钮尝试重新认证'})
-                  })
-                } else {
-                  p = dispatch('toastInfo', {msg: 'refresh_token已经超时需要用户重新授权'})
-                  // todo:此处稍后需要实现重定向到授权页面
-                }
+            })
+          } else {
+            if (ret.data.code === 42001) {
+              let refreshToken = localStore.get(WEIXIN_OPEN_REFRESH_TOKEN)
+              if (refreshToken) {
+                p = dispatch('weixinOpen$RefreshAccessToken', refreshToken).then(() => {
+                  dispatch('toastInfo', '点击认证按钮尝试重新认证')
+                })
               } else {
-                dispatch('toastError', ret.data)
+                p = dispatch('toastInfo', 'refresh_token已经超时需要用户重新授权')
+                // todo:此处稍后需要实现重定向到授权页面
               }
+            } else {
+              dispatch('toastError', ret.data)
             }
-            commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-            Indicator.close()
-          })
-        }, rootState.preLoadingMillisecond)
+          }
+          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+          Indicator.close()
+        })
       }
     })
     return p

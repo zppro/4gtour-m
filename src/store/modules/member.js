@@ -104,8 +104,8 @@ const mutations = {
 // actions
 const actions = {
   authMember ({ commit, rootState, dispatch }, { username, password, category }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open('登录中...')
+    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    // Indicator.open('登录中...')
     return Vue.http.post('api/proxyLogin', { username, password, category }).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
@@ -114,13 +114,13 @@ const actions = {
       } else {
         dispatch('toastError', ret.data)
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
+      // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+      // Indicator.close()
     })
   },
   authMemberByToken ({ commit, rootState, dispatch }, token) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open('登录中...')
+    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    // Indicator.open('登录中...')
     rootState.authMemberByTokenPromise = Vue.http.post('api/proxyLoginByToken', { token }).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
@@ -129,19 +129,19 @@ const actions = {
         dispatch('toastError', ret.data)
         commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
+      // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
+      // Indicator.close()
     })
     return rootState.authMemberByTokenPromise
   },
   logout ({ commit, rootState, dispatch }, isMannual = true) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open('安全退出...')
+    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+    // Indicator.open('安全退出...')
     commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
     commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
     rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
     commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-    Indicator.close()
+    // Indicator.close()
     return Promise.resolve(true)
   },
   authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
