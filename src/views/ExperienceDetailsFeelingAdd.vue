@@ -1,7 +1,7 @@
 <template lang="jade">
   .experience-details-feeling-add
     .experience-content
-      textarea(v-model="newExperience.content" placeholder="placeHolder" cols="200" maxlength="200")
+      textarea(v-model="newExperience.content" ,:placeholder="placeHolder" cols="200" maxlength="200")
     .experience-imgs
       image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
     experience-retweeted-preview(:experience="retweetedRoot" v-if="isRetweet")
