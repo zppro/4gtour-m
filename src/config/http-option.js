@@ -27,17 +27,14 @@ export const before = (request, next) => {
 }
 
 export const loadingIndicator = (request, next) => {
-  let loadingText = 'loading...'
-  let showLoading = false
-  if (request.headers.get('loadingText')) {
-    showLoading = true
-    loadingText = store.state[request.headers.get('loadingText')]
+  const loadingText = request.headers.get('loadingText')
+  if (loadingText) {
     request.headers.delete('loadingText')
   }
-  showLoading && store.dispatch('startLoading', loadingText)
+  loadingText && store.dispatch('startLoading', loadingText)
   next((response) => {
     clearTimeout(request.timeoutId)
-    showLoading && store.state.loading && store.dispatch('finishLoading')
+    loadingText && store.state.loading && store.dispatch('finishLoading')
   })
 }
 

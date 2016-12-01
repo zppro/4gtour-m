@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import moment from 'moment'
-import { Indicator } from 'mint-ui'
 import localStore from 'store'
 import * as mutationTypes from '../mutation-types'
 import { MEMBER_TOKEN } from '../keys'
 import { APICLOUD_LOGIN, APICLOUD_LOGOUT } from '../share-apicloud-event-names'
+import { MEMBER_LOGIN, DATA_FETCH_TEXT } from '../loading-texts'
 
 export const ENTITY_NAME = 'MEMBER'
 export const ORDER_NAME = '$ORDER'
@@ -72,7 +72,7 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.LOGIN_FAIL] (state) {
     state.self = initEmptyMemberInfo
     state.token = ''
-    // localStore.set(MEMBER_TOKEN, '')
+    localStore.set(MEMBER_TOKEN, '')
   },
   [ENTITY_NAME + mutationTypes.LOGIN_OUT] (state) {
     state.self = initEmptyMemberInfo
@@ -104,9 +104,7 @@ const mutations = {
 // actions
 const actions = {
   authMember ({ commit, rootState, dispatch }, { username, password, category }) {
-    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    // Indicator.open('登录中...')
-    return Vue.http.post('api/proxyLogin', { username, password, category }).then(ret => {
+    return Vue.http.post('api/proxyLogin', { username, password, category }, {headers: {loadingText: MEMBER_LOGIN}}).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
@@ -114,14 +112,10 @@ const actions = {
       } else {
         dispatch('toastError', ret.data)
       }
-      // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      // Indicator.close()
     })
   },
   authMemberByToken ({ commit, rootState, dispatch }, token) {
-    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    // Indicator.open('登录中...')
-    rootState.authMemberByTokenPromise = Vue.http.post('api/proxyLoginByToken', { token }).then(ret => {
+    rootState.authMemberByTokenPromise = Vue.http.post('api/proxyLoginByToken', { token }, {headers: {loadingText: MEMBER_LOGIN}}).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
@@ -129,19 +123,13 @@ const actions = {
         dispatch('toastError', ret.data)
         commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
       }
-      // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      // Indicator.close()
     })
     return rootState.authMemberByTokenPromise
   },
   logout ({ commit, rootState, dispatch }, isMannual = true) {
-    // commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    // Indicator.open('安全退出...')
     commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
     commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
     rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-    // Indicator.close()
     return Promise.resolve(true)
   },
   authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
@@ -166,45 +154,33 @@ const actions = {
     return p
   },
   fetchMember$Orders ({ commit, rootState }, noLoading) {
-    if (!noLoading) {
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-      Indicator.open(rootState.dataFetchText)
-    }
+    let options = noLoading ? null : {headers: {loadingText: DATA_FETCH_TEXT}}
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    return Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}, options).then(ret => {
       if (ret.data.success) {
         const member$Orders = ret.data.rows
         commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_LIST_SUCCESS, { member$Orders })
         commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { member$OrderRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
       }
-      if (!noLoading) {
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      }
     })
   },
-  appendMember$Orders ({ commit, state, rootState }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
+  appendMember$Orders ({ commit, state, rootState }, noLoading) {
+    let options = noLoading ? null : {headers: {loadingText: DATA_FETCH_TEXT}}
     commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: state.member$Orders.length}}).then(ret => {
+    return Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: state.member$Orders.length}}, options).then(ret => {
       if (ret.data.success) {
         const member$Orders = ret.data.rows
         member$Orders.length > 0 && commit(ENTITY_NAME + ORDER_NAME + mutationTypes.APPEND_LIST_SUCCESS, { member$Orders })
         commit(ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE, { member$OrderRecordCount: member$Orders.length, size: rootState.dataFetchingSize })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
     })
   },
   fetchMember$OrderInfo ({commit, rootState}, { id }) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
-    return Vue.http.get('api/order-details/' + id).then(ret => {
+    return Vue.http.get('api/order-details/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const member$Order = ret.data.ret
         commit(ENTITY_NAME + ORDER_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {member$Order})
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   ensureMember$OrderInfo ({ state, rootState, dispatch }) {

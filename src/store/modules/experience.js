@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { Indicator } from 'mint-ui'
 import * as mutationTypes from '../mutation-types'
+import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 
 const ENTITY_NAME = 'EXPERIENCE'
 
@@ -155,10 +155,8 @@ const mutations = {
 const actions = {
   fetchHotList ({ commit, rootState }) {
     console.log('fetchHotList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('trv/experiencesHot', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    return Vue.http.post('trv/experiencesHot', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         commit(ENTITY_NAME + HOT_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
@@ -166,16 +164,12 @@ const actions = {
       } else {
         commit(ENTITY_NAME + HOT_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   appendHotList ({ commit, state, rootState }) {
     console.log('appendHotList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    Vue.http.post('trv/experiencesHot', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}).then(ret => {
+    return Vue.http.post('trv/experiencesHot', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + HOT_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -183,16 +177,12 @@ const actions = {
       } else {
         commit(ENTITY_NAME + HOT_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   fetchMyTweetedList ({ commit, rootState }) {
     console.log('fetchMyTweetedList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
@@ -200,16 +190,12 @@ const actions = {
       } else {
         commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   appendMyTweetedList ({ commit, state, rootState }) {
     console.log('appendMyTweetedList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -217,16 +203,12 @@ const actions = {
       } else {
         commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   fetchMyStaredList ({ commit, rootState }) {
     console.log('fetchMyStaredList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: 0}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
@@ -234,16 +216,12 @@ const actions = {
       } else {
         commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   appendMyStaredList ({ commit, state, rootState }) {
     console.log('appendMyStaredList')
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -251,24 +229,17 @@ const actions = {
       } else {
         commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
     })
   },
   fetchExperienceInfo ({commit, rootState, dispatch}, {id, setCurrent = true}) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataFetchText)
-    return Vue.http.get('trv/experience/' + id).then(ret => {
+    return Vue.http.get('trv/experience/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       let experience
-      console.log(setCurrent)
       if (ret.data.success) {
         experience = ret.data.ret
         setCurrent && commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
       } else {
         dispatch('toastError', ret.data)
       }
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-      Indicator.close()
       return experience
     })
   },
@@ -299,10 +270,8 @@ const actions = {
     })
   },
   saveExperienceAsFeeling ({rootState, commit, dispatch}, feelingExperience) {
-    commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-    Indicator.open(rootState.dataSaveText)
     if (!feelingExperience.id) {
-      return Vue.http.post('trv/experience', feelingExperience).then(ret => {
+      return Vue.http.post('trv/experience', feelingExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
@@ -314,22 +283,24 @@ const actions = {
             dispatch('toastError', ret.data)
           })
         }
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
       })
     } else {
-      return Vue.http.put('trv/experience/' + feelingExperience.id, feelingExperience).then(ret => {
+      return Vue.http.put('trv/experience/' + feelingExperience.id, feelingExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
+          dispatch('submitFormSuccess').then(() => {
+            dispatch('toastSuccess')
+          })
+        } else {
+          dispatch('submitFormFail').then(() => {
+            dispatch('toastError', ret.data)
+          })
         }
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
       })
     }
   },
   toggleLikeExperience ({rootState, commit, dispatch}, {id, liked}) {
-    Indicator.open(rootState.dataSaveText)
     return Vue.http.post('trv/' + (liked ? 'experienceUnLike/' : 'experienceLike/') + id).then(ret => {
       if (ret.data.success) {
         const experienceLike = ret.data.ret
@@ -337,11 +308,9 @@ const actions = {
       } else {
         dispatch('toastError', ret.data)
       }
-      Indicator.close()
     })
   },
   toggleStarExperience ({rootState, commit, dispatch}, {id, stared}) {
-    Indicator.open(rootState.dataSaveText)
     return Vue.http.post('trv/' + (stared ? 'experienceUnStar/' : 'experienceStar/') + id).then(ret => {
       if (ret.data.success) {
         const experienceStar = ret.data.ret
@@ -349,7 +318,6 @@ const actions = {
       } else {
         dispatch('toastError', ret.data)
       }
-      Indicator.close()
     })
   }
 }

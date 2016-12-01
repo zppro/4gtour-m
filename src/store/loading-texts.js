@@ -1,0 +1,8 @@
+export const DATA_REFRESH_TEXT = '刷新中...'
+export const DATA_FETCH_TEXT = '数据读取中...'
+export const DATA_APPEND_TEXT = '加载中...'
+export const DATA_SAVE_TEXT = '数据保存中...'
+export const WEIXIN_OPEN_REQUEST_ACCESS_TOKEN = '获取微信开放平台AccessToken...'
+export const WEIXIN_OPEN_REFRESH_ACCESS_TOKEN = '刷新微信开放平台AccessToken...'
+export const WEIXIN_OPEN_GET_USER_INFO = '获取微信开放平台用户数据...'
+export const MEMBER_LOGIN = '登录中...'

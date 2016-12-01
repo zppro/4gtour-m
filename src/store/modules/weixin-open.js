@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import { Indicator } from 'mint-ui'
 import localStore from 'store'
 import router from '../../router'
 import * as mutationTypes from '../mutation-types'
 import { WEIXIN_OPEN_REFRESH_TOKEN } from '../keys'
+import { WEIXIN_OPEN_REQUEST_ACCESS_TOKEN, WEIXIN_OPEN_REFRESH_ACCESS_TOKEN, WEIXIN_OPEN_GET_USER_INFO } from '../loading-texts'
 
 export const ENTITY_NAME = 'WEIXIN-OPEN'
 export const CONFIG_NAME = '$CONFIG'
@@ -64,12 +64,8 @@ const actions = {
       }
     })
   },
-  weixinOpen$RequestAccessToken ({ commit, dispatch }, code, showLoading = true) {
-    if (showLoading) {
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-      Indicator.open('获取微信开放平台AccessToken...')
-    }
-    return Vue.http.get('weixin/open/requestAccessToken/' + code).then(ret => {
+  weixinOpen$RequestAccessToken ({ commit, dispatch }, code) {
+    return Vue.http.get('weixin/open/requestAccessToken/' + code, {headers: {loadingText: WEIXIN_OPEN_REQUEST_ACCESS_TOKEN}}).then(ret => {
       if (ret.data.success) {
         const accessTokenDataRet = ret.data.ret
         commit(ENTITY_NAME + ACCESS_TOKEN_DATA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, accessTokenDataRet)
@@ -77,18 +73,10 @@ const actions = {
         let errMsg = ret.data.code === 40029 ? '无效的授权码' : ret.data.msg
         dispatch('toastError', {msg: errMsg})
       }
-      if (showLoading) {
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      }
     })
   },
-  weixinOpen$RefreshAccessToken ({ commit, dispatch }, refreshToken, showLoading = true) {
-    if (showLoading) {
-      commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-      Indicator.open('刷新微信开放平台AccessToken...')
-    }
-    return Vue.http.get('weixin/open/refreshAccessToken/' + refreshToken).then(ret => {
+  weixinOpen$RefreshAccessToken ({ commit, dispatch }, refreshToken) {
+    return Vue.http.get('weixin/open/refreshAccessToken/' + refreshToken, {headers: {loadingText: WEIXIN_OPEN_REFRESH_ACCESS_TOKEN}}).then(ret => {
       if (ret.data.success) {
         const accessTokenDataRet = ret.data.ret
         commit(ENTITY_NAME + ACCESS_TOKEN_DATA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, accessTokenDataRet)
@@ -100,10 +88,6 @@ const actions = {
           dispatch('toastError', ret.data)
         }
       }
-      if (showLoading) {
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-        Indicator.close()
-      }
     })
   },
   weixinOpen$GetUserInfo ({ commit, state, rootState, dispatch }, code) {
@@ -111,20 +95,14 @@ const actions = {
     if (!state.accessTokenData.access_token) {
       p = dispatch('weixinOpen$RequestAccessToken', code)
     }
-    console.log(localStore.get(WEIXIN_OPEN_REFRESH_TOKEN))
     p.then(() => {
-      console.log(346)
-      console.log(state.accessTokenData)
       if (state.accessTokenData.access_token) {
-        commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.START_LOADING)
-        Indicator.open('获取微信开放平台用户数据...')
-        Vue.http.get('weixin/open/getUserInfo/' + state.accessTokenData.access_token + ',' + state.accessTokenData.openid).then(ret => {
+        Vue.http.get('weixin/open/getUserInfo/' + state.accessTokenData.access_token + ',' + state.accessTokenData.openid, {headers: {loadingText: WEIXIN_OPEN_GET_USER_INFO}}).then(ret => {
           if (ret.data.success) {
             const userInfoRet = ret.data.ret
             commit(ENTITY_NAME + USER_INFO_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, userInfoRet)
             dispatch('authMemberByOpenWeixinOnClient').then(() => {
               dispatch('toastSuccess', {msg: '微信登录成功'}).then(() => {
-                console.log(124)
                 router.replace({path: '/'})
               })
             })
@@ -143,8 +121,6 @@ const actions = {
               dispatch('toastError', ret.data)
             }
           }
-          commit(mutationTypes.$GLOABL_PREFIX$ + mutationTypes.FINISH_LOADING)
-          Indicator.close()
         })
       }
     })
