@@ -8,7 +8,8 @@ import { MEMBER_LOGIN, DATA_FETCH_TEXT } from '../loading-texts'
 
 export const ENTITY_NAME = 'MEMBER'
 export const ORDER_NAME = '$ORDER'
-export const UPLOAD_TOKEN = '$UPLOAD_TOKEN'
+export const UPLOAD_TOKEN_NAME = '$UPLOAD_TOKEN'
+export const TA_NAME = '$TA_NAME'
 
 const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', head_portrait: '', member_description: '' }
 // initial state
@@ -22,7 +23,8 @@ const state = {
     orderInfo: {},
     scenicSpotInfo: {}
   },
-  member$UploadTokenCurrent: ''
+  member$UploadTokenCurrent: '',
+  ta: {}
 }
 
 // getters
@@ -59,6 +61,9 @@ const getters = {
   },
   member$UploadToken (state) {
     return state.member$UploadTokenCurrent
+  },
+  taInfo (state) {
+    return state.ta
   }
 }
 
@@ -94,11 +99,14 @@ const mutations = {
   [ENTITY_NAME + ORDER_NAME + mutationTypes.SET_NO_MORE] (state, { member$OrderRecordCount, size }) {
     state.member$OrderNoMore = member$OrderRecordCount < size
   },
-  [ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.SET] (state, uploadToken) {
+  [ENTITY_NAME + UPLOAD_TOKEN_NAME + mutationTypes.SET] (state, uploadToken) {
     state.member$UploadTokenCurrent = uploadToken
   },
-  [ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR] (state) {
+  [ENTITY_NAME + UPLOAD_TOKEN_NAME + mutationTypes.CLEAR] (state) {
     state.member$UploadTokenCurrent = ''
+  },
+  [ENTITY_NAME + TA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { member$TA }) {
+    state.ta = member$TA
   }
 }
 // actions
@@ -128,7 +136,7 @@ const actions = {
   },
   logout ({ commit, rootState, dispatch }, isMannual = true) {
     commit(ENTITY_NAME + mutationTypes.LOGIN_OUT)
-    commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.CLEAR)
+    commit(ENTITY_NAME + UPLOAD_TOKEN_NAME + mutationTypes.CLEAR)
     rootState.env.isApiCloud && isMannual && dispatch('sendEventToApiCloud', { eventName: APICLOUD_LOGOUT })
     return Promise.resolve(true)
   },
@@ -193,7 +201,7 @@ const actions = {
     return Vue.http.get('qiniu/open/uploadToken/').then(ret => {
       if (ret.data.success) {
         const uploadToken = ret.data.ret
-        commit(ENTITY_NAME + UPLOAD_TOKEN + mutationTypes.SET, uploadToken)
+        commit(ENTITY_NAME + UPLOAD_TOKEN_NAME + mutationTypes.SET, uploadToken)
       } else {
         dispatch('toastError', ret.data)
       }
@@ -202,6 +210,22 @@ const actions = {
   ensureMember$UploadToken ({ state, dispatch }) {
     if (!state.member$UploadTokenCurrent) {
       return dispatch('fetchMember$UploadToken')
+    }
+    return dispatch('noop')
+  },
+  fetchMember$TA ({commit, dispatch}, { id }) {
+    return Vue.http.get('trv/member/' + id).then(ret => {
+      if (ret.data.success) {
+        const member$TA = ret.data.ret
+        commit(ENTITY_NAME + TA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {member$TA})
+      } else {
+        dispatch('toastError', ret.data)
+      }
+    })
+  },
+  ensureMember$TA ({ state, rootState, dispatch }) {
+    if (!state.ta.id) {
+      return dispatch('fetchMember$TA', rootState.route.params)
     }
     return dispatch('noop')
   }

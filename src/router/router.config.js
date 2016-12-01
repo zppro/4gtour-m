@@ -25,6 +25,10 @@ import ExperienceDetailsFeeling from '../views/ExperienceDetailsFeeling'
 import ExperienceDetailsRoute from '../views/ExperienceDetailsRoute'
 import ExperienceDetailsFeelingAddNav from '../views/partials/ExperienceDetailsFeelingAddNav.vue'
 import ExperienceDetailsFeelingAdd from '../views/ExperienceDetailsFeelingAdd.vue'
+import TANav from '../views/partials/TANav.vue'
+import TA from '../views/TA.vue'
+import TAInfo from '../views/partials/TAInfo.vue'
+import TAExperience from '../views/partials/TAExperience.vue'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -184,5 +188,23 @@ export default [
       head: ExperienceDetailsFeelingAddNav,
       body: ExperienceDetailsFeelingAdd
     }
+  },
+  {
+    name: 'TA',
+    path: '/ta/:id',
+    components: {
+      head: TANav,
+      body: TA
+    },
+    children: [
+      {
+        name: 'TA的详情',
+        path: 'details',
+        components: {
+          info: TAInfo,
+          experience: TAExperience
+        }
+      }
+    ]
   }
 ]

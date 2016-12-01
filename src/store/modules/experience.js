@@ -7,6 +7,8 @@ const ENTITY_NAME = 'EXPERIENCE'
 export const HOT_NAME = '$HOT'
 export const MY_TWEETED_NAME = '$MY_TWEETED'
 export const MY_STARED_NAME = '$MY_STARED'
+export const TA_TWEETED_NAME = '$TA_TWEETED'
+export const TA_STARED_NAME = '$TA_STARED'
 export const FEELING_NAME = '$FEELING_NAME'
 export const LIKES_NAME = '$LIKES'
 export const STARS_NAME = '$STARS'
@@ -18,15 +20,22 @@ const state = {
   hot: [],
   hotFirstLoaded: false,
   currentIndexOfMine: 0,
+  currentIndexOfTa: 0,
   myTweeted: [],
   myTweetedFirstLoaded: false,
   myStared: [],
   myStaredFirstLoaded: false,
+  taTweeted: [],
+  taTweetedFirstLoaded: false,
+  taStared: [],
+  taStaredFirstLoaded: false,
   current: {},
   listRequestTypeAppending: true,
   noMoreOfHot: false,
   noMoreOfMyTweeted: false,
-  noMoreOfMyStared: false
+  noMoreOfMyStared: false,
+  noMoreOfTaTweeted: false,
+  noMoreOfTaStared: false
 }
 
 // getters
@@ -37,11 +46,20 @@ const getters = {
   currentIndexInExperiencesOfMine (state) {
     return state.currentIndexOfMine
   },
+  currentIndexInExperiencesOfTa (state) {
+    return state.currentIndexOfTa
+  },
   experiencesMyTweeted (state) {
     return state.myTweeted
   },
   experiencesMyStared (state) {
     return state.myStared
+  },
+  experiencesTaTweeted (state) {
+    return state.taTweeted
+  },
+  experiencesTaStared (state) {
+    return state.taStared
   },
   experienceInDetails (state) {
     return state.current
@@ -54,6 +72,12 @@ const getters = {
   },
   appendMyStaredDiabled (state, getters, rootState) {
     return rootState.loading || state.noMoreOfMyStared || !state.myStaredFirstLoaded
+  },
+  appendTaTweetedDiabled (state, getters, rootState) {
+    return rootState.loading || state.noMoreOfTaTweeted || !state.taTweetedFirstLoaded
+  },
+  appendTaStaredDiabled (state, getters, rootState) {
+    return rootState.loading || state.noMoreOfTaStared || !state.taStaredFirstLoaded
   },
   showExperienceFetchIndicator (state, getters, rootState) {
     return rootState.loading && !state.listRequestTypeAppending
@@ -89,6 +113,20 @@ const mutations = {
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.myStared = state.myStared.concat(experiences)
   },
+  [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
+    state.taTweeted = experiences
+    state.taTweetedFirstLoaded = true
+  },
+  [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
+    state.taTweeted = state.taTweeted.concat(experiences)
+  },
+  [ENTITY_NAME + TA_STARED_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
+    state.taStared = experiences
+    state.taStaredFirstLoaded = true
+  },
+  [ENTITY_NAME + TA_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
+    state.taStared = state.taStared.concat(experiences)
+  },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { experience }) {
     state.current = experience
   },
@@ -101,11 +139,23 @@ const mutations = {
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
     state.noMoreOfMyStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
   },
+  [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
+    state.noMoreOfTaTweeted = state.hot >= MAX_HOT_COUNT || fetchCount < size
+  },
+  [ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
+    state.noMoreOfTaStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
+  },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 0
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 1
+  },
+  [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_CURRENT] (state) {
+    state.currentIndexOfTa = 0
+  },
+  [ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
+    state.currentIndexOfTa = 1
   },
   [ENTITY_NAME + FEELING_NAME + mutationTypes.ADD_DETAILS] (state, { content, imgs, location }) {
     state.current = { content, imgs, location }
@@ -131,6 +181,16 @@ const mutations = {
       Vue.set(theOne, 'likes', likes)
       Vue.set(theOne, 'liked', liked)
     }
+    theOne = state.taTweeted.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'likes', likes)
+      Vue.set(theOne, 'liked', liked)
+    }
+    theOne = state.taStared.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'likes', likes)
+      Vue.set(theOne, 'liked', liked)
+    }
   },
   [ENTITY_NAME + STARS_NAME + mutationTypes.SET] (state, {id, stars, stared}) {
     let theOne = state.hot.find(item => item.id === id)
@@ -144,6 +204,16 @@ const mutations = {
       Vue.set(theOne, 'stared', stared)
     }
     theOne = state.myStared.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'stars', stars)
+      Vue.set(theOne, 'stared', stared)
+    }
+    theOne = state.taTweeted.find(item => item.id === id)
+    if (theOne) {
+      Vue.set(theOne, 'stars', stars)
+      Vue.set(theOne, 'stared', stared)
+    }
+    theOne = state.taStared.find(item => item.id === id)
     if (theOne) {
       Vue.set(theOne, 'stars', stars)
       Vue.set(theOne, 'stared', stared)
@@ -195,7 +265,7 @@ const actions = {
   appendMyTweetedList ({ commit, state, rootState }) {
     console.log('appendMyTweetedList')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -231,6 +301,58 @@ const actions = {
       }
     })
   },
+  fetchTaTweetedList ({ commit, rootState }) {
+    console.log('fetchTaTweetedList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    return Vue.http.post('trv/experiencesTaTweeted/' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const experiences = ret.data.rows
+        commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
+        commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: experiences.length, size: rootState.dataFetchingSizeSmall })
+      } else {
+        commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  appendTaTweetedList ({ commit, state, rootState }) {
+    console.log('appendTaTweetedList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    return Vue.http.post('trv/experiencesTaTweeted/' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const experiences = ret.data.rows
+        experiences.length > 0 && commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
+        commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: experiences.length, size: rootState.dataFetchingSizeSmall })
+      } else {
+        commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  fetchTaStaredList ({ commit, rootState }) {
+    console.log('fetchTaStaredList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    return Vue.http.post('trv/experiencesTaStared/' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const experiences = ret.data.rows
+        commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.FETCH_LIST_SUCCESS, { experiences })
+        commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: experiences.length, size: rootState.dataFetchingSizeSmall })
+      } else {
+        commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  appendTaStaredList ({ commit, state, rootState }) {
+    console.log('appendTaStaredList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    return Vue.http.post('trv/experiencesTaStared' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const experiences = ret.data.rows
+        experiences.length > 0 && commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
+        commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: experiences.length, size: rootState.dataFetchingSizeSmall })
+      } else {
+        commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
   fetchExperienceInfo ({commit, rootState, dispatch}, {id, setCurrent = true}) {
     return Vue.http.get('trv/experience/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       let experience
@@ -243,13 +365,21 @@ const actions = {
       return experience
     })
   },
-  setMyTweetedOfMine ({commit, dispatch}) {
+  setMyTweeted ({commit, dispatch}) {
     commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT)
     return state.myTweeted.length === 0 ? dispatch('fetchMyTweetedList') : dispatch('noop')
   },
-  setMyStaredOfMine ({commit, dispatch}) {
+  setMyStared ({commit, dispatch}) {
     commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT)
     return state.myStared.length === 0 ? dispatch('fetchMyStaredList') : dispatch('noop')
+  },
+  setTaTweeted ({commit, dispatch}) {
+    commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_CURRENT)
+    return state.taTweeted.length === 0 ? dispatch('fetchTaTweetedList') : dispatch('noop')
+  },
+  setTaStared ({commit, dispatch}) {
+    commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_CURRENT)
+    return state.taStared.length === 0 ? dispatch('fetchTaStaredList') : dispatch('noop')
   },
   ensureExperience ({ state, rootState, dispatch }) {
     if (!state.current.id) {

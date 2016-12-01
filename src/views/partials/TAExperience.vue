@@ -1,18 +1,18 @@
 <template lang="jade">
-  .mine-list-c
+  .ta-body
     .switch-c
       .switch-block
-        a.switch-btn(:class='{"switch-tweeted":currentIndexInExperiencesOfMine!==0, "switch-tweeted-active":currentIndexInExperiencesOfMine===0}' @click="setMyTweeted")
+        a.switch-btn(:class='{"switch-tweeted":currentIndexInExperiencesOfTa!==0, "switch-tweeted-active":currentIndexInExperiencesOfTa===0}' @click="setTaTweeted")
           .i-wrapper
             i.fa.fa-paper-plane-o(aria-hidden="true")
-          span 我发布的
+          span TA的发布
       .switch-block
-        a.switch-btn(:class='{"switch-stared":currentIndexInExperiencesOfMine!==1, "switch-stared-active":currentIndexInExperiencesOfMine===1}' @click="setMyStared")
+        a.switch-btn(:class='{"switch-stared":currentIndexInExperiencesOfTa!==1, "switch-stared-active":currentIndexInExperiencesOfTa===1}' @click="setTaStared")
           .i-wrapper
             i.fa.fa-star-o(aria-hidden="true")
-          span 我收藏的
+          span TA的收藏
     no-more-data(v-if="currentExperiences.length === 0")
-    .mine-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0")
+    .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
@@ -40,12 +40,12 @@
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
-  import ExperienceList from '../components/ExperienceList.vue'
-  import ExperienceItem from '../components/ExperienceItem.vue'
-  import ExperienceItemRetweetRoot from '../components/ExperienceItemRetweetRoot.vue'
-  import NoMoreData from '../components/NoMoreData.vue'
-  import ImageCollection from '../components/ImageCollection.vue'
-  import ImageSwiper from '../components/ImageSwiper.vue'
+  import ExperienceList from '../../components/ExperienceList.vue'
+  import ExperienceItem from '../../components/ExperienceItem.vue'
+  import ExperienceItemRetweetRoot from '../../components/ExperienceItemRetweetRoot.vue'
+  import NoMoreData from '../../components/NoMoreData.vue'
+  import ImageCollection from '../../components/ImageCollection.vue'
+  import ImageSwiper from '../../components/ImageSwiper.vue'
   export default {
     data () {
       return {
@@ -55,21 +55,19 @@
     },
     computed: {
       currentExperiences () {
-        return this.currentIndexInExperiencesOfMine === 0 ? this.experiencesMyTweeted : this.experiencesMyStared
+        return this.currentIndexInExperiencesOfTa === 0 ? this.experiencesTaTweeted : this.experiencesTaStared
       },
       appendCurrentDiabled () {
-        return this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedDiabled : this.appendMyStaredDiabled
+        return this.currentIndexInExperiencesOfTa === 0 ? this.appendTaTweetedDiabled : this.appendTaStaredDiabled
       },
       showImageSwiper () {
         return this.allImages.length > 0
       },
-      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
-      ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait']),
+      ...mapGetters(['currentIndexInExperiencesOfTa', 'experiencesTaTweeted', 'experiencesTaStared', 'appendTaTweetedDiabled', 'appendTaStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     created () {
-      this.authMemberByTokenPromise.then(() => {
-        this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyStaredList()
-      })
+      this.currentIndexInExperiencesOfTa === 0 ? this.fetchTaTweetedList() : this.fetchTaStaredList()
     },
     methods: {
       zoomIn (allImages, currentImage) {
@@ -84,9 +82,9 @@
         return experience.category === 'A0003'
       },
       appendCurrentList () {
-        this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedList() : this.appendMyStaredList()
+        this.currentIndexInExperiencesOfTa === 0 ? this.appendTaTweetedList() : this.appendTaStaredList()
       },
-      ...mapActions(['setMyTweeted', 'setMyStared', 'fetchMyTweetedList', 'appendMyTweetedList', 'fetchMyStaredList', 'appendMyStaredList'])
+      ...mapActions(['setTaTweeted', 'setTaStared', 'fetchTaTweetedList', 'appendTaTweetedList', 'fetchTaStaredList', 'appendTaStaredList'])
     },
     components: {
       ExperienceList,
@@ -101,7 +99,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  .mine-list-c {
+  .ta-body {
     width: 100%;
     .switch-c{
       width:100%;
@@ -116,7 +114,7 @@
         .switch-btn{
           display: block;
           background-color: white;
-          width:4rem;
+          width:5rem;
           margin: 0 auto;
           padding-top:0.2rem;
           height: 1.8rem;
@@ -163,7 +161,7 @@
         border-right: solid 1px #ceced2;
       }
     }
-    .mine-list{
+    .ta-list{
       width:100%;
     }
     .full-screen{

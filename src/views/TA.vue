@@ -1,0 +1,27 @@
+<template lang="jade">
+  .TA
+    router-view(name="info", :ta="taInfo")
+    router-view(name="experience", :ta="taInfo")
+</template>
+
+<script>
+  import { mapGetters, mapActions } from 'vuex'
+  export default {
+    computed: {
+      ...mapGetters(['taInfo'])
+    },
+    created () {
+      this.ensureMember$TA()
+    },
+    methods: {
+      ...mapActions(['ensureMember$TA'])
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="less" scoped>
+  .TA {
+    width:100%;
+  }
+</style>
