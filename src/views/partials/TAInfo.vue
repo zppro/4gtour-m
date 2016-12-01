@@ -40,8 +40,8 @@
             border-radius: 2.375rem;
             .ta-head-portrait{
               opacity: 1!important;
-              min-width:4.35rem;
-              min-height:4.35rem;
+              width:4.35rem;
+              height:4.35rem;
               -moz-border-radius: 2.175rem;
               -webkit-border-radius: 2.175rem;
               border-radius: 2.175rem;
