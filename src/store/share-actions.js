@@ -45,9 +45,10 @@ export const login = ({ state, dispatch }) => {
     // 呼出登录窗体
     dispatch('sendEventToApiCloud', { eventName: APICLOUD_OPEN_LOGIN_WIN })
   } else {
-    router.replace({path: '/login'})
+    router.replace({path: '/login', query: {redirect: window.location.hash.substr(1)}})
   }
 }
+console.log(345)
 
 export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
   return Promise.resolve(true).then(() => {
