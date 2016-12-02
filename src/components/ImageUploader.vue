@@ -21,7 +21,7 @@
     props: ['allImages'],
     computed: {
       ...mapState(['env']),
-      ...mapGetters(['member$UploadToken'])
+      ...mapGetters(['member$UploadToken', 'fetchMember$UploadToken'])
     },
     created () {
       let self = this
@@ -52,8 +52,10 @@
               Indicator.close()
             },
             'Error': function (up, err, errTip) {
-              window.alert(errTip)
               Indicator.close()
+              window.alert(errTip)
+              console.log(err)
+              this.fetchMember$UploadToken()
             }
           }
         })
