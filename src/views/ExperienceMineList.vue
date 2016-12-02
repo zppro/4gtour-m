@@ -68,11 +68,11 @@
         return this.allImages.length > 0
       },
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
-      ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
+      ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator', 'haveNewExperience'])
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        this.currentExperiences.length === 0 && this.fetchData()
+        (this.currentExperiences.length === 0 || this.haveNewExperience) && this.fetchData()
       })
     },
     methods: {

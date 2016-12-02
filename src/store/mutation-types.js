@@ -20,4 +20,5 @@ export const LOGIN_OUT = '/LOGIN_OUT'
 export const SUBMIT_FORM = '/SUBMIT_FORM'
 export const SUBMIT_FORM_SUCCESS = '/SUBMIT_FORM_SUCCESS'
 export const SUBMIT_FORM_FAIL = '/SUBMIT_FORM_FAIL'
+export const HAVE_NEW_NOTIFY = '/HAVE_NEW_NOTIFY'
 

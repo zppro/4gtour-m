@@ -35,7 +35,8 @@ const state = {
   noMoreOfMyTweeted: false,
   noMoreOfMyStared: false,
   noMoreOfTaTweeted: false,
-  noMoreOfTaStared: false
+  noMoreOfTaStared: false,
+  newExperiences: true
 }
 
 // getters
@@ -84,6 +85,9 @@ const getters = {
   },
   showExperienceAppendIndicator (state, getters, rootState) {
     return rootState.loading && state.listRequestTypeAppending
+  },
+  haveNewExperience (state) {
+    return state.newExperiences
   }
 }
 
@@ -95,6 +99,7 @@ const mutations = {
   [ENTITY_NAME + HOT_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
     state.hot = experiences
     state.hotFirstLoaded = true
+    state.newExperiences = false
   },
   [ENTITY_NAME + HOT_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.hot = state.hot.concat(experiences)
@@ -218,6 +223,9 @@ const mutations = {
       Vue.set(theOne, 'stars', stars)
       Vue.set(theOne, 'stared', stared)
     }
+  },
+  [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
+    state.newExperiences = true
   }
 }
 
@@ -404,6 +412,7 @@ const actions = {
       return Vue.http.post('trv/experience', feelingExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
+          commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
           dispatch('submitFormSuccess').then(() => {
             dispatch('toastSuccess')

@@ -51,12 +51,11 @@
         return this.allImages.length > 0
       },
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
-      ...mapGetters(['isLogined', 'experiencesHot', 'appendHotDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
+      ...mapGetters(['isLogined', 'experiencesHot', 'appendHotDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator', 'haveNewExperience'])
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        console.log(this.isLogined)
-        this.experiencesHot.length === 0 && this.fetchHotList()
+        (this.experiencesHot.length === 0 || this.haveNewExperience) && this.fetchHotList()
       })
     },
     methods: {
