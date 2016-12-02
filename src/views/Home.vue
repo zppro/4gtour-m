@@ -1,5 +1,5 @@
 <template lang="jade">
-  .home(v-infinite-scroll="appendScenicSpots", infinite-scroll-disabled="appendDiabled", infinite-scroll-distance="infiniteScrollDistance")
+  .home(v-infinite-scroll="appendScenicSpots", infinite-scroll-disabled="appendDiabled", infinite-scroll-distance="infiniteScrollDistance", infinite-scroll-immediate-check="false")
     p(v-show="showFetchIndicator" class="page-refresh-loading")
       mt-spinner(type="triple-bounce" color="#ea5513")
       | {{dataRefreshText}}
@@ -26,8 +26,11 @@
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'env']),
       ...mapGetters(['allScenicSpotsInHome', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
     },
+    created () {
+      this.allScenicSpotsInHome.length === 0 && this.fetchScenicSpots()
+    },
     methods: {
-      ...mapActions(['appendScenicSpots'])
+      ...mapActions(['fetchScenicSpots', 'appendScenicSpots'])
     },
     components: {
       productList,

@@ -16,21 +16,22 @@
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
-      experience-list.experience-list
-        experience-item(v-for="experience in currentExperiences", :experience="experience")
-          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
-          span(slot="member_name") {{experience.member_name}}
-          span(slot="time_description") {{experience.time_description}}
-          div(slot="content" v-html="experience.content")
-          span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
-          .img-list(slot="imgs")
-            image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
-          span(slot="location") {{experience.location}}
-          span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
-          span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
-          span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
-          div(slot="retweetRoot" v-if="experience.retweet_flag" )
-            experience-item-retweet-root(:experience="experience.retweet_root" )
+      mt-loadmore(:top-method="loadMine" @top-status-change="handleMineChange" ref="myList")
+        experience-list.experience-list
+          experience-item(v-for="experience in currentExperiences", :experience="experience")
+            img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
+            span(slot="member_name") {{experience.member_name}}
+            span(slot="time_description") {{experience.time_description}}
+            div(slot="content" v-html="experience.content")
+            span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
+            .img-list(slot="imgs")
+              image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
+            span(slot="location") {{experience.location}}
+            span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
+            span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
+            span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
+            div(slot="retweetRoot" v-if="experience.retweet_flag" )
+              experience-item-retweet-root(:experience="experience.retweet_root" )
       p(v-show="showExperienceAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
         | {{dataAppendText}}
@@ -60,6 +61,9 @@
       appendCurrentDiabled () {
         return this.currentIndexInExperiencesOfMine === 0 ? this.appendMyTweetedDiabled : this.appendMyStaredDiabled
       },
+      fetchData () {
+        return this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList : this.fetchMyStaredList
+      },
       showImageSwiper () {
         return this.allImages.length > 0
       },
@@ -68,10 +72,18 @@
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        this.currentIndexInExperiencesOfMine === 0 ? this.fetchMyTweetedList() : this.fetchMyStaredList()
+        this.currentExperiences.length === 0 && this.fetchData()
       })
     },
     methods: {
+      handleMineChange (status) {
+        this.topStatus = status
+      },
+      loadMine (id) {
+        this.fetchData().then(() => {
+          this.$refs.myList.onTopLoaded(id)
+        })
+      },
       zoomIn (allImages, currentImage) {
         this.allImages = allImages
         this.currentImage = currentImage

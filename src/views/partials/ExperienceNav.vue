@@ -58,7 +58,6 @@
 </style>
 <script>
   import { mapGetters, mapActions } from 'vuex'
-  import { APICLOUD_OPEN_LOGIN_WIN } from '../../store/share-apicloud-event-names'
   let $ = window.$
   export default {
     data () {
@@ -92,13 +91,13 @@
     methods: {
       switchTab (index) {
         if (index === 2 && !this.isLogined) {
-          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_LOGIN_WIN })
+          this.login()
+        } else {
+          $('.tab-header').removeClass('tab-header-active')
+          $($('.tab-header').get(index)).addClass('tab-header-active')
+          let subView = index === 0 ? 'follow' : index === 1 ? 'hot' : 'mine'
+          this.$router.replace({path: '/experience/' + subView})
         }
-
-        $('.tab-header').removeClass('tab-header-active')
-        $($('.tab-header').get(index)).addClass('tab-header-active')
-        let subView = index === 0 ? 'follow' : index === 1 ? 'hot' : 'mine'
-        this.$router.replace({path: '/experience/' + subView})
       },
       showAddAction () {
         this.sheetVisible = true
@@ -109,7 +108,7 @@
       addRoute () {
         this.$router.push({path: '/experience-add/route'})
       },
-      ...mapActions(['sendEventToApiCloud'])
+      ...mapActions(['login'])
     }
   }
 </script>

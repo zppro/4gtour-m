@@ -56,7 +56,7 @@
     created () {
       this.authMemberByTokenPromise.then(() => {
         console.log(this.isLogined)
-        this.fetchHotList()
+        this.experiencesHot.length === 0 && this.fetchHotList()
       })
     },
     methods: {
