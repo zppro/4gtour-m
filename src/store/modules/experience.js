@@ -9,9 +9,10 @@ export const MY_TWEETED_NAME = '$MY_TWEETED'
 export const MY_STARED_NAME = '$MY_STARED'
 export const TA_TWEETED_NAME = '$TA_TWEETED'
 export const TA_STARED_NAME = '$TA_STARED'
-export const FEELING_NAME = '$FEELING_NAME'
+export const FEELING_NAME = '$FEELING'
 export const LIKES_NAME = '$LIKES'
 export const STARS_NAME = '$STARS'
+export const SCENERY_ROUTE_NAME = '$SCENERY_ROUTE'
 
 const MAX_HOT_COUNT = 100
 
@@ -36,7 +37,9 @@ const state = {
   noMoreOfMyStared: false,
   noMoreOfTaTweeted: false,
   noMoreOfTaStared: false,
-  newExperiences: true
+  newExperiences: true,
+  scenerySpotPickForRoute: [], // all
+  scenerySpotIdPickedInRoute: [] // picked
 }
 
 // getters
@@ -88,6 +91,14 @@ const getters = {
   },
   haveNewExperience (state) {
     return state.newExperiences
+  },
+  scenerySpotIdsPickedInRoute (state, getters) {
+    return state.scenerySpotIdPickedInRoute
+  },
+  scenerySpotPickForRoute (state, getters) {
+    return state.scenerySpotPickForRoute.map((s) => {
+      return { label: s.show_name, value: s.id, disabled: s.disabled }
+    })
   }
 }
 
@@ -107,6 +118,7 @@ const mutations = {
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { experiences }) {
     state.myTweeted = experiences
     state.myTweetedFirstLoaded = true
+    state.newExperiences = false
   },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { experiences }) {
     state.myTweeted = state.myTweeted.concat(experiences)
@@ -226,6 +238,20 @@ const mutations = {
   },
   [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
     state.newExperiences = true
+  },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET] (state, { scenerySpots }) {
+    state.scenerySpotPickForRoute = scenerySpots
+  },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC] (state, { scenerySpotIds }) {
+    for (var s = 0; s < scenerySpotIds.length; s++) {
+      for (var i = 0; i < state.scenerySpotPickForRoute.length; i++) {
+        if (state.scenerySpotPickForRoute[i].id === scenerySpotIds[s]) {
+          Vue.set(state.scenerySpotPickForRoute[i], 'disabled', true)
+        }
+      }
+    }
+
+    state.scenerySpotIdPickedInRoute = scenerySpotIds
   }
 }
 
@@ -457,6 +483,18 @@ const actions = {
       } else {
         dispatch('toastError', ret.data)
       }
+    })
+  },
+  ensureScenerySpots ({commit, dispatch}) {
+    return dispatch('cds$FetchScenerySpotsAllAsSource').then(scenerySpots => {
+      console.log(12345)
+      console.log(scenerySpots)
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET, {scenerySpots})
+    })
+  },
+  syncScenerySpotsToRoute ({commit, dispatch}, scenerySpotIds) {
+    return dispatch('noop').then(ret => {
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC, {scenerySpotIds})
     })
   }
 }

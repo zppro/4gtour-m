@@ -78,8 +78,9 @@ body {
   flex-direction:row;
   align-items: center;
   padding:0;
-  margin:0;
+  margin:0 auto;
   width:100%;
+  max-width: 18.75rem;
 }
 .nav-item{
   color:white;

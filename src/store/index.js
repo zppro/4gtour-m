@@ -7,6 +7,7 @@ import mutations from './share-mutations'
 import scenicSpot from './modules/scenic-spot'
 import weixinOpen from './modules/weixin-open'
 import member from './modules/member'
+import scenerySpot from './modules/scenery-spot'
 import experience from './modules/experience'
 
 Vue.use(Vuex)
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     scenicSpot,
     member,
     weixinOpen,
+    scenerySpot,
     experience
   },
   strict: false

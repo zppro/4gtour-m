@@ -25,6 +25,10 @@ import ExperienceDetailsFeeling from '../views/ExperienceDetailsFeeling'
 import ExperienceDetailsRoute from '../views/ExperienceDetailsRoute'
 import ExperienceDetailsFeelingAddNav from '../views/partials/ExperienceDetailsFeelingAddNav.vue'
 import ExperienceDetailsFeelingAdd from '../views/ExperienceDetailsFeelingAdd.vue'
+import ExperienceDetailsRouteAddNav from '../views/partials/ExperienceDetailsRouteAddNav.vue'
+import ExperienceDetailsRouteAdd from '../views/ExperienceDetailsRouteAdd.vue'
+import PickScenerySpotsNav from '../views/partials/PickScenerySpotsNav.vue'
+import PickScenerySpots from '../views/PickScenerySpots.vue'
 import TANav from '../views/partials/TANav.vue'
 import TA from '../views/TA.vue'
 import TAInfo from '../views/partials/TAInfo.vue'
@@ -172,13 +176,32 @@ export default [
     ]
   },
   {
-    name: '新增',
+    name: '新增感受',
     meta: { auth: true },
     path: '/experience-add/feeling',
     components: {
       head: ExperienceDetailsFeelingAddNav,
       body: ExperienceDetailsFeelingAdd
     }
+  },
+  {
+    name: '新增路线',
+    meta: { auth: true },
+    path: '/experience-add/route',
+    components: {
+      head: ExperienceDetailsRouteAddNav,
+      body: ExperienceDetailsRouteAdd
+    },
+    children: [
+      {
+        name: '选择景点',
+        path: '',
+        components: {
+          dialogHead: PickScenerySpotsNav,
+          dialogBody: PickScenerySpots
+        }
+      }
+    ]
   },
   {
     name: '转发',
