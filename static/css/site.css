@@ -125,3 +125,17 @@ body {
 .text-danger,a.text-danger{color:#ea5513;}
 iframe.img-loader{padding:0;margin:0;}
 .header-color{background-color:#ea5513;}
+.btn1 {
+  display: block;
+  margin:0 auto;
+  width:16.55rem;
+  height:2.2rem;
+  line-height:2.2rem;
+  font-size: 1.267rem;
+  color:white;
+  background-color: #ea5513;
+  text-align: center;
+  -moz-border-radius: 2.2rem;
+  -webkit-border-radius: 2.2rem;
+  border-radius: 2.2rem;
+}

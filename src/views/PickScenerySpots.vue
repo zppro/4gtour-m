@@ -1,31 +1,39 @@
 <template lang="jade">
   .pick-scenery-spots
     mt-checklist(v-model="newPicked", :options="scenerySpots")
+    a.btn1.btn-confirm(@click="confirmPick") 选择
 </template>
 
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   export default {
     data () {
       return {
         newPicked: []
       }
     },
-    computed: {
-      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'env']),
-      ...mapGetters(['allScenerySpots', 'appendDiabled', 'showFetchIndicator', 'showAppendIndicator'])
-    },
     props: ['scenerySpots', 'picked'],
     created () {
       console.log(111)
       this.newPicked = [].concat(this.picked)
     },
+    computed: {
+      ...mapGetters(['scenerySpotsConfirmPickToRoute'])
+    },
+    watch: {
+      scenerySpotsConfirmPickToRoute: function (newScenerySpotsConfirmPickToRoute) {
+        newScenerySpotsConfirmPickToRoute && this.sync()
+      }
+    },
     methods: {
-      syncToVue () {
-        console.log('sync 1111')
-        this.syncScenerySpotsToRoute()
+      sync () {
+        this.syncScenerySpotsToRoute(this.newPicked)
       },
-      ...mapActions(['syncScenerySpotsToRoute'])
+      confirmPick () {
+        this.confirmScenerySpotsToRoute()
+        this.$emit('closeDialog')
+      },
+      ...mapActions(['syncScenerySpotsToRoute', 'confirmScenerySpotsToRoute'])
     }
   }
 </script>
@@ -46,9 +54,8 @@
     .mint-checkbox-label{
       font-size:0.8rem;
     }
-    .mint-checkbox-input:checked + .mint-checkbox-core{
-      background-color: #ff8193;
-      border-color: #ff8193;
+    .btn-confirm{
+      margin-top: 2rem;
     }
   }
 </style>

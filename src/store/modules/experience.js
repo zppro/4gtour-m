@@ -38,8 +38,10 @@ const state = {
   noMoreOfTaTweeted: false,
   noMoreOfTaStared: false,
   newExperiences: true,
-  scenerySpotPickForRoute: [], // all
-  scenerySpotIdPickedInRoute: [] // picked
+  scenerySpotsConfirmPick: false, // 确认选择
+  scenerySpotsPickForRoute: [], // all
+  scenerySpotIdsPickedInRoute: [], // picked
+  routeWhenEdit: [] // 编辑中的路线
 }
 
 // getters
@@ -92,13 +94,19 @@ const getters = {
   haveNewExperience (state) {
     return state.newExperiences
   },
-  scenerySpotIdsPickedInRoute (state, getters) {
-    return state.scenerySpotIdPickedInRoute
+  scenerySpotsConfirmPickToRoute (state) {
+    return state.scenerySpotsConfirmPick
   },
-  scenerySpotPickForRoute (state, getters) {
-    return state.scenerySpotPickForRoute.map((s) => {
+  scenerySpotIdsPickedInRoute (state) {
+    return state.scenerySpotIdsPickedInRoute
+  },
+  scenerySpotsPickForRoute (state) {
+    return state.scenerySpotsPickForRoute.map((s) => {
       return { label: s.show_name, value: s.id, disabled: s.disabled }
     })
+  },
+  routeWhenEdit (state) {
+    return state.routeWhenEdit
   }
 }
 
@@ -240,18 +248,29 @@ const mutations = {
     state.newExperiences = true
   },
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET] (state, { scenerySpots }) {
-    state.scenerySpotPickForRoute = scenerySpots
+    state.scenerySpotsPickForRoute = scenerySpots
   },
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC] (state, { scenerySpotIds }) {
     for (var s = 0; s < scenerySpotIds.length; s++) {
-      for (var i = 0; i < state.scenerySpotPickForRoute.length; i++) {
-        if (state.scenerySpotPickForRoute[i].id === scenerySpotIds[s]) {
-          Vue.set(state.scenerySpotPickForRoute[i], 'disabled', true)
+      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
+        if (state.scenerySpotsPickForRoute[i].id === scenerySpotIds[s]) {
+          if (!state.scenerySpotsPickForRoute[i].disabled) {
+            Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', true)
+            let length = state.routeWhenEdit.length
+            if (length > 0) {
+              state.routeWhenEdit.push({ type: 'A0003', order_no: (length + 1) / 2.0 })
+            }
+            state.routeWhenEdit.push({ type: 'A0001', title: state.scenerySpotsPickForRoute[i].show_name, scenerySpotId: scenerySpotIds[s], order_no: (length + 1) })
+          }
         }
       }
     }
-
-    state.scenerySpotIdPickedInRoute = scenerySpotIds
+    state.scenerySpotIdsPickedInRoute = scenerySpotIds
+    state.scenerySpotsConfirmPick = false
+    console.log(state.routeWhenEdit)
+  },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM] (state) {
+    state.scenerySpotsConfirmPick = true
   }
 }
 
@@ -495,6 +514,11 @@ const actions = {
   syncScenerySpotsToRoute ({commit, dispatch}, scenerySpotIds) {
     return dispatch('noop').then(ret => {
       commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC, {scenerySpotIds})
+    })
+  },
+  confirmScenerySpotsToRoute ({commit, dispatch}) {
+    return dispatch('noop').then(ret => {
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM)
     })
   }
 }

@@ -5,6 +5,7 @@
     a.nav-item.nav-item-center
       h1 {{title}}
     a.nav-item.nav-item-right
+      a.btn-send 保存
 </template>
 <style lang="less">
 
@@ -31,7 +32,12 @@
   export default {
     computed: {
       title () {
-        return this.$route.name
+        console.log(this.$route)
+        if (this.$route.matched.length > 1) {
+          return this.$route.matched[0].name
+        } else {
+          return this.$route.name
+        }
       }
     },
     methods: {

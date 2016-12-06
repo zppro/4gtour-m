@@ -1,6 +1,9 @@
 <template lang="jade">
   .experience-details-route-add
     .route-container
+      .route-items
+        experience-route-item-edit.route-item(v-for="routeItem in routeWhenEdit", :experienceRouteItem="routeItem")
+        .clear
     a#addRoute(@click="openPickScenerySpotsDialog")
       .cross.cross-lt
       .cross.cross-rt
@@ -8,13 +11,12 @@
       .cross.cross-rb
     mt-popup(v-model="isPickScenerySpotsDialogOpen" position="bottom" class="mint-popup-bottom")
       router-view(name="dialogHead" v-on:closeDialog="closePickScenerySpotsDialog")
-      router-view(name="dialogBody", :scenerySpots="scenerySpotPickForRoute", :picked="scenerySpotIdsPickedInRoute")
+      router-view(name="dialogBody", v-on:closeDialog="closePickScenerySpotsDialog", :scenerySpots="scenerySpotsPickForRoute", :picked="scenerySpotIdsPickedInRoute")
 </template>
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
-  import ImageUploader from '../components/ImageUploader.vue'
-  import ExperienceRetweetedPreview from '../components/ExperienceRetweetedPreview.vue'
+  import ExperienceRouteItemEdit from '../components/ExperienceRouteItemEdit.vue'
   export default {
     data () {
       return {
@@ -40,7 +42,7 @@
         })
       },
       ...mapState(['env', 'submitingForm']),
-      ...mapGetters(['scenerySpotPickForRoute', 'scenerySpotIdsPickedInRoute'])
+      ...mapGetters(['scenerySpotsPickForRoute', 'scenerySpotIdsPickedInRoute', 'routeWhenEdit'])
     },
     created () {
       console.log('123')
@@ -74,13 +76,13 @@
       },
       onUploaded (imgUrl) {
         console.log(imgUrl)
+        console.log(3441)
 //        this.newExperience.imgs.push(imgUrl)
       },
       ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'ensureScenerySpots'])
     },
     components: {
-      ImageUploader,
-      ExperienceRetweetedPreview
+      ExperienceRouteItemEdit
     }
   }
 </script>
@@ -93,6 +95,17 @@
     padding: 0.75rem;
     .route-container{
       width:100%;
+      position: relative;
+      .route-items {
+        width: 0.75rem;
+        height:100%;
+        display:block;
+        border-right: dashed 1px #c1c1c1;
+        .route-item{
+          float:left;
+          width:17.25rem;
+        }
+      }
     }
     .mint-popup-bottom {
       width: 100%;
@@ -101,7 +114,7 @@
     }
     a#addRoute{
       display: inline-block;
-      margin: 0 auto;
+      margin: 1.1rem auto;
       width:3.75rem;
       height:3.75rem;
       -moz-border-radius: 1.875rem;
