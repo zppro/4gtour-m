@@ -1,30 +1,38 @@
 <template lang="jade">
-  .experience-route-item-edit
+  .experience-route-item-edit(:class='{"bg-white":isLast}')
     .route-item-left
-      .ball-scenery-spot(v-if="isScenerySpot") {{experienceRouteItem.order_no}}
+      .ball-scenery-spot(v-if="isScenerySpot") {{orderNo}}
       .ball-traffic-line(v-if="!isScenerySpot")
         i.fa.fa-bus(aria-hidden="true")
     .route-item-right
       .route-item-title-actions(v-if="isScenerySpot")
         .route-item-title {{experienceRouteItem.title}}
-        .route-item-remove
-          i.fa.fa-trash(aria-hidden="true")
-      .route-item-title-actions(v-if="!isScenerySpot")
-        span 景点间交通：
+        a.route-item-remove(@click="removeItem")
+          i.fa.fa-trash.text-muted(aria-hidden="true")
+      .route-traffic-line(v-if="!isScenerySpot")
+        .route-traffic-line-title 景点间交通
         textarea(v-model="routeContent")
       .route-item-imgs(v-if="isScenerySpot")
-        image-uploader(:all-images="experienceRouteItem.imgs" v-on:uploaded="onUploaded")
+        image-uploader(:upload-id="uploadId", :all-images="imgs" v-on:uploaded="onUploaded")
       .route-item-content(v-if="isScenerySpot")
-        span 推荐理由：
+        .route-item-label
+          .ball-small
+          | 推荐理由
         textarea(v-model="routeContent")
       .route-time-consuming(v-if="isScenerySpot")
-        span 游玩时间：
-        mt-radio(v-model="routeTimeConsuming", :options="scenerySpots")
+        .route-item-label
+          .ball-small
+          | 游玩时间
+        mt-radio(v-model="routeTimeConsuming", :options="trv03")
 </template>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attribute to limit CSS to this component only  -->
 <style lang="less">
+.bg-white{
+  background-color: white;
+}
 .experience-route-item-edit {
   width:100%;
+  padding-bottom: 0.4rem;
   .route-item-left{
     width: 1.5rem;
     float: left;
@@ -70,34 +78,114 @@
         flex: 0.1;
       }
     }
-    .order-code, .order-time, .order-amount{
-      font-size:0.8rem;
-      height:1.38rem;
-      line-height:1.38rem;
+    textarea{
+      width: 100%;
+      height:3rem;
     }
-    .order-code{
-      color: #428bca;
+    .route-traffic-line {
+      display: block;
+      .route-traffic-line-title{
+        height: 1.5rem;
+        line-height: 1.5rem;
+        text-align: left;
+        font-size: 0.9333rem;
+      }
     }
-    .order-amount{
-      color: #fa761d;
-    }
-    .action-left-right{
-      position:absolute;
-      font-size:0.8rem;
-      right:0.3rem;
-      bottom:0.3rem;
+    .route-item-content, .route-time-consuming{
+      .route-item-label {
+        height: 1.6rem;
+        line-height: 1.6rem;
+        text-align: left;
+        font-size: 0.9rem;
+        .ball-small{
+          margin:0.1rem 0.2rem;
+          width:0.4rem;
+          height:0.4rem;
+          background-color: #6ec782;
+          display: inline-block;
+          -moz-border-radius: 100%;
+          -webkit-border-radius: 100%;
+          border-radius: 100%;
+        }
+      }
+      .mint-cell-wrapper{
+        text-align: left;
+        font-size:0.8rem;
+      }
     }
   }
 }
 </style>
 <script>
+  import { mapActions } from 'vuex'
   import ImageUploader from '../components/ImageUploader.vue'
   export default {
-    props: ['experienceRouteItem'],
+    props: ['experienceRouteItem', 'isLast'],
     computed: {
       isScenerySpot () {
         return this.experienceRouteItem.type === 'A0001'
+      },
+      orderNo () {
+        return this.experienceRouteItem.order_no
+      },
+      imgs () {
+        return this.experienceRouteItem.imgs
+      },
+      uploadId () {
+        return 'experience-route-item-' + this.orderNo
+      },
+      routeContent: {
+        get () {
+          return this.experienceRouteItem.content
+        },
+        set (value) {
+          this.updateRouteField({orderNo: this.orderNo, key: 'content', value})
+        }
+      },
+      trv03 () {
+        return [
+          {
+            label: '15分钟以内',
+            value: 'A0001'
+          },
+          {
+            label: '15-30分钟',
+            value: 'A0003'
+          },
+          {
+            label: '30-60分钟',
+            value: 'A0005'
+          },
+          {
+            label: '1-2小时',
+            value: 'A0007'
+          },
+          {
+            label: '半天',
+            value: 'A0009'
+          },
+          {
+            label: '一天',
+            value: 'A0011'
+          }
+        ]
       }
+    },
+    created () {
+      console.log(this.orderNo)
+    },
+    methods: {
+      onUploaded (imgUrl) {
+        this.updateRouteField({orderNo: this.orderNo, key: 'imgs', value: this.imgs.concat([imgUrl])})
+      },
+      removeItem () {
+        let self = this
+        this.confirm('确定将当前景点从路线编辑中移除么?').then(action => {
+          console.log(action)
+          self.removeScenerySpotFromRoute(self.orderNo)
+        })
+      },
+      ...mapActions(['toast', 'updateRouteField', 'removeScenerySpotFromRoute', 'confirm'])
     },
     components: {
       ImageUploader

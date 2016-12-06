@@ -1,8 +1,8 @@
 <template lang="jade">
   .img-uploader
     img(v-for="img in allImages", :src="format(img)" @click="select(img)")
-    #img-uploader-container
-      a#addImage
+    .img-uploader-container(:id="imgUploaderContainerId")
+      a.addImage(:id="imgUploaderButtonId")
         .cross.cross-lt
         .cross.cross-rt
         .cross.cross-lb
@@ -13,27 +13,28 @@
   import { mapState, mapGetters, mapActions } from 'vuex'
   import { Indicator } from 'mint-ui'
   export default {
-    data () {
-      return {
-        uploader: null
-      }
-    },
-    props: ['allImages'],
+    props: ['allImages', 'uploadId'],
     computed: {
+      imgUploaderContainerId () {
+        return this.uploadId ? this.uploadId + '-container' : 'img-uploader-container'
+      },
+      imgUploaderButtonId () {
+        return this.uploadId ? this.uploadId + '-button' : 'addImage'
+      },
       ...mapState(['env']),
       ...mapGetters(['member$UploadToken', 'fetchMember$UploadToken'])
     },
     created () {
       let self = this
       this.ensureMember$UploadToken().then(() => {
-        self.uploader = window.Qiniu.uploader({
+        window.Qiniu.uploader({
           runtimes: 'html5,flash,html4',
-          browse_button: 'addImage',
+          browse_button: self.imgUploaderButtonId,
           uptoken: self.member$UploadToken,
           unique_names: true,
           domain: 'http://img2.okertrip.com/',
           get_new_uptoken: false,
-          container: 'img-uploader-container',
+          container: self.imgUploaderContainerId,
           max_file_size: '20mb',
           flash_swf_url: '/static/js/plupload/Moxie.swf',
           max_retries: 3,
@@ -84,7 +85,7 @@
        margin-top:0.225rem;
        margin-right:0.225rem;
      }
-    #img-uploader-container{
+    .img-uploader-container{
       float:left;
       display: inline-block;
       width:3.75rem;
@@ -92,7 +93,7 @@
       margin-top:0.225rem;
       margin-right:0.225rem;
     }
-    a#addImage{
+    a.addImage{
       display: inline-block;
       width:3.75rem;
       height:3.75rem;

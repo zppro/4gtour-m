@@ -2,7 +2,7 @@
   .experience-details-route-add
     .route-container
       .route-items
-        experience-route-item-edit.route-item(v-for="routeItem in routeWhenEdit", :experienceRouteItem="routeItem")
+        experience-route-item-edit.route-item(v-for="(routeItem, index) in routeWhenEdit", :experience-route-item="routeItem", :is-last="index === routeWhenEdit.length-1")
         .clear
     a#addRoute(@click="openPickScenerySpotsDialog")
       .cross.cross-lt
@@ -45,7 +45,7 @@
       ...mapGetters(['scenerySpotsPickForRoute', 'scenerySpotIdsPickedInRoute', 'routeWhenEdit'])
     },
     created () {
-      console.log('123')
+      console.log('234111')
       this.ensureScenerySpots()
     },
     watch: {
@@ -73,11 +73,6 @@
       },
       closePickScenerySpotsDialog () {
         this.isPickScenerySpotsDialogOpen = false
-      },
-      onUploaded (imgUrl) {
-        console.log(imgUrl)
-        console.log(3441)
-//        this.newExperience.imgs.push(imgUrl)
       },
       ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'ensureScenerySpots'])
     },

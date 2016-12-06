@@ -258,19 +258,45 @@ const mutations = {
             Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', true)
             let length = state.routeWhenEdit.length
             if (length > 0) {
-              state.routeWhenEdit.push({ type: 'A0003', order_no: (length + 1) / 2.0 })
+              state.routeWhenEdit.push({ type: 'A0003', imgs: [], order_no: length + 0.5 })
             }
-            state.routeWhenEdit.push({ type: 'A0001', title: state.scenerySpotsPickForRoute[i].show_name, scenerySpotId: scenerySpotIds[s], order_no: (length + 1) })
+            state.routeWhenEdit.push({ type: 'A0001', imgs: [], scenerySpotId: scenerySpotIds[s], order_no: (length + 1), title: state.scenerySpotsPickForRoute[i].show_name })
           }
         }
       }
     }
     state.scenerySpotIdsPickedInRoute = scenerySpotIds
     state.scenerySpotsConfirmPick = false
-    console.log(state.routeWhenEdit)
   },
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM] (state) {
     state.scenerySpotsConfirmPick = true
+  },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.UPDATE] (state, {orderNo, key, value}) {
+    let theOne = state.routeWhenEdit.find(item => item.order_no === orderNo)
+    if (theOne) {
+      Vue.set(theOne, key, value)
+    }
+  },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.REMOVE] (state, orderNo) {
+    let length = state.routeWhenEdit.length
+    let index = state.routeWhenEdit.findIndex(item => item.order_no === orderNo)
+    if (index !== -1) {
+      if (length > index + 1) {
+        state.routeWhenEdit.splice(index + 1, 1)
+      }
+      let removedScenerySpots = state.routeWhenEdit.splice(index, 1)
+      // todo 这里对于多个景点需要再此分析
+      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
+        if (state.scenerySpotsPickForRoute[i].id === removedScenerySpots[0].scenerySpotId) {
+          Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', false)
+        }
+      }
+      let indexOfIds = state.scenerySpotIdsPickedInRoute.findIndex(id => id === removedScenerySpots[0].scenerySpotId)
+      indexOfIds !== -1 && state.scenerySpotIdsPickedInRoute.splice(indexOfIds, 1)
+      for (var k = index; k < state.routeWhenEdit.length; k++) {
+        Vue.set(state.routeWhenEdit[k], 'order_no', state.routeWhenEdit[k].order_no - 1)
+      }
+    }
   }
 }
 
@@ -506,8 +532,6 @@ const actions = {
   },
   ensureScenerySpots ({commit, dispatch}) {
     return dispatch('cds$FetchScenerySpotsAllAsSource').then(scenerySpots => {
-      console.log(12345)
-      console.log(scenerySpots)
       commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET, {scenerySpots})
     })
   },
@@ -519,6 +543,16 @@ const actions = {
   confirmScenerySpotsToRoute ({commit, dispatch}) {
     return dispatch('noop').then(ret => {
       commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM)
+    })
+  },
+  updateRouteField ({commit, dispatch}, {orderNo, key, value}) {
+    return dispatch('noop').then(ret => {
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.UPDATE, {orderNo, key, value})
+    })
+  },
+  removeScenerySpotFromRoute ({commit, dispatch}, orderNo) {
+    return dispatch('noop').then(ret => {
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.REMOVE, orderNo)
     })
   }
 }

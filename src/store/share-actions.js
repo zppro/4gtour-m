@@ -1,4 +1,4 @@
-import { Toast, Indicator } from 'mint-ui'
+import { Toast, Indicator, MessageBox } from 'mint-ui'
 import router from '../router'
 import * as mutationTypes from './mutation-types'
 import { toastOption } from '../config/mint-ui-option'
@@ -38,6 +38,10 @@ export const toastError = (o, {msg}) => {
 
 export const toastInfo = (o, msg) => {
   Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-info'}))
+}
+
+export const confirm = (o, msg) => {
+  return MessageBox.confirm('确定执行此操作?')
 }
 
 export const login = ({ state, dispatch }) => {
