@@ -27,6 +27,7 @@
     created () {
       let self = this
       this.ensureMember$UploadToken().then(() => {
+        console.log(self.member$UploadToken)
         window.Qiniu.uploader({
           runtimes: 'html5,flash,html4',
           browse_button: self.imgUploaderButtonId,

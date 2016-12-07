@@ -21,7 +21,6 @@
       },
       ok () {
         this.confirmScenerySpotsToRoute()
-        this.$emit('closeDialog')
       },
       ...mapActions(['confirmScenerySpotsToRoute'])
     }

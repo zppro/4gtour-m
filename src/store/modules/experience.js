@@ -38,10 +38,7 @@ const state = {
   noMoreOfTaTweeted: false,
   noMoreOfTaStared: false,
   newExperiences: true,
-  scenerySpotsConfirmPick: false, // 确认选择
-  scenerySpotsPickForRoute: [], // all
-  scenerySpotIdsPickedInRoute: [], // picked
-  routeWhenEdit: [] // 编辑中的路线
+  scenerySpotsConfirmPick: false // 确认选择
 }
 
 // getters
@@ -96,17 +93,6 @@ const getters = {
   },
   scenerySpotsConfirmPickToRoute (state) {
     return state.scenerySpotsConfirmPick
-  },
-  scenerySpotIdsPickedInRoute (state) {
-    return state.scenerySpotIdsPickedInRoute
-  },
-  scenerySpotsPickForRoute (state) {
-    return state.scenerySpotsPickForRoute.map((s) => {
-      return { label: s.show_name, value: s.id, disabled: s.disabled }
-    })
-  },
-  routeWhenEdit (state) {
-    return state.routeWhenEdit
   }
 }
 
@@ -247,70 +233,11 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
     state.newExperiences = true
   },
-  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET] (state, { scenerySpots }) {
-    state.scenerySpotsPickForRoute = scenerySpots
-  },
-  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CLEAR] (state) {
-    if (state.scenerySpotsPickForRoute.length > 0) {
-      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
-        if (state.scenerySpotsPickForRoute[i].disabled) {
-          Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', false)
-        }
-      }
-    }
-    state.routeWhenEdit = []
-    state.scenerySpotIdsPickedInRoute = []
-    state.scenerySpotsConfirmPick = false
-  },
-  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC] (state, { scenerySpotIds }) {
-    for (var s = 0; s < scenerySpotIds.length; s++) {
-      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
-        if (state.scenerySpotsPickForRoute[i].id === scenerySpotIds[s]) {
-          if (!state.scenerySpotsPickForRoute[i].disabled) {
-            Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', true)
-            let length = state.routeWhenEdit.length
-            if (length > 0) {
-              state.routeWhenEdit.push({ type: 'A0003', imgs: [], order_no: length + 0.5 })
-            }
-            state.routeWhenEdit.push({ type: 'A0001', imgs: [], scenerySpotId: scenerySpotIds[s], order_no: (length + 1), title: state.scenerySpotsPickForRoute[i].show_name })
-          }
-        }
-      }
-    }
-    state.scenerySpotIdsPickedInRoute = scenerySpotIds
-    state.scenerySpotsConfirmPick = false
-  },
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM] (state) {
     state.scenerySpotsConfirmPick = true
   },
-  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.UPDATE] (state, {orderNo, key, value}) {
-    let theOne = state.routeWhenEdit.find(item => item.order_no === orderNo)
-    if (theOne) {
-      Vue.set(theOne, key, value)
-    }
-  },
-  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.REMOVE] (state, orderNo) {
-    let length = state.routeWhenEdit.length
-    let index = state.routeWhenEdit.findIndex(item => item.order_no === orderNo)
-    if (index !== -1) {
-      if (length > index + 1) {
-        state.routeWhenEdit.splice(index + 1, 1) // 当不是最后一个景点时删除后面的路线
-      }
-      let removedScenerySpots = state.routeWhenEdit.splice(index, 1)
-      if (length === index + 1) {
-        state.routeWhenEdit.splice(index - 1, 1) // 当是最后一个景点则删除前面的路线
-      }
-      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
-        if (state.scenerySpotsPickForRoute[i].id === removedScenerySpots[0].scenerySpotId) {
-          Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', false)
-        }
-      }
-      let indexOfIds = state.scenerySpotIdsPickedInRoute.findIndex(id => id === removedScenerySpots[0].scenerySpotId)
-      indexOfIds !== -1 && state.scenerySpotIdsPickedInRoute.splice(indexOfIds, 1)
-      for (var k = index; k < state.routeWhenEdit.length; k++) {
-        Vue.set(state.routeWhenEdit[k], 'order_no', state.routeWhenEdit[k].order_no - 1)
-      }
-    }
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM_RESTORE] (state) {
+    state.scenerySpotsConfirmPick = false
   }
 }
 
@@ -492,9 +419,9 @@ const actions = {
       return state.current
     })
   },
-  saveExperienceAsFeeling ({rootState, commit, dispatch}, feelingExperience) {
-    if (!feelingExperience.id) {
-      return Vue.http.post('trv/experience', feelingExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+  saveExperience ({rootState, commit, dispatch}, theExperience) {
+    if (!theExperience.id) {
+      return Vue.http.post('trv/experience', theExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
@@ -509,7 +436,7 @@ const actions = {
         }
       })
     } else {
-      return Vue.http.put('trv/experience/' + feelingExperience.id, feelingExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      return Vue.http.put('trv/experience/' + theExperience.id, theExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         if (ret.data.success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
@@ -544,34 +471,14 @@ const actions = {
       }
     })
   },
-  ensureScenerySpots ({commit, dispatch}) {
-    return dispatch('cds$FetchScenerySpotsAllAsSource').then(scenerySpots => {
-      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET, {scenerySpots})
-    })
-  },
-  syncScenerySpotsToRoute ({commit, dispatch}, scenerySpotIds) {
-    return dispatch('noop').then(ret => {
-      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC, {scenerySpotIds})
-    })
-  },
   confirmScenerySpotsToRoute ({commit, dispatch}) {
     return dispatch('noop').then(ret => {
       commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM)
     })
   },
-  updateRouteField ({commit, dispatch}, {orderNo, key, value}) {
+  restoreConfirmScenerySpotsToRoute ({commit, dispatch}) {
     return dispatch('noop').then(ret => {
-      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.UPDATE, {orderNo, key, value})
-    })
-  },
-  removeScenerySpotFromRoute ({commit, dispatch}, orderNo) {
-    return dispatch('noop').then(ret => {
-      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.REMOVE, orderNo)
-    })
-  },
-  initRouteWhenAdd ({commit, dispatch}) {
-    return dispatch('noop').then(ret => {
-      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CLEAR)
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CONFIRM_RESTORE)
     })
   }
 }

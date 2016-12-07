@@ -4,7 +4,7 @@
       i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-    a.nav-item.nav-item-right
+    a.nav-item.nav-item-right(@click="submitForm")
       a.btn-send 保存
 </template>
 <style lang="less">
@@ -29,6 +29,7 @@
   }
 </style>
 <script>
+  import { mapActions } from 'vuex'
   export default {
     computed: {
       title () {
@@ -44,7 +45,8 @@
       back () {
 //        this.$router.replace('/experience/mine')
         window.history.back()
-      }
+      },
+      ...mapActions(['submitForm'])
     }
   }
 </script>

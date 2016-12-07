@@ -2,7 +2,7 @@
   .experience-details-route-add
     .route-container
       .route-items
-        experience-route-item-edit.route-item(v-for="(routeItem, index) in routeWhenEdit", :experience-route-item="routeItem", :is-last="index === routeWhenEdit.length-1")
+        experience-route-item-edit.route-item(v-on:removeItem="removeFromRoute" v-for="(routeItem, index) in newExperience.route", :experience-route-item="routeItem", :is-last="index === newExperience.route.length-1")
         .clear
     a#addRoute(@click="openPickScenerySpotsDialog")
       .cross.cross-lt
@@ -11,16 +11,20 @@
       .cross.cross-rb
     mt-popup(v-model="isPickScenerySpotsDialogOpen" position="bottom" class="mint-popup-bottom")
       router-view(name="dialogHead" v-on:closeDialog="closePickScenerySpotsDialog")
-      router-view(name="dialogBody", v-on:closeDialog="closePickScenerySpotsDialog", :scenerySpots="scenerySpotsPickForRoute", :picked="scenerySpotIdsPickedInRoute")
+      router-view(name="dialogBody", v-on:comfirmDialog="confirmPicked", :scenerySpots="scenerySpots", :picked="scenerySpotIdsPickedInRoute")
 </template>
 
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
+  import Vue from 'vue'
+  import { mapState, mapActions } from 'vuex'
   import ExperienceRouteItemEdit from '../components/ExperienceRouteItemEdit.vue'
   export default {
     data () {
       return {
+        validation: {},
         isPickScenerySpotsDialogOpen: false,
+        scenerySpotsPickForRoute: [], // all
+        scenerySpotIdsPickedInRoute: [], // picked
         newExperience: {
           category: 'A0003',
           route: [],
@@ -30,38 +34,36 @@
       }
     },
     computed: {
-      validation: function () {
-        return {
-          route$required: this.newExperience.route.length > 1
-        }
-      },
-      isValid: function () {
-        var validation = this.validation
-        return Object.keys(validation).every(function (key) {
-          return validation[key]
+      scenerySpots: function () {
+        return this.scenerySpotsPickForRoute.map((s) => {
+          return { label: s.show_name, value: s.id, disabled: s.disabled }
         })
       },
-      ...mapState(['env', 'submitingForm']),
-      ...mapGetters(['scenerySpotsPickForRoute', 'scenerySpotIdsPickedInRoute', 'routeWhenEdit'])
+      ...mapState(['env', 'submitingForm'])
     },
     created () {
-      console.log('234111')
-      this.ensureScenerySpots()
+      console.log('12')
       this.ensureD('trv03')
+      this.cds$FetchScenerySpotsAllAsSource().then((rows) => {
+        this.scenerySpotsPickForRoute = rows
+      })
     },
     watch: {
       submitingForm: function (newSubmitingForm) {
-        var self = this
+        let self = this
         if (newSubmitingForm) {
-          if (this.isValid) {
-            console.log(this.newExperience)
-            this.saveExperienceAsRoute(this.newExperience).then(() => {
+          console.log(this.newExperience.route)
+          if (this.isValid()) {
+            console.log('validate success')
+            this.saveExperience(this.newExperience).then(() => {
               self.$router.replace('/experience/mine')
             })
           } else {
             this.submitFormFail().then(() => {
               if (!self.validation.route$required) {
                 self.toast({msg: '路线必须是包含至少两个景点'})
+              } else if (!self.validation.route$contentRequired) {
+                self.toast({msg: '景点介绍或者景点间的交通不能为空'})
               }
             })
           }
@@ -69,13 +71,75 @@
       }
     },
     methods: {
+      isValid () {
+        let self = this
+        this.validation = this.validate()
+        return Object.keys(this.validation).every(function (key) {
+          return self.validation[key]
+        })
+      },
+      validate () {
+        let self = this
+        return {
+          route$required: self.newExperience.route.length > 1,
+          route$contentRequired: self.newExperience.route.every(o => {
+            console.log(o)
+            return (o.content || '').Trim().length > 0
+          })
+        }
+      },
       openPickScenerySpotsDialog () {
         this.isPickScenerySpotsDialogOpen = true
       },
       closePickScenerySpotsDialog () {
         this.isPickScenerySpotsDialogOpen = false
       },
-      ...mapActions(['toast', 'ensureD', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'ensureScenerySpots', 'initRouteWhenAdd'])
+      confirmPicked (scenerySpotIds) {
+        this.isPickScenerySpotsDialogOpen = false
+        for (var s = 0; s < scenerySpotIds.length; s++) {
+          for (var i = 0; i < this.scenerySpotsPickForRoute.length; i++) {
+            if (this.scenerySpotsPickForRoute[i].id === scenerySpotIds[s]) {
+              if (!this.scenerySpotsPickForRoute[i].disabled) {
+//                this.scenerySpotsPickForRoute[i].disabled = true
+                Vue.set(this.scenerySpotsPickForRoute[i], 'disabled', true)
+                let length = this.newExperience.route.length
+                if (length > 0) {
+                  this.newExperience.route.push({ type: 'A0003', imgs: [], order_no: length + 0.5 })
+                }
+                this.newExperience.route.push({ type: 'A0001', imgs: [], scenerySpotId: scenerySpotIds[s], order_no: (length + 1), title: this.scenerySpotsPickForRoute[i].show_name })
+              }
+            }
+          }
+        }
+        console.log(this.scenerySpotsPickForRoute)
+        this.scenerySpotIdsPickedInRoute = scenerySpotIds
+        this.restoreConfirmScenerySpotsToRoute()
+      },
+      removeFromRoute (orderNo) {
+        let length = this.newExperience.route.length
+        let index = this.newExperience.route.findIndex(item => item.order_no === orderNo)
+        if (index !== -1) {
+          if (length > index + 1) {
+            this.newExperience.route.splice(index + 1, 1) // 当不是最后一个景点时删除后面的路线
+          }
+          let removedScenerySpots = this.newExperience.route.splice(index, 1)
+          if (length === index + 1) {
+            this.newExperience.route.splice(index - 1, 1) // 当是最后一个景点则删除前面的路线
+          }
+          for (var i = 0; i < this.scenerySpotsPickForRoute.length; i++) {
+            if (this.scenerySpotsPickForRoute[i].id === removedScenerySpots[0].scenerySpotId) {
+//              this.scenerySpotsPickForRoute[i].disabled = undefined
+              Vue.set(this.scenerySpotsPickForRoute[i], 'disabled', undefined)
+            }
+          }
+          let indexOfIds = this.scenerySpotIdsPickedInRoute.findIndex(id => id === removedScenerySpots[0].scenerySpotId)
+          indexOfIds !== -1 && this.scenerySpotIdsPickedInRoute.splice(indexOfIds, 1)
+          for (var k = index; k < this.newExperience.route.length; k++) {
+            this.newExperience.route[k].order_no -= 1
+          }
+        }
+      },
+      ...mapActions(['toast', 'ensureD', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'cds$FetchScenerySpotsAllAsSource', 'restoreConfirmScenerySpotsToRoute'])
     },
     components: {
       ExperienceRouteItemEdit

@@ -49,7 +49,6 @@ export const preloadD = ({ commit, dispatch }, key) => {
   return Vue.http.get('api/d/' + key).then(ret => {
     if (ret.data.success) {
       const values = ret.data.rows
-      console.log(values)
       commit(mutationTypes.$DICTIONARY$ + mutationTypes.SET, {key, values})
       return values
     } else {

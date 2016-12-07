@@ -127,6 +127,7 @@ const actions = {
       if (ret.data.success) {
         const loginRet = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.LOGIN_SUCCESS, loginRet)
+        dispatch('fetchMember$UploadToken')
       } else {
         dispatch('toastError', ret.data)
         commit(ENTITY_NAME + mutationTypes.LOGIN_FAIL)
@@ -208,7 +209,8 @@ const actions = {
     })
   },
   ensureMember$UploadToken ({ state, dispatch }) {
-    if (!state.member$UploadTokenCurrent) {
+    if (state.self.member_id !== initEmptyMemberInfo.member_id && !state.member$UploadTokenCurrent) {
+      console.log(345)
       return dispatch('fetchMember$UploadToken')
     }
     return dispatch('noop')

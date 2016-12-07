@@ -1,7 +1,7 @@
 <template lang="jade">
   .pick-scenery-spots
     mt-checklist(v-model="newPicked", :options="scenerySpots")
-    a.btn1.btn-confirm(@click="confirmPick") 选择
+    a.btn1.btn-confirm(@click="pick") 选择
 </template>
 
 <script>
@@ -14,26 +14,22 @@
     },
     props: ['scenerySpots', 'picked'],
     created () {
-      console.log(111)
       this.newPicked = [].concat(this.picked)
+      console.log(this.scenerySpots)
     },
     computed: {
       ...mapGetters(['scenerySpotsConfirmPickToRoute'])
     },
     watch: {
       scenerySpotsConfirmPickToRoute: function (newScenerySpotsConfirmPickToRoute) {
-        newScenerySpotsConfirmPickToRoute && this.sync()
+        newScenerySpotsConfirmPickToRoute && this.pick()
       }
     },
     methods: {
-      sync () {
-        this.syncScenerySpotsToRoute(this.newPicked)
+      pick () {
+        this.$emit('comfirmDialog', this.newPicked)
       },
-      confirmPick () {
-        this.confirmScenerySpotsToRoute()
-        this.$emit('closeDialog')
-      },
-      ...mapActions(['syncScenerySpotsToRoute', 'confirmScenerySpotsToRoute'])
+      ...mapActions(['confirmScenerySpotsToRoute'])
     }
   }
 </script>

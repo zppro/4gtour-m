@@ -78,7 +78,7 @@
         if (newSubmitingForm) {
           if (this.isValid) {
             console.log(this.newExperience)
-            this.saveExperienceAsFeeling(this.newExperience).then(() => {
+            this.saveExperience(this.newExperience).then(() => {
               self.$router.replace('/experience/mine')
             })
           } else {
@@ -96,7 +96,7 @@
         console.log(imgUrl)
         this.newExperience.imgs.push(imgUrl)
       },
-      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsFeeling', 'fetchExperienceInfo'])
+      ...mapActions(['toast', 'submitFormFail', 'saveExperience', 'fetchExperienceInfo'])
     },
     components: {
       ImageUploader,
