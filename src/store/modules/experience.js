@@ -422,7 +422,8 @@ const actions = {
   saveExperience ({rootState, commit, dispatch}, theExperience) {
     if (!theExperience.id) {
       return Vue.http.post('trv/experience', theExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
-        if (ret.data.success) {
+        const success = ret.data.success
+        if (success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
@@ -434,10 +435,12 @@ const actions = {
             dispatch('toastError', ret.data)
           })
         }
+        return success
       })
     } else {
       return Vue.http.put('trv/experience/' + theExperience.id, theExperience, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
-        if (ret.data.success) {
+        const success = ret.data.success
+        if (success) {
           const experience = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {experience})
           dispatch('submitFormSuccess').then(() => {
@@ -448,6 +451,7 @@ const actions = {
             dispatch('toastError', ret.data)
           })
         }
+        return success
       })
     }
   },

@@ -125,6 +125,7 @@ body {
 .text-danger,a.text-danger{color:#ea5513;}
 iframe.img-loader{padding:0;margin:0;}
 .header-color{background-color:#ea5513;}
+.inline-block{display: inline-block}
 .btn1 {
   display: block;
   margin:0 auto;

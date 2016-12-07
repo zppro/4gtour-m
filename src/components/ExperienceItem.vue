@@ -8,6 +8,10 @@
           slot(name="member_name")
         .time-description
           slot(name="time_description")
+      .experience-mark
+        i.fa.fa-eye.text-primary(aria-hidden="true" v-if="!isRoute", title="见闻")
+        i.fa.fa-bus.text-primary(aria-hidden="true" v-if="isRoute" , title="公交车")
+        i.fa.fa-taxi.text-primary(aria-hidden="true" v-if="isRoute" , title="的士")
     .item-body
       .content
         slot(name="content")
@@ -72,6 +76,12 @@
           font-size: 0.5rem;
           color:#7c7b7b;
         }
+      }
+      .experience-mark{
+        display: inline-block;
+        float:right;
+        font-size:0.5rem;
+        i{margin-left: 0.1rem;}
       }
     }
     .item-body{
@@ -150,6 +160,9 @@
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/route'}
+      },
+      isRoute () {
+        return this.experience.category === 'A0003'
       },
       ...mapGetters(['isLogined'])
     },

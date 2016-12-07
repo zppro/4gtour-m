@@ -9,6 +9,7 @@
       .cross.cross-rt
       .cross.cross-lb
       .cross.cross-rb
+    a.btn1.btn-save(@click="submitForm") 提交
     mt-popup(v-model="isPickScenerySpotsDialogOpen" position="bottom" class="mint-popup-bottom")
       router-view(name="dialogHead" v-on:closeDialog="closePickScenerySpotsDialog")
       router-view(name="dialogBody", v-on:comfirmDialog="confirmPicked", :scenerySpots="scenerySpots", :picked="scenerySpotIdsPickedInRoute")
@@ -39,7 +40,7 @@
           return { label: s.show_name, value: s.id, disabled: s.disabled }
         })
       },
-      ...mapState(['env', 'submitingForm'])
+      ...mapState(['env', 'submitingForm', 'ordinal'])
     },
     created () {
       console.log('12')
@@ -55,8 +56,10 @@
           console.log(this.newExperience.route)
           if (this.isValid()) {
             console.log('validate success')
-            this.saveExperience(this.newExperience).then(() => {
-              self.$router.replace('/experience/mine')
+            this.newExperience.content = this.newExperience.route.filter(o => o.type === 'A0001').map(o => self.ordinal[o.order_no] + o.title).join(' -> ')
+            this.newExperience.imgs = this.newExperience.route.filter(o => o.type === 'A0001').reduce((prev, next) => { return prev.concat(next.imgs) }, [])
+            this.saveExperience(this.newExperience).then((success) => {
+              success && self.$router.replace('/experience/mine')
             })
           } else {
             this.submitFormFail().then(() => {
@@ -95,6 +98,10 @@
         this.isPickScenerySpotsDialogOpen = false
       },
       confirmPicked (scenerySpotIds) {
+        if (scenerySpotIds.length > 10) {
+          this.toast({msg: '路线的景点最多不能超过10个'})
+          return
+        }
         this.isPickScenerySpotsDialogOpen = false
         for (var s = 0; s < scenerySpotIds.length; s++) {
           for (var i = 0; i < this.scenerySpotsPickForRoute.length; i++) {
@@ -139,7 +146,7 @@
           }
         }
       },
-      ...mapActions(['toast', 'ensureD', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'cds$FetchScenerySpotsAllAsSource', 'restoreConfirmScenerySpotsToRoute'])
+      ...mapActions(['toast', 'ensureD', 'submitForm', 'submitFormFail', 'saveExperience', 'fetchExperienceInfo', 'cds$FetchScenerySpotsAllAsSource', 'restoreConfirmScenerySpotsToRoute'])
     },
     components: {
       ExperienceRouteItemEdit
@@ -205,6 +212,9 @@
         border-left:solid 1px #c8c8c8;
         border-top:solid 1px #c8c8c8;
       }
+    }
+    .btn-confirm{
+      margin-top: 2rem;
     }
   }
 </style>

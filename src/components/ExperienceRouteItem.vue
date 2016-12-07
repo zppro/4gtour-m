@@ -35,9 +35,10 @@
         .info-content.scenery-spot-address
           slot(name="scenerySpotAddress")
     .experience-route-traffic(v-if="!isScenerySpot")
-      i.fa.fa-bus(aria-hidden="true")
-      .traffic-start-left
-      .traffic-start-right
+      .traffic-head
+        .traffic-icon
+          i.fa.fa-bus(aria-hidden="true")
+        span
       .traffic-content
         slot(name="routeContent")
 </template>
@@ -97,34 +98,47 @@
         }
       }
       .route-image-collection{
-        height:7.2rem;
+        height:7.5rem;
         padding:0;
       }
     }
     .experience-route-traffic {
       background-color:#F0EFF5;
       position: relative;
-      display:flex;
-      i{
-        position: absolute;
-        left:1.08rem;
-        top: 1.08rem;
-        flex:1;
-      }
-      .traffic-start-left,.traffic-start-right{
-        flex:1;
-      }
-      .traffic-start-right{
-        border-left:1px #000 dotted;
+      width:100%;
+      display: flex;
+      .traffic-head{
+        width: 1.65rem;
+        display:inline-block;
+        flex: 1;
+        .traffic-icon{
+          width: 1.15rem;
+          height:1.15rem;
+          background-color: #8195EB;
+          -moz-border-radius: 100%;
+          -webkit-border-radius: 100%;
+          border-radius: 100%;
+          display: inline-block;
+          i{
+            color: white;
+            font-size: 0.7rem;
+            display: block;
+            margin: 0.225rem auto;
+          }
+        }
+        span{
+          height:100%;
+          display:inline-block;
+          vertical-align:middle;
+        }
       }
       .traffic-content {
-        flex:10;
+        display: inline-block;
+        width:16rem;
         padding:0.5rem;
         font-size:0.65rem;
         text-align:left;
-      }
-      .traffic-end{
-        flex: 1;
+        flex: 5;
       }
     }
   }

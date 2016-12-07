@@ -78,8 +78,8 @@
         if (newSubmitingForm) {
           if (this.isValid) {
             console.log(this.newExperience)
-            this.saveExperience(this.newExperience).then(() => {
-              self.$router.replace('/experience/mine')
+            this.saveExperience(this.newExperience).then((success) => {
+              success && self.$router.replace('/experience/mine')
             })
           } else {
             this.submitFormFail().then(() => {

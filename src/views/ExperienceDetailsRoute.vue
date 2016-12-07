@@ -1,21 +1,21 @@
 <template lang="jade">
   .experience-details-route
-    experience-route-item(v-for="route in experience.routes", :is-scenery-spot="route.type === 'A0001'")
-      span(slot="routeOrderNo") {{route.order_no}}
-      span(slot="title") {{route.scenerySpotInfo.show_name}}
-      span(slot="level") {{route.scenerySpotInfo.level}}
-      image-swiper(:all-images="route.imgs",:current-image="currentImage", auto="3000" slot="routeImages")
-      div(slot="routeContent") {{route.content}}
-      span(slot="routeTimeConsuming") {{route.time_consuming}}
-      div(slot="scenerySpotIntroduction") {{route.scenerySpotInfo.introduction_simple}}
-      div(slot="scenerySpotRuntime") {{route.scenerySpotInfo.runtime}}
-      div(slot="scenerySpotTel") {{route.scenerySpotInfo.tel}}
-      div(slot="scenerySpotAddress") {{route.scenerySpotInfo.address}}
+    experience-route-item(v-for="routeItem in experience.route", :is-scenery-spot="routeItem.type === 'A0001'")
+      span(slot="routeOrderNo") {{routeItem.order_no}}
+      span(slot="title") {{routeItem.scenerySpotId.show_name}}
+      span(slot="level") {{routeItem.scenerySpotId.level}}
+      image-rotator(:all-images="getScenerySpotImgs(routeItem)",:current-image="currentImage", :auto="3000" slot="routeImages" width="18.75" height="7.5")
+      div(slot="routeContent") {{routeItem.content}}
+      span(slot="routeTimeConsuming") {{routeItem.time_consuming}}
+      div(slot="scenerySpotIntroduction") {{routeItem.scenerySpotId.introduction_simple}}
+      div(slot="scenerySpotRuntime") {{routeItem.scenerySpotId.runtime}}
+      div(slot="scenerySpotTel") {{routeItem.scenerySpotId.tel}}
+      div(slot="scenerySpotAddress") {{routeItem.scenerySpotId.address}}
 </template>
 
 <script>
   import ExperienceRouteItem from '../components/ExperienceRouteItem.vue'
-  import ImageSwiper from '../components/ImageSwiper.vue'
+  import ImageRotator from '../components/ImageRotator.vue'
   export default {
     data () {
       return {
@@ -23,9 +23,22 @@
       }
     },
     props: ['experience'],
+    created () {
+      console.log('1111111111111111111111111111111created')
+      console.log(this.experience)
+    },
+    methods: {
+      getScenerySpotImgs (routeItem) {
+        if (routeItem.imgs.length > 0) {
+          return routeItem.imgs
+        } else {
+          return [routeItem.scenerySpotId.img]
+        }
+      }
+    },
     components: {
       ExperienceRouteItem,
-      ImageSwiper
+      ImageRotator
     }
   }
 </script>

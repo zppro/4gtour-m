@@ -21,7 +21,7 @@
           img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
           span(slot="time_description") {{experience.time_description}}
-          div(slot="content" v-html="experience.content")
+          div.inline-block(slot="content" v-html="experience.content")
           span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
           .img-list(slot="imgs")
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
