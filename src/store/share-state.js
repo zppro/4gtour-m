@@ -17,5 +17,6 @@ export default {
   submitingForm: false,
   defaultMemberHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png?imageView2/1/w/70/h/70',
   defaultTAHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png',
-  authMemberByTokenPromise: Promise.resolve(false)
+  authMemberByTokenPromise: Promise.resolve(false),
+  d: {} // 字典容器
 }

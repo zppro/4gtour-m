@@ -47,6 +47,7 @@
     created () {
       console.log('234111')
       this.ensureScenerySpots()
+      this.ensureD('trv03')
     },
     watch: {
       submitingForm: function (newSubmitingForm) {
@@ -74,7 +75,7 @@
       closePickScenerySpotsDialog () {
         this.isPickScenerySpotsDialogOpen = false
       },
-      ...mapActions(['toast', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'ensureScenerySpots'])
+      ...mapActions(['toast', 'ensureD', 'submitFormFail', 'saveExperienceAsRoute', 'fetchExperienceInfo', 'ensureScenerySpots', 'initRouteWhenAdd'])
     },
     components: {
       ExperienceRouteItemEdit

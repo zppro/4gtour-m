@@ -1,4 +1,5 @@
 export const $GLOABL_PREFIX$ = 'GLOBAL'
+export const $DICTIONARY$ = 'DICTIONARY'
 
 export const SET = '/SET'
 export const CLEAR = '/CLEAR'

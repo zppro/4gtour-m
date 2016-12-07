@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import * as mutationTypes from './mutation-types'
 
 export default {
@@ -21,5 +22,8 @@ export default {
   },
   [mutationTypes.$GLOABL_PREFIX$ + mutationTypes.SUBMIT_FORM_FAIL] (state) {
     state.submitingForm = false
+  },
+  [mutationTypes.$DICTIONARY$ + mutationTypes.SET] (state, {key, values}) {
+    Vue.set(state.d, key, values)
   }
 }

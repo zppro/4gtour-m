@@ -11,18 +11,18 @@
           i.fa.fa-trash.text-muted(aria-hidden="true")
       .route-traffic-line(v-if="!isScenerySpot")
         .route-traffic-line-title 景点间交通
-        textarea(v-model="routeContent")
+        textarea(v-model="routeContent" placeholder="相邻景点的出行方式..")
       .route-item-imgs(v-if="isScenerySpot")
         image-uploader(:upload-id="uploadId", :all-images="imgs" v-on:uploaded="onUploaded")
       .route-item-content(v-if="isScenerySpot")
         .route-item-label
           .ball-small
           | 推荐理由
-        textarea(v-model="routeContent")
-      .route-time-consuming(v-if="isScenerySpot")
+        textarea(v-model="routeContent" placeholder="例如：风景优美， 心旷神怡..")
+      .route-time-consuming
         .route-item-label
           .ball-small
-          | 游玩时间
+          | {{isScenerySpot ? '游玩时间': '耗时'}}
         mt-radio(v-model="routeTimeConsuming", :options="trv03")
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only  -->
@@ -117,7 +117,7 @@
 }
 </style>
 <script>
-  import { mapActions } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   import ImageUploader from '../components/ImageUploader.vue'
   export default {
     props: ['experienceRouteItem', 'isLast'],
@@ -142,34 +142,15 @@
           this.updateRouteField({orderNo: this.orderNo, key: 'content', value})
         }
       },
-      trv03 () {
-        return [
-          {
-            label: '15分钟以内',
-            value: 'A0001'
-          },
-          {
-            label: '15-30分钟',
-            value: 'A0003'
-          },
-          {
-            label: '30-60分钟',
-            value: 'A0005'
-          },
-          {
-            label: '1-2小时',
-            value: 'A0007'
-          },
-          {
-            label: '半天',
-            value: 'A0009'
-          },
-          {
-            label: '一天',
-            value: 'A0011'
-          }
-        ]
-      }
+      routeTimeConsuming: {
+        get () {
+          return this.experienceRouteItem.time_consuming
+        },
+        set (value) {
+          this.updateRouteField({orderNo: this.orderNo, key: 'time_consuming', value})
+        }
+      },
+      ...mapGetters(['trv03'])
     },
     created () {
       console.log(this.orderNo)

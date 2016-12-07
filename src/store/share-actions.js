@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { Toast, Indicator, MessageBox } from 'mint-ui'
 import router from '../router'
 import * as mutationTypes from './mutation-types'
@@ -44,6 +45,28 @@ export const confirm = (o, msg) => {
   return MessageBox.confirm('确定执行此操作?')
 }
 
+export const preloadD = ({ commit, dispatch }, key) => {
+  return Vue.http.get('api/d/' + key).then(ret => {
+    if (ret.data.success) {
+      const values = ret.data.rows
+      console.log(values)
+      commit(mutationTypes.$DICTIONARY$ + mutationTypes.SET, {key, values})
+      return values
+    } else {
+      dispatch('toastError', ret.data)
+    }
+  })
+}
+
+export const ensureD = ({ state, dispatch }, key) => {
+  let values = state.d[key]
+  if (!values) {
+    return dispatch('preloadD', key)
+  } else {
+    return Promise.resolve(values)
+  }
+}
+
 export const login = ({ state, dispatch }) => {
   if (state.env.isApiCloud) {
     // 呼出登录窗体
@@ -52,7 +75,6 @@ export const login = ({ state, dispatch }) => {
     router.replace({path: '/login', query: {redirect: window.location.hash.substr(1)}})
   }
 }
-console.log(345)
 
 export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
   return Promise.resolve(true).then(() => {

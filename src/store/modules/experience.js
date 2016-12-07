@@ -250,6 +250,18 @@ const mutations = {
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SET] (state, { scenerySpots }) {
     state.scenerySpotsPickForRoute = scenerySpots
   },
+  [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CLEAR] (state) {
+    if (state.scenerySpotsPickForRoute.length > 0) {
+      for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
+        if (state.scenerySpotsPickForRoute[i].disabled) {
+          Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', false)
+        }
+      }
+    }
+    state.routeWhenEdit = []
+    state.scenerySpotIdsPickedInRoute = []
+    state.scenerySpotsConfirmPick = false
+  },
   [ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.SYNC] (state, { scenerySpotIds }) {
     for (var s = 0; s < scenerySpotIds.length; s++) {
       for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
@@ -282,10 +294,12 @@ const mutations = {
     let index = state.routeWhenEdit.findIndex(item => item.order_no === orderNo)
     if (index !== -1) {
       if (length > index + 1) {
-        state.routeWhenEdit.splice(index + 1, 1)
+        state.routeWhenEdit.splice(index + 1, 1) // 当不是最后一个景点时删除后面的路线
       }
       let removedScenerySpots = state.routeWhenEdit.splice(index, 1)
-      // todo 这里对于多个景点需要再此分析
+      if (length === index + 1) {
+        state.routeWhenEdit.splice(index - 1, 1) // 当是最后一个景点则删除前面的路线
+      }
       for (var i = 0; i < state.scenerySpotsPickForRoute.length; i++) {
         if (state.scenerySpotsPickForRoute[i].id === removedScenerySpots[0].scenerySpotId) {
           Vue.set(state.scenerySpotsPickForRoute[i], 'disabled', false)
@@ -553,6 +567,11 @@ const actions = {
   removeScenerySpotFromRoute ({commit, dispatch}, orderNo) {
     return dispatch('noop').then(ret => {
       commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.REMOVE, orderNo)
+    })
+  },
+  initRouteWhenAdd ({commit, dispatch}) {
+    return dispatch('noop').then(ret => {
+      commit(ENTITY_NAME + SCENERY_ROUTE_NAME + mutationTypes.CLEAR)
     })
   }
 }
