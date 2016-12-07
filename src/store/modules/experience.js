@@ -151,10 +151,10 @@ const mutations = {
     state.noMoreOfMyStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
   },
   [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
-    state.noMoreOfTaTweeted = state.hot >= MAX_HOT_COUNT || fetchCount < size
+    state.noMoreOfTaTweeted = fetchCount < size
   },
   [ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
-    state.noMoreOfTaStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
+    state.noMoreOfTaStared = fetchCount < size
   },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 0
@@ -285,7 +285,7 @@ const actions = {
   appendMyTweetedList ({ commit, state, rootState }) {
     console.log('appendMyTweetedList')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyTweeted', {page: {size: rootState.dataFetchingSize, skip: state.myTweeted.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -311,7 +311,7 @@ const actions = {
   appendMyStaredList ({ commit, state, rootState }) {
     console.log('appendMyStaredList')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/experiencesMyStared', {page: {size: rootState.dataFetchingSize, skip: state.myStared.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + MY_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -337,7 +337,7 @@ const actions = {
   appendTaTweetedList ({ commit, state, rootState }) {
     console.log('appendTaTweetedList')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/experiencesTaTweeted/' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/experiencesTaTweeted/' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.taTweeted.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
@@ -363,7 +363,7 @@ const actions = {
   appendTaStaredList ({ commit, state, rootState }) {
     console.log('appendTaStaredList')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/experiencesTaStared' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.hot.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/experiencesTaStared' + rootState.route.params.id, {page: {size: rootState.dataFetchingSizeSmall, skip: state.taStared.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const experiences = ret.data.rows
         experiences.length > 0 && commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.APPEND_LIST_SUCCESS, { experiences })
