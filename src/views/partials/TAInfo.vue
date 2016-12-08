@@ -82,18 +82,9 @@
       ...mapState(['defaultTAHeadPortrait']),
       ...mapGetters(['isLogined'])
     },
-    created () {
-      console.log('ta=')
-      window.setTimeout(() => {
-        console.log(this.ta.name)
-      }, 2000)
-    },
     methods: {
       format: function (img) {
         return window.utils.qiniuImageView(img, window.utils.rem2px(4.35), window.utils.rem2px(4.35))
-      },
-      closeSelf () {
-        this.$emit('AAA')
       }
     }
   }

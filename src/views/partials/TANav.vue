@@ -64,6 +64,7 @@
           this.login()
         } else {
           // continue
+          this.followMember$TA()
         }
       },
       unFollowTa () {
@@ -71,9 +72,10 @@
           this.login()
         } else {
           // continue
+          this.unFollowMember$TA()
         }
       },
-      ...mapActions(['login'])
+      ...mapActions(['login', 'followMember$TA', 'unFollowMember$TA'])
     }
   }
 </script>

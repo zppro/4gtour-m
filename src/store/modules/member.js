@@ -108,10 +108,10 @@ const mutations = {
   [ENTITY_NAME + TA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { member$TA }) {
     state.ta = member$TA
   },
-  [ENTITY_NAME + TA_NAME + mutationTypes.SET] (state, { isFollowedByMe, following, followed }) {
+  [ENTITY_NAME + TA_NAME + mutationTypes.SET] (state, { isFollowedByMe, following, follower }) {
     Vue.set(state.ta, 'isFollowedByMe', isFollowedByMe)
     Vue.set(state.ta, 'following', following)
-    Vue.set(state.ta, 'followed', followed)
+    Vue.set(state.ta, 'follower', follower)
   }
 }
 // actions

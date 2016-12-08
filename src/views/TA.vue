@@ -5,15 +5,20 @@
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   export default {
     computed: {
+      ...mapState(['authMemberByTokenPromise']),
       ...mapGetters(['taInfo'])
     },
     created () {
       console.log('created in TA.vue')
       window.scrollTo(0, 0)
-      this.ensureMember$TA()
+      let self = this
+      this.authMemberByTokenPromise.then(() => {
+        console.log('logined')
+        self.ensureMember$TA()
+      })
     },
     watch: {
       $route () {
