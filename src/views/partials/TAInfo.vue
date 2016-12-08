@@ -6,8 +6,8 @@
             img.ta-head-portrait(:src="format(ta.head_portrait || defaultTAHeadPortrait)")
       .ta-name {{ta.name}}
       .ta-follow-unfollow
-        a.ta-following 关注 {{ta.following || 0}}
-        a.ta-follower 粉丝 {{ta.follower || 0}}
+        router-link.ta-following(:to="taFollowingUrl") 关注 {{ta.following || 0}}
+        router-link.ta-follower(:to="taFollowerUrl") 粉丝 {{ta.follower || 0}}
 </template>
 <style lang="less" scoped>
     .ta-head {
@@ -79,6 +79,12 @@
   export default{
     props: ['ta'],
     computed: {
+      taFollowingUrl () {
+        return '/ta/' + this.ta.code + '/following'
+      },
+      taFollowerUrl () {
+        return '/ta/' + this.ta.code + '/follower'
+      },
       ...mapState(['defaultTAHeadPortrait']),
       ...mapGetters(['isLogined'])
     },

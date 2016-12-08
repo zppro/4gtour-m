@@ -33,6 +33,7 @@ import TANav from '../views/partials/TANav.vue'
 import TA from '../views/TA.vue'
 import TAInfo from '../views/partials/TAInfo.vue'
 import TAExperience from '../views/partials/TAExperience.vue'
+import TAFollowingFollowerList from '../views/TAFollowingFollowerList.vue'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -226,6 +227,22 @@ export default [
         components: {
           info: TAInfo,
           experience: TAExperience
+        }
+      },
+      {
+        name: 'TA的关注',
+        path: 'following',
+        components: {
+          info: TAInfo,
+          following: TAFollowingFollowerList
+        }
+      },
+      {
+        name: 'TA的粉丝',
+        path: 'follower',
+        components: {
+          info: TAInfo,
+          follower: TAFollowingFollowerList
         }
       }
     ]

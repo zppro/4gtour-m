@@ -2,6 +2,8 @@
   .TA
     router-view(name="info", :ta="taInfo")
     router-view(name="experience", :ta="taInfo")
+    router-view(name="following", :ta="taInfo", :is-list-following="true")
+    router-view(name="follower", :ta="taInfo", :is-list-following="false")
 </template>
 
 <script>
@@ -16,13 +18,13 @@
       window.scrollTo(0, 0)
       let self = this
       this.authMemberByTokenPromise.then(() => {
-        console.log('logined')
         self.ensureMember$TA()
       })
     },
     watch: {
       $route () {
         window.scrollTo(0, 0)
+        console.log(this.$route.path)
         this.ensureMember$TA()
       }
     },

@@ -145,10 +145,10 @@ const mutations = {
     state.noMoreOfHot = state.hot >= MAX_HOT_COUNT || fetchCount < size
   },
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
-    state.noMoreOfMyTweeted = state.hot >= MAX_HOT_COUNT || fetchCount < size
+    state.noMoreOfMyTweeted = fetchCount < size
   },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
-    state.noMoreOfMyStared = state.hot >= MAX_HOT_COUNT || fetchCount < size
+    state.noMoreOfMyStared = fetchCount < size
   },
   [ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
     state.noMoreOfTaTweeted = fetchCount < size
