@@ -107,6 +107,11 @@ const mutations = {
   },
   [ENTITY_NAME + TA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { member$TA }) {
     state.ta = member$TA
+  },
+  [ENTITY_NAME + TA_NAME + mutationTypes.SET] (state, { isFollowedByMe, following, followed }) {
+    Vue.set(state.ta, 'isFollowedByMe', isFollowedByMe)
+    Vue.set(state.ta, 'following', following)
+    Vue.set(state.ta, 'followed', followed)
   }
 }
 // actions
@@ -226,10 +231,30 @@ const actions = {
     })
   },
   ensureMember$TA ({ state, rootState, dispatch }) {
-    if (!state.ta.id) {
+    if (!state.ta.id || state.ta.id !== rootState.route.params.id) {
       return dispatch('fetchMember$TA', rootState.route.params)
     }
     return dispatch('noop')
+  },
+  followMember$TA ({ state, commit, dispatch }) {
+    return Vue.http.post('trv/memberFollow/' + state.ta.code).then(ret => {
+      if (ret.data.success) {
+        const followResult = ret.data.ret
+        commit(ENTITY_NAME + TA_NAME + mutationTypes.SET, followResult)
+      } else {
+        dispatch('toastError', ret.data)
+      }
+    })
+  },
+  unFollowMember$TA ({ state, commit, dispatch }) {
+    return Vue.http.post('trv/memberUnFollow/' + state.ta.code).then(ret => {
+      if (ret.data.success) {
+        const unFollowResult = ret.data.ret
+        commit(ENTITY_NAME + TA_NAME + mutationTypes.SET, unFollowResult)
+      } else {
+        dispatch('toastError', ret.data)
+      }
+    })
   }
 }
 

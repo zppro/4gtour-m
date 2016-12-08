@@ -11,7 +11,15 @@
       ...mapGetters(['taInfo'])
     },
     created () {
+      console.log('created in TA.vue')
+      window.scrollTo(0, 0)
       this.ensureMember$TA()
+    },
+    watch: {
+      $route () {
+        window.scrollTo(0, 0)
+        this.ensureMember$TA()
+      }
     },
     methods: {
       ...mapActions(['ensureMember$TA'])

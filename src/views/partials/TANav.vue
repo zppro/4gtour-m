@@ -5,10 +5,12 @@
     a.nav-item.nav-item-center
       h1 {{title}}
     a.nav-item.nav-item-right
-      i.fa.fa-commenting(aria-hidden="true")
-      span 聊天
-      i.fa.fa-plus-circle(aria-hidden="true")
-      span 关注
+      <!--i.fa.fa-commenting(aria-hidden="true")-->
+      <!--span 聊天-->
+      i.fa.fa-plus-circle(aria-hidden="true" v-if="showFollowBtn" @click="followTa")
+        span 关注
+      i.fa.fa-minus-circle(aria-hidden="true" v-if="showUnFollowBtn"  @click="unFollowTa")
+        span 取关
 </template>
 <style lang="less" scoped>
   .nav-header{
@@ -26,10 +28,11 @@
   .nav-item-right{
     flex: 0.5;
     width:60px;
+    text-align: right;
   }
   .nav-header .nav-item-right i{
     font-size:0.7rem;
-    margin-left:0.4rem;
+    margin:0 0.2rem;
   }
   .nav-header .nav-item-right span{
     font-size:0.7rem;
@@ -37,19 +40,40 @@
   }
 </style>
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   export default{
     props: ['ta'],
     computed: {
       title () {
         return ''
       },
-      ...mapGetters(['isLogined'])
+      showFollowBtn () {
+        return this.memberInfo.member_id !== this.taInfo.code && !this.taInfo.isFollowedByMe
+      },
+      showUnFollowBtn () {
+        return this.memberInfo.member_id !== this.taInfo.code && this.taInfo.isFollowedByMe
+      },
+      ...mapGetters(['isLogined', 'memberInfo', 'taInfo'])
     },
     methods: {
       back () {
         window.history.back()
-      }
+      },
+      followTa () {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          // continue
+        }
+      },
+      unFollowTa () {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          // continue
+        }
+      },
+      ...mapActions(['login'])
     }
   }
 </script>

@@ -6,8 +6,8 @@
             img.ta-head-portrait(:src="format(ta.head_portrait || defaultTAHeadPortrait)")
       .ta-name {{ta.name}}
       .ta-follow-unfollow
-        .ta-follow 关注 365
-        .ta-unfollow 粉丝 835
+        a.ta-following 关注 {{ta.following || 0}}
+        a.ta-follower 粉丝 {{ta.follower || 0}}
 </template>
 <style lang="less" scoped>
     .ta-head {
@@ -59,15 +59,16 @@
         font-size:0.667rem;
         width:7rem;
         margin: 0 auto;
-        .ta-follow,.ta-unfollow {
+        .ta-following,.ta-follower {
           width:50%;
           display: inline-block;
           text-align: center;
+          color:white;
         }
-        .ta-follow{
+        .ta-following{
           border-right: solid 0.5px whitesmoke;
         }
-        .ta-unfollow{
+        .ta-follower{
           border-left: solid 0.5px whitesmoke;
         }
       }
