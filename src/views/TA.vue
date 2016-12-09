@@ -1,9 +1,10 @@
 <template lang="jade">
   .TA
     router-view(name="info", :ta="taInfo")
-    router-view(name="experience", :ta="taInfo")
-    router-view(name="following", :ta="taInfo", :is-list-following="true")
-    router-view(name="follower", :ta="taInfo", :is-list-following="false")
+    router-view(name="tweeted", :is-list-tweeted="true" keep-alive)
+    router-view(name="stared", :is-list-tweeted="false" keep-alive)
+    router-view(name="following", :is-list-following="true" keep-alive)
+    router-view(name="follower", :is-list-following="false" keep-alive)
 </template>
 
 <script>
@@ -14,7 +15,7 @@
       ...mapGetters(['taInfo'])
     },
     created () {
-      console.log('created in TA.vue')
+      console.log('created in TA.vue11')
       window.scrollTo(0, 0)
       let self = this
       this.authMemberByTokenPromise.then(() => {

@@ -3,7 +3,7 @@
     mt-swipe(:auto="swipeAuto")
       mt-swipe-item(v-for=" image in allImages")
         img(:src="image" @click="close")
-        span
+        span.verticle-middle
 </template>
 <script>
   export default {
@@ -28,11 +28,6 @@
     background-color: #000;
     img{
       width:100%;
-      vertical-align:middle;
-    }
-    span{
-      height:100%;
-      display:inline-block;
       vertical-align:middle;
     }
   }

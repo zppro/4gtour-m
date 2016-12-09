@@ -4,7 +4,7 @@
       mt-swipe-item(v-for=" image in allImages")
         .img-wrapper
           img(:src="format(image)" @click="close")
-        span
+        span.verticle-middle
 </template>
 <script>
   export default {
@@ -33,19 +33,12 @@
     .img-wrapper{
       width: 100%;
       display: inline-block;
-      vertical-align:middle;
       img{
         margin: 0 auto;
         max-width: 18.75rem;
         vertical-align:middle;
         display: block;
       }
-    }
-
-    span{
-      height:100%;
-      display:inline-block;
-      vertical-align:middle;
     }
   }
 </style>

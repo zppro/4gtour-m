@@ -1,6 +1,6 @@
 <template lang="jade">
   .ta-body
-    .switch-c
+    .switch-c(v-if="false")
       .switch-block
         a.switch-btn(:class='{"switch-tweeted":currentIndexInExperiencesOfTa!==0, "switch-tweeted-active":currentIndexInExperiencesOfTa===0}' @click="setTaTweeted")
           .i-wrapper
@@ -12,7 +12,7 @@
             i.fa.fa-star-o(aria-hidden="true")
           span TA的收藏
     no-more-data(v-if="currentExperiences.length === 0")
-    .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0")
+    .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0" , infinite-scroll-immediate-check="false")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
@@ -53,6 +53,7 @@
         currentImage: ''
       }
     },
+    props: ['isListTweeted'],
     computed: {
       currentExperiences () {
         return this.currentIndexInExperiencesOfTa === 0 ? this.experiencesTaTweeted : this.experiencesTaStared
@@ -67,7 +68,13 @@
       ...mapGetters(['currentIndexInExperiencesOfTa', 'experiencesTaTweeted', 'experiencesTaStared', 'appendTaTweetedDiabled', 'appendTaStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator'])
     },
     created () {
-      this.currentIndexInExperiencesOfTa === 0 ? this.fetchTaTweetedList() : this.fetchTaStaredList()
+      console.log('this.isListTweeted:' + this.isListTweeted)
+      let p = this.isListTweeted ? this.setTaTweeted() : this.setTaStared()
+
+      p.then(() => {
+        console.log(this.currentIndexInExperiencesOfTa)
+        this.currentIndexInExperiencesOfTa === 0 ? this.fetchTaTweetedList() : this.fetchTaStaredList()
+      })
     },
     methods: {
       zoomIn (allImages, currentImage) {

@@ -1,7 +1,7 @@
 <template lang="jade">
   .ta-following-follower-c
     no-more-data(v-if="currentFollowList.length === 0")
-    .ta-following-follower(v-if="currentFollowList.length > 0", v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
+    .ta-following-follower(v-show="currentFollowList.length > 0", v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
       p(v-show="showTa$FollowingFollowedFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
           | {{dataRefreshText}}
@@ -18,11 +18,11 @@
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
-  import NoMoreData from '../components/NoMoreData.vue'
-  import TaFollowingFollowerList from '../components/TAFollowingFollowerList.vue'
-  import TaFollowingFollowerItem from '../components/TAFollowingFollowerItem.vue'
+  import NoMoreData from '../../components/NoMoreData.vue'
+  import TaFollowingFollowerList from '../../components/TAFollowingFollowerList.vue'
+  import TaFollowingFollowerItem from '../../components/TAFollowingFollowerItem.vue'
   export default {
-    props: ['ta', 'isListFollowing'],
+    props: ['isListFollowing'],
     computed: {
       currentFollowList () {
         return this.isListFollowing ? this.allTa$Followings : this.allTa$Followers
@@ -51,7 +51,7 @@
       ...mapActions(['fetchTa$FollowingList', 'appendTa$FollowingList', 'fetchTa$FollowerList', 'appendTa$FollowerList'])
     },
     created () {
-      this.currentFollowList.length === 0 && this.fetchData()
+      this.fetchData()
     },
     components: {
       NoMoreData,
@@ -62,7 +62,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less" >
   .ta-following-follower-c {
     width: 100%;
     .ta-following-follower{

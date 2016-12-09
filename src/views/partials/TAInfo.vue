@@ -5,9 +5,11 @@
           .ta-head-portrait-w2
             img.ta-head-portrait(:src="format(ta.head_portrait || defaultTAHeadPortrait)")
       .ta-name {{ta.name}}
-      .ta-follow-unfollow
-        router-link.ta-following(:to="taFollowingUrl") 关注 {{ta.following || 0}}
-        router-link.ta-follower(:to="taFollowerUrl") 粉丝 {{ta.follower || 0}}
+      .ta-stat-actions
+        router-link.ta-following(:to="taFollowingUrl" replace) 关注 {{ta.following || 0}}
+        router-link.ta-follower(:to="taFollowerUrl" replace) 粉丝 {{ta.follower || 0}}
+        router-link.ta-tweeted(:to="taTweetedUrl" replace) 发布 {{ta.following || 0}}
+        router-link.ta-stared(:to="taStaredUrl" replace) 收藏 {{ta.follower || 0}}
 </template>
 <style lang="less" scoped>
     .ta-head {
@@ -55,12 +57,12 @@
         margin-top:0.45rem;
         margin-bottom: 0.35rem;
       }
-      .ta-follow-unfollow{
+      .ta-stat-actions{
         font-size:0.667rem;
-        width:7rem;
+        width:14rem;
         margin: 0 auto;
-        .ta-following,.ta-follower {
-          width:50%;
+        .ta-following,.ta-follower,.ta-tweeted,.ta-stared {
+          width:25%;
           display: inline-block;
           text-align: center;
           color:white;
@@ -68,7 +70,11 @@
         .ta-following{
           border-right: solid 0.5px whitesmoke;
         }
-        .ta-follower{
+        .ta-follower,.ta-tweeted{
+          border-left: solid 0.5px whitesmoke;
+          border-right: solid 0.5px whitesmoke;
+        }
+        .ta-stared{
           border-left: solid 0.5px whitesmoke;
         }
       }
@@ -84,6 +90,12 @@
       },
       taFollowerUrl () {
         return '/ta/' + this.ta.code + '/follower'
+      },
+      taTweetedUrl () {
+        return '/ta/' + this.ta.code + '/tweeted'
+      },
+      taStaredUrl () {
+        return '/ta/' + this.ta.code + '/stared'
       },
       ...mapState(['defaultTAHeadPortrait']),
       ...mapGetters(['isLogined'])

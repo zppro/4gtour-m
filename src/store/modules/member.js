@@ -277,7 +277,7 @@ const actions = {
     })
   },
   ensureMember$TA ({ state, rootState, dispatch }) {
-    if (!state.ta.id || state.ta.id !== rootState.route.params.id) {
+    if (!state.ta.code || state.ta.code !== rootState.route.params.id) {
       return dispatch('fetchMember$TA', rootState.route.params)
     }
     return dispatch('noop')

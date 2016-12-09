@@ -38,7 +38,7 @@
       .traffic-head
         .traffic-icon
           i.fa.fa-bus(aria-hidden="true")
-        span
+        span.verticle-middle
       .traffic-content
         slot(name="routeContent")
 </template>
@@ -125,11 +125,6 @@
             display: block;
             margin: 0.225rem auto;
           }
-        }
-        span{
-          height:100%;
-          display:inline-block;
-          vertical-align:middle;
         }
       }
       .traffic-content {

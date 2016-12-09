@@ -394,10 +394,12 @@ const actions = {
     return state.myStared.length === 0 ? dispatch('fetchMyStaredList') : dispatch('noop')
   },
   setTaTweeted ({commit, dispatch}) {
+    console.log('setTaTweeted')
     commit(ENTITY_NAME + TA_TWEETED_NAME + mutationTypes.SET_CURRENT)
     return state.taTweeted.length === 0 ? dispatch('fetchTaTweetedList') : dispatch('noop')
   },
   setTaStared ({commit, dispatch}) {
+    console.log('setTaStared')
     commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_CURRENT)
     return state.taStared.length === 0 ? dispatch('fetchTaStaredList') : dispatch('noop')
   },
