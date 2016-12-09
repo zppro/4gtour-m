@@ -32,10 +32,6 @@ import PickScenerySpots from '../views/PickScenerySpots.vue'
 import TANav from '../views/partials/TANav.vue'
 import TA from '../views/TA.vue'
 import TAInfo from '../views/partials/TAInfo.vue'
-import TAExperience from '../views/partials/TAExperience.vue'
-import TAFollowingFollowerList from '../views/partials/TAFollowingFollowerList.vue'
-
-console.log(TAExperience)
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -228,32 +224,28 @@ export default [
         path: 'tweeted',
         alias: 'details',
         components: {
-          info: TAInfo,
-          tweeted: TAExperience
+          info: TAInfo
         }
       },
       {
         name: 'TA的收藏',
         path: 'stared',
         components: {
-          info: TAInfo,
-          stared: Object.assign({}, TAExperience)
+          info: TAInfo
         }
       },
       {
         name: 'TA的关注',
         path: 'following',
         components: {
-          info: TAInfo,
-          following: TAFollowingFollowerList
+          info: TAInfo
         }
       },
       {
         name: 'TA的粉丝',
         path: 'follower',
         components: {
-          info: TAInfo,
-          follower: TAFollowingFollowerList
+          info: TAInfo
         }
       }
     ]

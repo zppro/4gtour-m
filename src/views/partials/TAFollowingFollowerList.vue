@@ -53,6 +53,11 @@
     created () {
       this.fetchData()
     },
+    watch: {
+      isListFollowing () {
+        this.fetchData()
+      }
+    },
     components: {
       NoMoreData,
       TaFollowingFollowerList,

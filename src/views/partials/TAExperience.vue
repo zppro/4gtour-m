@@ -76,6 +76,11 @@
         this.currentIndexInExperiencesOfTa === 0 ? this.fetchTaTweetedList() : this.fetchTaStaredList()
       })
     },
+    watch: {
+      isListTweeted () {
+        this.isListTweeted ? this.setTaTweeted() : this.setTaStared()
+      }
+    },
     methods: {
       zoomIn (allImages, currentImage) {
         this.allImages = allImages

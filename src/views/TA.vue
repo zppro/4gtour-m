@@ -1,23 +1,30 @@
 <template lang="jade">
   .TA
     router-view(name="info", :ta="taInfo")
-    router-view(name="tweeted", :is-list-tweeted="true" keep-alive)
-    router-view(name="stared", :is-list-tweeted="false" keep-alive)
-    router-view(name="following", :is-list-following="true" keep-alive)
-    router-view(name="follower", :is-list-following="false" keep-alive)
+    router-view(name="taData", :is="currentView", :is-list-tweeted="isListTweeted", :is-list-following="isListFollowing" )
 </template>
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
+  import TAExperience from './partials/TAExperience.vue'
+  import TAFollowingFollowerList from './partials/TAFollowingFollowerList.vue'
   export default {
+    data () {
+      return {
+        isListTweeted: true,
+        isListFollowing: false,
+        currentView: 'TAExperience'
+      }
+    },
     computed: {
       ...mapState(['authMemberByTokenPromise']),
       ...mapGetters(['taInfo'])
     },
     created () {
-      console.log('created in TA.vue11')
+      console.log('created in TA.vue')
       window.scrollTo(0, 0)
       let self = this
+      this.switchChildView()
       this.authMemberByTokenPromise.then(() => {
         self.ensureMember$TA()
       })
@@ -27,10 +34,30 @@
         window.scrollTo(0, 0)
         console.log(this.$route.path)
         this.ensureMember$TA()
+        this.switchChildView()
       }
     },
     methods: {
+      switchChildView () {
+        if (this.$route.path.endsWith('/stared')) {
+          this.isListTweeted = false
+          this.currentView = 'TAExperience'
+        } else if (this.$route.path.endsWith('/following')) {
+          this.isListFollowing = true
+          this.currentView = 'TAFollowingFollowerList'
+        } else if (this.$route.path.endsWith('/follower')) {
+          this.isListFollowing = false
+          this.currentView = 'TAFollowingFollowerList'
+        } else {
+          this.isListTweeted = true
+          this.currentView = 'TAExperience'
+        }
+      },
       ...mapActions(['ensureMember$TA'])
+    },
+    components: {
+      TAExperience,
+      TAFollowingFollowerList
     }
   }
 </script>
