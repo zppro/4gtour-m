@@ -62,7 +62,6 @@
         if (!this.isLogined) {
           this.login()
         } else {
-          // continue
           this.followMember$TA()
         }
       },
@@ -70,7 +69,6 @@
         if (!this.isLogined) {
           this.login()
         } else {
-          // continue
           this.unFollowMember$TA()
         }
       },

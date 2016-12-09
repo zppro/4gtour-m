@@ -29,7 +29,6 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(r => r.meta.auth)) {
     if (store.state.member.self.member_id === 'anonymity') {
       if (store.state.env.isApiCloud) {
-        console.log('call apicloud login')
         store.dispatch('sendEventToApiCloud', { eventName: APICLOUD_OPEN_LOGIN_WIN })
         next(false)
       } else {

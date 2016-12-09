@@ -117,6 +117,13 @@ export default [
     }
   },
   {
+    name: '我的订单-apicloud',
+    path: '/my-orders-apicloud',
+    components: {
+      body: attachFilters(MyOrders, filters)
+    }
+  },
+  {
     name: '订单详情',
     meta: { auth: true },
     path: '/order-details/:id',
@@ -147,6 +154,13 @@ export default [
     path: '/experience/mine',
     components: {
       head: ExperienceNav,
+      body: ExperienceMineList
+    }
+  },
+  {
+    name: '我的见闻-apicloud',
+    path: '/experience/mine-apicloud',
+    components: {
       body: ExperienceMineList
     }
   },

@@ -18,6 +18,7 @@ const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', hea
 const state = {
   token: '',
   self: initEmptyMemberInfo,
+  isLogining: false,
   member$Orders: [],
   listRequestTypeAppending: true,
   member$OrderNoMore: false,
@@ -41,8 +42,10 @@ const getters = {
     return state.member$Orders
   },
   isLogined (state) {
-    // return !!state.member_id && state.member_id !== 'anonymity'
     return !!state.token
+  },
+  isLogining (state) {
+    return state.isLogining
   },
   memberHaveUnpayAndValidOrders (state, getters) {
     return getters['memberHaveUnpayAndValidCount'] > 0
@@ -98,17 +101,22 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.LOGIN_SUCCESS] (state, { memberInfo, token }) {
     state.self = memberInfo
     state.token = token
+    state.isLogining = false
     localStore.set(MEMBER_TOKEN, token)
   },
   [ENTITY_NAME + mutationTypes.LOGIN_FAIL] (state) {
     state.self = initEmptyMemberInfo
     state.token = ''
+    state.isLogining = false
     localStore.set(MEMBER_TOKEN, '')
   },
   [ENTITY_NAME + mutationTypes.LOGIN_OUT] (state) {
     state.self = initEmptyMemberInfo
     state.token = ''
     localStore.set(MEMBER_TOKEN, '')
+  },
+  [ENTITY_NAME + mutationTypes.LOGINING] (state) {
+    state.isLogining = true
   },
   [ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
     state.listRequestTypeAppending = listRequestType === 'append'
@@ -163,6 +171,7 @@ const mutations = {
 // actions
 const actions = {
   authMember ({ commit, rootState, dispatch }, { username, password, category }) {
+    commit(ENTITY_NAME + mutationTypes.LOGINING)
     return Vue.http.post('api/proxyLogin', { username, password, category }, {headers: {loadingText: MEMBER_LOGIN}}).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
@@ -174,6 +183,7 @@ const actions = {
     })
   },
   authMemberByToken ({ commit, rootState, dispatch }, token) {
+    commit(ENTITY_NAME + mutationTypes.LOGINING)
     rootState.authMemberByTokenPromise = Vue.http.post('api/proxyLoginByToken', { token }, {headers: {loadingText: MEMBER_LOGIN}}).then(ret => {
       if (ret.data.success) {
         const loginRet = ret.data.ret
@@ -193,6 +203,7 @@ const actions = {
     return Promise.resolve(true)
   },
   authMemberByOpenWeixinOnClient ({ commit, dispatch, rootState, getters }) {
+    commit(ENTITY_NAME + mutationTypes.LOGINING)
     let userInfo = getters['weixinOpenUserInfo']
     let p = Promise.resolve({ token: userInfo.openid, memberInfo: { member_id: userInfo.openid, member_name: userInfo.nickname, head_portrait: userInfo.headimgurl, member_description: '' } })
     if (!window.env.isApiCloud) {
@@ -282,8 +293,8 @@ const actions = {
     }
     return dispatch('noop')
   },
-  followMember$TA ({ state, commit, dispatch }) {
-    return Vue.http.post('trv/memberFollow/' + state.ta.code).then(ret => {
+  followMember$TA ({ state, commit, dispatch }, followMemberId) {
+    return Vue.http.post('trv/memberFollow/' + (followMemberId || state.ta.code)).then(ret => {
       if (ret.data.success) {
         const followResult = ret.data.ret
         commit(ENTITY_NAME + TA_NAME + mutationTypes.SET, followResult)
@@ -292,8 +303,8 @@ const actions = {
       }
     })
   },
-  unFollowMember$TA ({ state, commit, dispatch }) {
-    return Vue.http.post('trv/memberUnFollow/' + state.ta.code).then(ret => {
+  unFollowMember$TA ({ state, commit, dispatch }, unFollowMemberId) {
+    return Vue.http.post('trv/memberUnFollow/' + (unFollowMemberId || state.ta.code)).then(ret => {
       if (ret.data.success) {
         const unFollowResult = ret.data.ret
         commit(ENTITY_NAME + TA_NAME + mutationTypes.SET, unFollowResult)

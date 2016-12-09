@@ -6,10 +6,18 @@
             img.ta-head-portrait(:src="format(ta.head_portrait || defaultTAHeadPortrait)")
       .ta-name {{ta.name}}
       .ta-stat-actions
-        router-link.ta-following(:to="taFollowingUrl" replace) 关注 {{ta.following || 0}}
-        router-link.ta-follower(:to="taFollowerUrl" replace) 粉丝 {{ta.follower || 0}}
-        router-link.ta-tweeted(:to="taTweetedUrl" replace) 发布 {{ta.following || 0}}
-        router-link.ta-stared(:to="taStaredUrl" replace) 收藏 {{ta.follower || 0}}
+        router-link.ta-following(:to="taFollowingUrl" replace)
+          .wrapper 关注
+          | {{ta.following || 0}}
+        router-link.ta-follower(:to="taFollowerUrl" replace)
+          .wrapper 粉丝
+          | {{ta.follower || 0}}
+        router-link.ta-tweeted(:to="taTweetedUrl" replace)
+          .wrapper 发布
+          | {{ta.tweeted || 0}}
+        router-link.ta-stared(:to="taStaredUrl" replace)
+          .wrapper 收藏
+          | {{ta.stared || 0}}
 </template>
 <style lang="less" scoped>
     .ta-head {
@@ -29,9 +37,9 @@
           height:4.95rem;
           background-color: #6185DB;
           padding:0.1rem;
-          -moz-border-radius: 2.475rem;
-          -webkit-border-radius: 2.475rem;
-          border-radius: 2.375rem;
+          -moz-border-radius: 100%;
+          -webkit-border-radius: 100%;
+          border-radius: 100%;
           .ta-head-portrait-w2{
             width:4.75rem;
             height:4.75rem;
@@ -58,7 +66,7 @@
         margin-bottom: 0.35rem;
       }
       .ta-stat-actions{
-        font-size:0.667rem;
+        font-size:0.6rem;
         width:14rem;
         margin: 0 auto;
         .ta-following,.ta-follower,.ta-tweeted,.ta-stared {
@@ -66,6 +74,14 @@
           display: inline-block;
           text-align: center;
           color:white;
+          .wrapper{
+            display: inline-block;
+            -moz-border-radius: 0.1rem;
+            -webkit-border-radius: 0.1rem;
+            border-radius: 0.1rem;
+            padding:0.1rem 0.2rem;
+            margin-right:0.2rem;
+          }
         }
         .ta-following{
           border-right: solid 0.5px whitesmoke;

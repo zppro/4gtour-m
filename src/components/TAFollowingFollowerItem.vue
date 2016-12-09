@@ -73,7 +73,7 @@
 <script>
   import { mapGetters, mapActions } from 'vuex'
   export default {
-    props: ['taMemberId', 'taMemberId', 'isFollowing'],
+    props: ['taMemberId', 'isFollowing'],
     computed: {
       isFollowedByMe () {
 
@@ -91,10 +91,18 @@
     },
     methods: {
       followTa () {
-        console.log('followTa')
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.followMember$TA(this.taMemberId)
+        }
       },
       unFollowTa () {
-        console.log('unFollowTa')
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.unFollowMember$TA(this.taMemberId)
+        }
       },
       ...mapActions(['login', 'followMember$TA', 'unFollowMember$TA'])
     }
