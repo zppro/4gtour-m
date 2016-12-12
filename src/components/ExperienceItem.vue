@@ -11,7 +11,7 @@
       .experience-mark
         i.fa.fa-eye.text-primary(aria-hidden="true" v-if="!isRoute", title="见闻")
         i.fa.fa-bus.text-primary(aria-hidden="true" v-if="isRoute" , title="公交车")
-        i.fa.fa-taxi.text-primary(aria-hidden="true" v-if="isRoute" , title="的士")
+        i.fa.fa-taxi.text-primary(aria-hidden="true" v-if="false" , title="的士")
     .item-body
       .content
         slot(name="content")
@@ -24,6 +24,7 @@
       slot(name="retweetRoot")
     .item-foot
       .location
+        .remove-action.text-muted(v-if="canRemove" @click="remove") 删除
         i.fa.fa-map-marker(aria-hidden="true")
         slot(name="location")
       .actions
@@ -116,11 +117,19 @@
       margin-top:0.45rem;
       .location{
         display: inline-block;
-        width:2.4rem;
+
         height:1.2rem;
         font-size: 0.5rem;
         color:#7c7b7b;
         span{margin-left:0.225rem;}
+        .remove-action{
+          display: inline-block;
+          width: 1.75rem;
+          margin-right:0.225rem;
+          text-align: center;
+          font-size: 0.7rem;
+          cursor: pointer;
+        }
       }
       .actions{
         float:right;
@@ -153,7 +162,7 @@
 <script>
   import { mapGetters, mapActions } from 'vuex'
   export default {
-    props: ['experience'],
+    props: ['experience', 'canRemove'],
     computed: {
       memberInfoUrl () {
         return '/ta/' + this.experience.member_id + '/details'
@@ -162,11 +171,17 @@
         return {path: '/experience-details/' + this.experience.id + '/route'}
       },
       isRoute () {
+        console.log(345)
         return this.experience.category === 'A0003'
       },
       ...mapGetters(['isLogined'])
     },
     methods: {
+      remove () {
+        this.confirm('确定要删除么?').then(action => {
+          this.removeExperience(this.experience)
+        })
+      },
       retweet () {
         if (!this.isLogined) {
           this.login()
@@ -188,7 +203,7 @@
           this.toggleStarExperience(this.experience)
         }
       },
-      ...mapActions(['login', 'toggleLikeExperience', 'toggleStarExperience'])
+      ...mapActions(['login', 'confirm', 'removeExperience', 'toggleLikeExperience', 'toggleStarExperience'])
     }
   }
 </script>

@@ -159,6 +159,54 @@ const mutations = {
   [ENTITY_NAME + MY_TWEETED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 0
   },
+  [ENTITY_NAME + mutationTypes.REMOVE] (state, {id, influenceToRetweetChain}) {
+    let theIndex = state.myTweeted.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      state.myTweeted.splice(theIndex, 1)
+    }
+    theIndex = state.hot.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      state.hot.splice(theIndex, 1)
+    }
+    theIndex = state.myStared.find(item => item.id === id)
+    if (theIndex !== -1) {
+      state.myStared.splice(theIndex, 1)
+    }
+    theIndex = state.taTweeted.find(item => item.id === id)
+    if (theIndex !== -1) {
+      state.taTweeted.splice(theIndex, 1)
+    }
+    theIndex = state.taStared.find(item => item.id === id)
+    if (theIndex !== -1) {
+      state.taStared.splice(theIndex, 1)
+    }
+
+    influenceToRetweetChain.forEach(o => {
+      console.log('influenceToRetweetChain:' + o.id + ' => ' + o.retweets)
+      let theOne = state.hot.find(item => item.id === o.id)
+      if (theOne) {
+        console.log('influenceTo hot')
+        Vue.set(theOne, 'retweets', o.retweets)
+      }
+      theOne = state.myTweeted.find(item => item.id === o.id)
+      if (theOne) {
+        console.log('influenceTo myTweeted')
+        Vue.set(theOne, 'retweets', o.retweets)
+      }
+      theOne = state.myStared.find(item => item.id === o.id)
+      if (theOne) {
+        Vue.set(theOne, 'retweets', o.retweets)
+      }
+      theOne = state.taTweeted.find(item => item.id === o.id)
+      if (theOne) {
+        Vue.set(theOne, 'retweets', o.retweets)
+      }
+      theOne = state.taStared.find(item => item.id === o.id)
+      if (theOne) {
+        Vue.set(theOne, 'retweets', o.retweets)
+      }
+    })
+  },
   [ENTITY_NAME + MY_STARED_NAME + mutationTypes.SET_CURRENT] (state) {
     state.currentIndexOfMine = 1
   },
@@ -402,6 +450,18 @@ const actions = {
     console.log('setTaStared')
     commit(ENTITY_NAME + TA_STARED_NAME + mutationTypes.SET_CURRENT)
     return state.taStared.length === 0 ? dispatch('fetchTaStaredList') : dispatch('noop')
+  },
+  removeExperience ({commit, dispatch}, {id}) {
+    let influenceToRetweetChain
+    return Vue.http.delete('trv/experience/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        influenceToRetweetChain = ret.data.rows
+        commit(ENTITY_NAME + mutationTypes.REMOVE, {id, influenceToRetweetChain})
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return id
+    })
   },
   ensureExperience ({ state, rootState, dispatch }) {
     if (!state.current.id) {

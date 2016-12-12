@@ -18,7 +18,7 @@
         | {{dataRefreshText}}
       mt-loadmore(:top-method="loadMine" @top-status-change="handleMineChange" ref="myList")
         experience-list.experience-list
-          experience-item(v-for="experience in currentExperiences", :experience="experience")
+          experience-item(v-for="experience in currentExperiences", :experience="experience", :can-remove="canRemove")
             img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
             span(slot="member_name") {{experience.member_name}}
             span(slot="time_description") {{experience.time_description}}
@@ -66,6 +66,9 @@
       },
       showImageSwiper () {
         return this.allImages.length > 0
+      },
+      canRemove () {
+        return this.currentIndexInExperiencesOfMine === 0
       },
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait', 'authMemberByTokenPromise']),
       ...mapGetters(['currentIndexInExperiencesOfMine', 'experiencesMyTweeted', 'experiencesMyStared', 'appendMyTweetedDiabled', 'appendMyStaredDiabled', 'showExperienceFetchIndicator', 'showExperienceAppendIndicator', 'haveNewExperience'])

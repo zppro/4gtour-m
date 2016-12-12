@@ -1,19 +1,21 @@
 <template lang="jade">
   .experience-item-retweet-root
-    .item-head
-      router-link.member-head-portrait(:to="memberInfoUrl")
-        img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" )
-      .name-time
-        router-link.member-name.text-danger(:to="memberInfoUrl") {{'@' + experience.member_name}}
-        .time-description {{experience.time_description}}
-    .item-body
-      .content {{experience.content}}
-      router-link(v-if="false" ,:to="routeItemUrl")
-        span.text-danger 全文
-      .imgs
-        .img-list
-          image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
-        .clear
+    .removed.text-muted(v-if="isRemoved") 作者已删除
+    .not-removed(v-if="!isRemoved")
+      .item-head
+        router-link.member-head-portrait(:to="memberInfoUrl")
+          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" )
+        .name-time
+          router-link.member-name.text-danger(:to="memberInfoUrl") {{'@' + experience.member_name}}
+          .time-description {{experience.time_description}}
+      .item-body
+        .content {{experience.content}}
+        router-link(v-if="false" ,:to="routeItemUrl")
+          span.text-danger 全文
+        .imgs
+          .img-list
+            image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
+          .clear
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
@@ -25,6 +27,10 @@
     -moz-border-radius: 0.2rem;
     -webkit-border-radius: 2rem;
     border-radius: 0.2rem;
+    .removed{
+      font-style: italic;
+      font-size: 0.8rem;
+    }
     .item-head{
       width: 100%;
       a.member-head-portrait{
@@ -86,6 +92,9 @@
     computed: {
       memberInfoUrl () {
         return '/ta/' + this.experience.member_id + '/details'
+      },
+      isRemoved () {
+        return this.experience.status === 0
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/route'}
