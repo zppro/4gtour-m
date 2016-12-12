@@ -19,5 +19,6 @@ export default {
   defaultTAHeadPortrait: 'http://img2.okertrip.com/user-temp-headpic.png',
   authMemberByTokenPromise: Promise.resolve(false),
   d: {}, // 字典容器
-  ordinal: ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩']
+  ordinal: ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩'],
+  longPressDelayMS: 700
 }

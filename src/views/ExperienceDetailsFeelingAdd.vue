@@ -3,7 +3,7 @@
     .experience-content
       textarea(v-model="newExperience.content" ,:placeholder="placeHolder" cols="200" maxlength="200")
     .experience-imgs
-      image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded")
+      image-uploader(:all-images="newExperience.imgs" v-on:uploaded="onUploaded" v-on:remove="onRemove")
     experience-retweeted-preview(:experience="retweetedRoot" v-if="isRetweet")
 </template>
 
@@ -95,6 +95,10 @@
       onUploaded (imgUrl) {
         console.log(imgUrl)
         this.newExperience.imgs.push(imgUrl)
+      },
+      onRemove (imgUrlIndex) {
+        console.log(imgUrlIndex)
+        this.newExperience.imgs.splice(imgUrlIndex, 1)
       },
       ...mapActions(['toast', 'submitFormFail', 'saveExperience', 'fetchExperienceInfo'])
     },

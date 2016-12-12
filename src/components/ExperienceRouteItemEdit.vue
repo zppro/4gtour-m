@@ -13,7 +13,7 @@
         .route-traffic-line-title 景点间交通
         textarea(v-model="experienceRouteItem.content" placeholder="相邻景点的出行方式..")
       .route-item-imgs(v-if="isScenerySpot")
-        image-uploader(:upload-id="uploadId", :all-images="experienceRouteItem.imgs" v-on:uploaded="onUploaded")
+        image-uploader(:upload-id="uploadId", :all-images="experienceRouteItem.imgs" v-on:uploaded="onUploaded" v-on:remove="onRemove")
       .route-item-content(v-if="isScenerySpot")
         .route-item-label
           .ball-small
@@ -133,6 +133,10 @@
     methods: {
       onUploaded (imgUrl) {
         this.experienceRouteItem.imgs.push(imgUrl)
+      },
+      onRemove (imgUrlIndex) {
+        console.log(imgUrlIndex)
+        this.experienceRouteItem.imgs.splice(imgUrlIndex, 1)
       },
       removeItem () {
         let self = this

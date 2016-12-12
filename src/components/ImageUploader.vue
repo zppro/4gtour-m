@@ -1,18 +1,24 @@
 <template lang="jade">
   .img-uploader
-    img(v-for="img in allImages", :src="format(img)" @click="select(img)")
+    img(v-for="img in allImages", :src="format(img)")
     .img-uploader-container(:id="imgUploaderContainerId")
       a.addImage(:id="imgUploaderButtonId")
         .cross.cross-lt
         .cross.cross-rt
         .cross.cross-lb
         .cross.cross-rb
-    .clear
+    .tip.text-muted 长按图片可删除
 </template>
 <script>
+  import Vue from 'vue'
   import { mapState, mapGetters, mapActions } from 'vuex'
   import { Indicator } from 'mint-ui'
   export default {
+    data () {
+      return {
+        hammerImgs: {}
+      }
+    },
     props: ['allImages', 'uploadId'],
     computed: {
       imgUploaderContainerId () {
@@ -21,7 +27,7 @@
       imgUploaderButtonId () {
         return this.uploadId ? this.uploadId + '-button' : 'addImage'
       },
-      ...mapState(['env']),
+      ...mapState(['longPressDelayMS']),
       ...mapGetters(['member$UploadToken', 'fetchMember$UploadToken'])
     },
     created () {
@@ -63,12 +69,35 @@
         })
       })
     },
+    watch: {
+      allImages () {
+        this.hammerImgs = {} // clear old delegate object
+        Vue.nextTick(() => {
+          this.allImages.forEach(this.processActionToImage)
+        })
+      }
+    },
     methods: {
       format: function (img) {
         return window.utils.qiniuImageView(img, window.utils.rem2px(3.75), window.utils.rem2px(3.75))
       },
-      select (img) {
-        this.$emit('select', this.allImages, img)
+      processActionToImage (img, index) {
+        let vm = this
+        let tid
+        this.hammerImgs[img] = new window.Hammer.Manager(window.$('.img-uploader img')[index])
+//        this.hammerImgs[img].add(new window.Hammer.Tap())
+        this.hammerImgs[img].add(new window.Hammer.Press())
+        this.hammerImgs[img].on('press pressup', (ev) => {
+//          console.log(ev.type + ' gesture detected.')
+          if (ev.type === 'press') {
+            tid = window.setTimeout(() => {
+              vm.$emit('remove', index)
+            }, vm.longPressDelayMS)
+          } else if (ev.type === 'pressup') {
+            console.log(tid)
+            tid && window.clearTimeout(tid)
+          }
+        })
       },
       ...mapActions(['ensureMember$UploadToken'])
     }
@@ -124,8 +153,13 @@
         border-top:solid 1px #c8c8c8;
       }
     }
-    .clear{
+    .tip{
+      padding-top:0.5rem;
       clear:left;
+      display:block;
+      font-size:0.5rem;
+      font-style: italic;
+      text-align:left;
     }
   }
 </style>
