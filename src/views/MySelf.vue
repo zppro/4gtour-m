@@ -5,9 +5,8 @@
 </template>
 
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
-  import TAExperience from './partials/TAExperience.vue'
-  import TAFollowingFollowerList from './partials/TAFollowingFollowerList.vue'
+  import { mapState } from 'vuex'
+  import MyFollowingFollowerList from './partials/MyFollowingFollowerList.vue'
   export default {
     data () {
       return {
@@ -17,8 +16,7 @@
       }
     },
     computed: {
-      ...mapState(['authMemberByTokenPromise']),
-      ...mapGetters(['taInfo'])
+      ...mapState(['authMemberByTokenPromise'])
     },
     created () {
       console.log('created in MySelf.vue')
@@ -42,20 +40,18 @@
           this.currentView = 'TAExperience'
         } else if (this.$route.path.endsWith('/following')) {
           this.isListFollowing = true
-          this.currentView = 'TAFollowingFollowerList'
+          this.currentView = 'MyFollowingFollowerList'
         } else if (this.$route.path.endsWith('/follower')) {
           this.isListFollowing = false
-          this.currentView = 'TAFollowingFollowerList'
+          this.currentView = 'MyFollowingFollowerList'
         } else {
           this.isListTweeted = true
-          this.currentView = 'TAExperience'
+          this.currentView = ''
         }
-      },
-      ...mapActions(['ensureMember$TA'])
+      }
     },
     components: {
-      TAExperience,
-      TAFollowingFollowerList
+      MyFollowingFollowerList
     }
   }
 </script>

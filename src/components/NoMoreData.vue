@@ -17,8 +17,7 @@ export default {
 <style lang="less" scoped>
   .no-more-data{
     width:100%;
-    height:30.15rem;
-    padding-top:0.15rem;
+    padding:0.15rem 0;
     margin:0;
     background-color: white;
     h3{font-style: italic;}

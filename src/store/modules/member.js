@@ -9,6 +9,8 @@ import { MEMBER_LOGIN, DATA_FETCH_TEXT } from '../loading-texts'
 export const ENTITY_NAME = 'MEMBER'
 export const ORDER_NAME = '$ORDER'
 export const UPLOAD_TOKEN_NAME = '$UPLOAD_TOKEN'
+export const SELF_FOLLOWING_NAME = '$SELF_FOLLOWING'
+export const SELF_FOLLOWER_NAME = '$SELF_FOLLOWER'
 export const TA_NAME = '$TA_NAME'
 export const TA_FOLLOWING_NAME = '$TA_FOLLOWING'
 export const TA_FOLLOWER_NAME = '$TA_FOLLOWER'
@@ -19,14 +21,20 @@ const state = {
   token: '',
   self: initEmptyMemberInfo,
   isLogining: false,
-  member$Orders: [],
   listRequestTypeAppending: true,
+  member$UploadTokenCurrent: '',
+  member$Orders: [],
   member$OrderNoMore: false,
   member$OrderCurrent: {
     orderInfo: {},
     scenicSpotInfo: {}
   },
-  member$UploadTokenCurrent: '',
+  self$Followings: [],
+  self$FollowingFirstLoaded: false,
+  noMoreOfSelf$Following: false,
+  self$Followers: [],
+  self$FollowerFirstLoaded: false,
+  noMoreOfSelf$Follower: false,
   ta: {},
   ta$Followings: [],
   ta$FollowingFirstLoaded: false,
@@ -58,20 +66,32 @@ const getters = {
   memberInfo (state) {
     return state.self
   },
-  appendMember$OrderDiabled (state, getters, rootState) {
-    return rootState.loading || state.member$OrderNoMore
-  },
-  showMember$OrderFetchIndicator (state, getters, rootState) {
+  showMemberFetchIndicator (state, getters, rootState) {
     return rootState.loading && !state.listRequestTypeAppending
   },
-  showMember$OrderAppendIndicator (state, getters, rootState) {
+  showMemberAppendIndicator (state, getters, rootState) {
     return rootState.loading && state.listRequestTypeAppending
+  },
+  appendMember$OrderDiabled (state, getters, rootState) {
+    return rootState.loading || state.member$OrderNoMore
   },
   member$OrderInDetails (state) {
     return state.member$OrderCurrent
   },
   member$UploadToken (state) {
     return state.member$UploadTokenCurrent
+  },
+  appendSelf$FollowingDiabled (state, rootState) {
+    return rootState.loading || state.noMoreOfSelf$Following || !state.self$FollowingFirstLoaded
+  },
+  appendSelf$FollowerDiabled (state, rootState) {
+    return rootState.loading || state.noMoreOfSelf$Follower || !state.self$FollowerFirstLoaded
+  },
+  allSelf$Followings (state) {
+    return state.self$Followings
+  },
+  allSelf$Followers (state) {
+    return state.self$Followers
   },
   taInfo (state) {
     return state.ta
@@ -81,12 +101,6 @@ const getters = {
   },
   appendTa$FollowerDiabled (state, getters, rootState) {
     return rootState.loading || state.noMoreOfTa$Follower || !state.ta$FollowerFirstLoaded
-  },
-  showTa$FollowingFollowedFetchIndicator (state, getters, rootState) {
-    return rootState.loading && !state.listRequestTypeAppending
-  },
-  showTa$FollowingFollowedAppendIndicator (state, getters, rootState) {
-    return rootState.loading && state.listRequestTypeAppending
   },
   allTa$Followings (state) {
     return state.ta$Followings
@@ -138,6 +152,26 @@ const mutations = {
   },
   [ENTITY_NAME + UPLOAD_TOKEN_NAME + mutationTypes.CLEAR] (state) {
     state.member$UploadTokenCurrent = ''
+  },
+  [ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { followings }) {
+    state.self$Followings = followings
+    state.self$FollowingFirstLoaded = true
+  },
+  [ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { followings }) {
+    state.self$Followings = state.self$Followings.concat(followings)
+  },
+  [ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
+    state.noMoreOfSelf$Following = fetchCount < size
+  },
+  [ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { followers }) {
+    state.self$Followers = followers
+    state.self$FollowerFirstLoaded = true
+  },
+  [ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { followers }) {
+    state.self$Followers = state.self$Followers.concat(followers)
+  },
+  [ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
+    state.noMoreOfSelf$Follower = fetchCount < size
   },
   [ENTITY_NAME + TA_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { member$TA }) {
     state.ta = member$TA
@@ -225,7 +259,9 @@ const actions = {
     return p
   },
   fetchMember$Orders ({ commit, rootState }, noLoading) {
+    console.log(noLoading)
     let options = noLoading ? null : {headers: {loadingText: DATA_FETCH_TEXT}}
+    console.log(options)
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
     return Vue.http.post('api/orders', {page: {size: rootState.dataFetchingSize, skip: 0}}, options).then(ret => {
       if (ret.data.success) {
@@ -276,6 +312,58 @@ const actions = {
       return dispatch('fetchMember$UploadToken')
     }
     return dispatch('noop')
+  },
+  fetchSelf$FollowingList ({ commit, rootState }) {
+    console.log('fetchSelf$FollowingList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    return Vue.http.post('trv/followings/' + state.self.member_id, {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const followings = ret.data.rows
+        commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.FETCH_LIST_SUCCESS, { followings })
+        commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.SET_NO_MORE, { fetchCount: followings.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  appendSelf$FollowingList ({ commit, state, rootState }) {
+    console.log('appendSelf$FollowingList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    return Vue.http.post('trv/followings/' + state.self.member_id, {page: {size: rootState.dataFetchingSize, skip: state.ta$Followings.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const followings = ret.data.rows
+        followings.length > 0 && commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.APPEND_LIST_SUCCESS, { followings })
+        commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.SET_NO_MORE, { fetchCount: followings.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + SELF_FOLLOWING_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  fetchSelf$FollowerList ({ commit, rootState }) {
+    console.log('fetchSelf$FollowerList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    return Vue.http.post('trv/followers/' + state.self.member_id, {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const followers = ret.data.rows
+        commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.FETCH_LIST_SUCCESS, { followers })
+        commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: followers.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  appendSelf$FollowerList ({ commit, state, rootState }) {
+    console.log('appendSelf$FollowerList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    return Vue.http.post('trv/followers/' + state.self.member_id, {page: {size: rootState.dataFetchingSize, skip: state.ta$Followings.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const followers = ret.data.rows
+        followers.length > 0 && commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.APPEND_LIST_SUCCESS, { followers })
+        commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: followers.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + SELF_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
   },
   fetchMember$TA ({commit, dispatch}, { id }) {
     return Vue.http.get('trv/member/' + id).then(ret => {

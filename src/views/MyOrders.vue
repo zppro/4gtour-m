@@ -1,11 +1,11 @@
 <template lang="jade">
   .my-orders-c
-    no-more-data(v-if="allMember$Orders.length === 0")
-    .my-orders(v-show="allMember$Orders.length > 0", v-infinite-scroll="appendMember$Orders", infinite-scroll-disabled="appendMember$OrderDiabled", infinite-scroll-distance="infiniteScrollDistance")
-      p(v-show="showMember$OrderFetchIndicator" class="page-refresh-loading")
+    .my-orders(v-infinite-scroll="appendMember$Orders", infinite-scroll-disabled="appendMember$OrderDiabled", infinite-scroll-distance="infiniteScrollDistance")
+      p(v-show="showMemberFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
           | {{dataRefreshText}}
-      order-list.order-list
+      no-more-data(v-show="allMember$Orders.length === 0")
+      order-list.order-list(v-show="allMember$Orders.length > 0")
         order-item(v-for="order in allMember$Orders", :order-id="order.id")
           span(slot="title", :title="order.p_name") {{order.p_name}}
           span(slot="status")
@@ -13,7 +13,7 @@
           span(slot="code") {{order.code}}
           span(slot="time") {{order.check_in_time | formatDate }}
           span(slot="amount") ¥{{order.amount}}
-      p(v-show="showMember$OrderAppendIndicator" class="page-append-loading")
+      p(v-show="showMemberAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
           | {{dataAppendText}}
 </template>
@@ -26,14 +26,16 @@
   export default {
     computed: {
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'authMemberByTokenPromise']),
-      ...mapGetters(['allMember$Orders', 'appendMember$OrderDiabled', 'showMember$OrderFetchIndicator', 'showMember$OrderAppendIndicator'])
+      ...mapGetters(['allMember$Orders', 'appendMember$OrderDiabled', 'showMemberFetchIndicator', 'showMemberAppendIndicator'])
     },
     methods: {
       ...mapActions(['fetchMember$Orders', 'appendMember$Orders'])
     },
     created () {
+      console.log(this.showMemberFetchIndicator)
       this.authMemberByTokenPromise.then(() => {
         this.fetchMember$Orders()
+        console.log(this.showMemberFetchIndicator)
       })
     },
     components: {

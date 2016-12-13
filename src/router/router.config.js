@@ -29,6 +29,7 @@ import ExperienceDetailsRouteAddNav from '../views/partials/ExperienceDetailsRou
 import ExperienceDetailsRouteAdd from '../views/ExperienceDetailsRouteAdd.vue'
 import PickScenerySpotsNav from '../views/partials/PickScenerySpotsNav.vue'
 import PickScenerySpots from '../views/PickScenerySpots.vue'
+import MySelf from '../views/MySelf.vue'
 import TANav from '../views/partials/TANav.vue'
 import TA from '../views/TA.vue'
 import TAInfo from '../views/partials/TAInfo.vue'
@@ -224,6 +225,23 @@ export default [
       head: ExperienceDetailsFeelingAddNav,
       body: ExperienceDetailsFeelingAdd
     }
+  },
+  {
+    name: 'MySelf-apicloud',
+    path: '/myself-apicloud',
+    components: {
+      body: MySelf
+    },
+    children: [
+      {
+        name: '我的关注',
+        path: 'following'
+      },
+      {
+        name: '我的粉丝',
+        path: 'follower'
+      }
+    ]
   },
   {
     name: 'TA',

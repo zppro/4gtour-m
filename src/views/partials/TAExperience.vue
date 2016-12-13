@@ -189,5 +189,9 @@
       background-color: #000;
       backface-visibility: hidden;
     }
+    .mint-loadmore{
+      width: 100%;
+      height:21.35rem;
+    }
   }
 </style>

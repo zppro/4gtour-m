@@ -1,17 +1,17 @@
 <template lang="jade">
   .my-following-follower-c
-    no-more-data(v-if="currentFollowList.length === 0")
-    .my-following-follower(v-show="currentFollowList.length > 0", v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
-      p(v-show="showTa$FollowingFollowedFetchIndicator" class="page-refresh-loading")
+    .my-following-follower(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
+      p(v-show="showMemberFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
           | {{dataRefreshText}}
       mt-loadmore(:top-method="loadFollow" @top-status-change="handleFollowChange" ref="myList")
-        following-follower-list
+        no-more-data(v-show="currentFollowList.length === 0")
+        following-follower-list(v-show="currentFollowList.length > 0")
           following-follower-item(v-for="followItem in currentFollowList", :ta-member-id="followItem.id", :relation="followItem.relation")
             img(:src="followItem.headPic || defaultMemberHeadPortrait" slot="member_head_portrait")
             span(slot="member_name") {{followItem.nickName}}
-            span(slot="member_description") {{followItem.headpic}}
-      p(v-show="showTa$FollowingFollowedAppendIndicator" class="page-append-loading")
+            span(slot="member_description") {{followItem.description || '暂无'}}
+      p(v-show="showMemberAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
           | {{dataAppendText}}
 </template>
@@ -25,16 +25,16 @@
     props: ['isListFollowing'],
     computed: {
       currentFollowList () {
-        return this.isListFollowing ? this.allTa$Followings : this.allTa$Followers
+        return this.isListFollowing ? this.allSelf$Followings : this.allSelf$Followers
       },
       appendCurrentDiabled () {
-        return this.isListFollowing ? this.appendTa$FollowingDiabled : this.appendTa$FollowerDiabled
+        return this.isListFollowing ? this.appendSelf$FollowingDiabled : this.appendSelf$FollowerDiabled
       },
       fetchData () {
-        return this.isListFollowing ? this.fetchTa$FollowingList : this.fetchTa$FollowerList
+        return this.isListFollowing ? this.fetchSelf$FollowingList : this.fetchSelf$FollowerList
       },
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'defaultMemberHeadPortrait']),
-      ...mapGetters(['allTa$Followings', 'allTa$Followers', 'appendTa$FollowingDiabled', 'appendTa$FollowerDiabled', 'showTa$FollowingFollowedFetchIndicator', 'showTa$FollowingFollowedAppendIndicator'])
+      ...mapGetters(['allSelf$Followings', 'allSelf$Followers', 'appendSelf$FollowingDiabled', 'appendSelf$FollowerDiabled', 'showMemberFetchIndicator', 'showMemberAppendIndicator'])
     },
     methods: {
       handleFollowChange (status) {
@@ -46,12 +46,11 @@
         })
       },
       appendCurrentList () {
-        this.isListFollowing ? this.appendTa$FollowingList() : this.appendTa$FollowerList()
+        this.isListFollowing ? this.appendSelf$FollowingList() : this.appendSelf$FollowerList()
       },
-      ...mapActions(['fetchTa$FollowingList', 'appendTa$FollowingList', 'fetchTa$FollowerList', 'appendTa$FollowerList'])
+      ...mapActions(['fetchSelf$FollowingList', 'appendSelf$FollowingList', 'fetchSelf$FollowerList', 'appendSelf$FollowerList'])
     },
     created () {
-      console.log('fetchData at created isListFollowing:' + this.isListFollowing)
       this.fetchData()
     },
     watch: {
@@ -71,8 +70,9 @@
 <style lang="less" >
   .my-following-follower-c {
     width: 100%;
-    .my-following-follower{
+    .mint-loadmore{
       width: 100%;
+      height:21.35rem;
     }
   }
 </style>

@@ -53,6 +53,7 @@
     .member-description{
       margin-top:0.1rem;
       font-size: 0.5rem;
+      font-style: italic;
       color:#7c7b7b;
     }
   }
