@@ -1,7 +1,7 @@
 <template lang="jade">
-  .TA
-    router-view(name="info", :ta="taInfo")
-    router-view(name="taSubView", :is="currentView", :is-list-tweeted="isListTweeted", :is-list-following="isListFollowing" )
+  .MySelf
+    router-view(name="info")
+    router-view(name="mySelfSubView", :is="currentView", :is-list-tweeted="isListTweeted", :is-list-following="isListFollowing" )
 </template>
 
 <script>
@@ -21,11 +21,10 @@
       ...mapGetters(['taInfo'])
     },
     created () {
-      console.log('created in TA.vue')
+      console.log('created in MySelf.vue')
       window.scrollTo(0, 0)
       let self = this
       this.authMemberByTokenPromise.then(() => {
-        self.ensureMember$TA()
         self.switchChildView()
       })
     },
@@ -33,7 +32,6 @@
       $route () {
         window.scrollTo(0, 0)
         console.log(this.$route.path)
-        this.ensureMember$TA()
         this.switchChildView()
       }
     },
@@ -64,7 +62,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-  .TA {
+  .MySelf {
     width:100%;
   }
 </style>

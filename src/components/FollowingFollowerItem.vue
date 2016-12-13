@@ -73,19 +73,19 @@
 <script>
   import { mapGetters, mapActions } from 'vuex'
   export default {
-    props: ['taMemberId', 'isFollowing'],
+    props: ['taMemberId', 'relation'],
     computed: {
       isFollowedByMe () {
-
+        return this.relation === 2 || this.relation === 3
       },
       memberInfoUrl () {
         return {path: '/ta/' + this.taMemberId + '/details'}
       },
       showFollowBtn () {
-        return !this.isFollowedByMe
+        return !this.isLogined || !this.isFollowedByMe
       },
       showUnFollowBtn () {
-        return this.isFollowedByMe
+        return this.isLogined && this.isFollowedByMe
       },
       ...mapGetters(['isLogined', 'memberInfo'])
     },

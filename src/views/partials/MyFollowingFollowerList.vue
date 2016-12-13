@@ -1,7 +1,7 @@
 <template lang="jade">
-  .ta-following-follower-c
+  .my-following-follower-c
     no-more-data(v-if="currentFollowList.length === 0")
-    .ta-following-follower(v-show="currentFollowList.length > 0", v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
+    .my-following-follower(v-show="currentFollowList.length > 0", v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance" , infinite-scroll-immediate-check="false")
       p(v-show="showTa$FollowingFollowedFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
           | {{dataRefreshText}}
@@ -69,9 +69,9 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" >
-  .ta-following-follower-c {
+  .my-following-follower-c {
     width: 100%;
-    .ta-following-follower{
+    .my-following-follower{
       width: 100%;
     }
   }
