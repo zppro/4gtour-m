@@ -11,7 +11,7 @@
       .cross.cross-rb
     a.btn1.btn-save(@click="submitForm") 提交
     mt-popup(v-model="isPickScenerySpotsDialogOpen" position="bottom" class="mint-popup-bottom")
-      router-view(name="dialogHead" v-on:closeDialog="closePickScenerySpotsDialog")
+      router-view(name="dialogHead", v-on:closeDialog="closePickScenerySpotsDialog")
       router-view(name="dialogBody", v-on:comfirmDialog="confirmPicked", :scenerySpots="scenerySpots", :picked="scenerySpotIdsPickedInRoute")
 </template>
 

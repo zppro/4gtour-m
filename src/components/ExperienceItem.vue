@@ -171,7 +171,6 @@
         return {path: '/experience-details/' + this.experience.id + '/route'}
       },
       isRoute () {
-        console.log(345)
         return this.experience.category === 'A0003'
       },
       ...mapGetters(['isLogined'])

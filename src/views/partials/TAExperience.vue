@@ -12,11 +12,11 @@
             i.fa.fa-star-o(aria-hidden="true")
           span TA的收藏
     no-more-data(v-if="currentExperiences.length === 0")
-    .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", v-show="currentExperiences.length > 0" , infinite-scroll-immediate-check="false")
+    .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", infinite-scroll-immediate-check="false")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
-      experience-list.experience-list
+      experience-list.experience-list(v-show="currentExperiences.length > 0")
         experience-item(v-for="experience in currentExperiences", :experience="experience")
           img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
           span(slot="member_name") {{experience.member_name}}
@@ -69,15 +69,11 @@
     },
     created () {
       console.log('this.isListTweeted:' + this.isListTweeted)
-      let p = this.isListTweeted ? this.setTaTweeted() : this.setTaStared()
-
-      p.then(() => {
-        console.log(this.currentIndexInExperiencesOfTa)
-        this.currentIndexInExperiencesOfTa === 0 ? this.fetchTaTweetedList() : this.fetchTaStaredList()
-      })
+      this.isListTweeted ? this.setTaTweeted() : this.setTaStared()
     },
     watch: {
       isListTweeted () {
+        console.log('TAExperience watch.isListTweeted:' + this.isListTweeted)
         this.isListTweeted ? this.setTaTweeted() : this.setTaStared()
       }
     },

@@ -78,7 +78,6 @@
   }
 
   function qiniuImageView (img, w, h, mode) {
-    console.log(w)
     return img + '?imageView2/' + (mode || 1) + '/w/' + w + '/h/' + h
   }
 

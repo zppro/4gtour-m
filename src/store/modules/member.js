@@ -308,7 +308,6 @@ const actions = {
   },
   ensureMember$UploadToken ({ state, dispatch }) {
     if (state.self.member_id !== initEmptyMemberInfo.member_id && !state.member$UploadTokenCurrent) {
-      console.log(345)
       return dispatch('fetchMember$UploadToken')
     }
     return dispatch('noop')

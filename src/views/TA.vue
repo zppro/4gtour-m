@@ -32,6 +32,7 @@
     watch: {
       $route () {
         window.scrollTo(0, 0)
+        console.log('TA watch $route')
         console.log(this.$route.path)
         this.ensureMember$TA()
         this.switchChildView()
