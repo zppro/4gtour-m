@@ -11,26 +11,27 @@
           .i-wrapper
             i.fa.fa-star-o(aria-hidden="true")
           span TA的收藏
-    no-more-data(v-if="currentExperiences.length === 0")
     .ta-list(v-infinite-scroll="appendCurrentList", infinite-scroll-disabled="appendCurrentDiabled", infinite-scroll-distance="infiniteScrollDistance", infinite-scroll-immediate-check="false")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
-      experience-list.experience-list(v-show="currentExperiences.length > 0")
-        experience-item(v-for="experience in currentExperiences", :experience="experience")
-          img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
-          span(slot="member_name") {{experience.member_name}}
-          span(slot="time_description") {{experience.time_description}}
-          div.inline-block(slot="content" v-html="experience.content")
-          span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
-          .img-list(slot="imgs")
-            image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
-          span(slot="location") {{experience.location}}
-          span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
-          span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
-          span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
-          div(slot="retweetRoot" v-if="experience.retweet_flag" )
-            experience-item-retweet-root(:experience="experience.retweet_root" )
+      mt-loadmore(:top-method="loadExperience" @top-status-change="handleExperienceChange" ref="myList")
+        no-more-data(v-show="currentExperiences.length === 0")
+        experience-list.experience-list(v-show="currentExperiences.length > 0")
+          experience-item(v-for="experience in currentExperiences", :experience="experience")
+            img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
+            span(slot="member_name") {{experience.member_name}}
+            span(slot="time_description") {{experience.time_description}}
+            div.inline-block(slot="content" v-html="experience.content")
+            span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
+            .img-list(slot="imgs")
+              image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
+            span(slot="location") {{experience.location}}
+            span(slot="retweets" v-if="experience.retweets > 0") {{experience.retweets}}
+            span(slot="stars" v-if="experience.stars > 0") {{experience.stars}}
+            span(slot="likes" v-if="experience.likes > 0") {{experience.likes}}
+            div(slot="retweetRoot" v-if="experience.retweet_flag" )
+              experience-item-retweet-root(:experience="experience.retweet_root" )
       p(v-show="showExperienceAppendIndicator" class="page-append-loading")
         mt-spinner(type="fading-circle" color="#ea5513")
         | {{dataAppendText}}
@@ -59,6 +60,7 @@
         return this.currentIndexInExperiencesOfTa === 0 ? this.experiencesTaTweeted : this.experiencesTaStared
       },
       appendCurrentDiabled () {
+        console.log('currentIndexInExperiencesOfTa: ' + this.currentIndexInExperiencesOfTa + ' appendTaTweetedDiabled:' + this.appendTaTweetedDiabled)
         return this.currentIndexInExperiencesOfTa === 0 ? this.appendTaTweetedDiabled : this.appendTaStaredDiabled
       },
       showImageSwiper () {
@@ -89,7 +91,16 @@
       isExperienceRoute: function (experience) {
         return experience.category === 'A0003'
       },
+      handleExperienceChange (status) {
+        this.topStatus = status
+      },
+      loadExperience (id) {
+        (this.isListTweeted ? this.setTaTweeted() : this.setTaStared()).then(() => {
+          this.$refs.myList.onTopLoaded(id)
+        })
+      },
       appendCurrentList () {
+        console.log('appendCurrentList...')
         this.currentIndexInExperiencesOfTa === 0 ? this.appendTaTweetedList() : this.appendTaStaredList()
       },
       ...mapActions(['setTaTweeted', 'setTaStared', 'fetchTaTweetedList', 'appendTaTweetedList', 'fetchTaStaredList', 'appendTaStaredList'])
@@ -187,7 +198,7 @@
     }
     .mint-loadmore{
       width: 100%;
-      height:21.35rem;
+      min-height:21.35rem;
     }
   }
 </style>

@@ -1,4 +1,4 @@
-{
+ {
   "name": "4gtour-m",
   "version": "0.4.2",
   "description": "4gtour web app with h5 ",
@@ -15,9 +15,9 @@
     "mint-ui": "^2.0.2",
     "moment": "^2.15.1",
     "store": "^1.3.20",
-    "vue": "^2.0.3",
+    "vue": "^2.0.8",
     "vue-resource": "^1.0.3",
-    "vue-router": "^2.0.0",
+    "vue-router": "^2.0.3",
     "vuex": "^2.0.0",
     "vuex-router-sync": "^3.0.0"
   },

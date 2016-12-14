@@ -72,7 +72,7 @@
     width: 100%;
     .mint-loadmore{
       width: 100%;
-      height:21.35rem;
+      min-height:21.35rem;
     }
   }
 </style>
