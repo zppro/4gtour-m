@@ -1,12 +1,12 @@
 <template lang="jade">
   .hot-list-c
-    no-more-data(v-if="experiencesHot.length === 0")
-    .hot-list(v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance",v-show="experiencesHot.length > 0" )
+    .hot-list(v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
       mt-loadmore(:top-method="loadTop" @top-status-change="handleTopChange" ref="hotList")
-        experience-list.experience-list
+        no-more-data(v-show="experiencesHot.length === 0")
+        experience-list.experience-list(v-show="experiencesHot.length > 0")
           experience-item(v-for="experience in experiencesHot", :experience="experience")
             img(:src="experience.member_head_portrait || defaultMemberHeadPortrait" slot="member_head_portrait")
             span(slot="member_name") {{experience.member_name}}

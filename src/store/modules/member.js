@@ -14,6 +14,7 @@ export const SELF_FOLLOWER_NAME = '$SELF_FOLLOWER'
 export const TA_NAME = '$TA_NAME'
 export const TA_FOLLOWING_NAME = '$TA_FOLLOWING'
 export const TA_FOLLOWER_NAME = '$TA_FOLLOWER'
+export const FOLLOWING_TREND_NAME = '$FOLLOWING_TREND_NAME'
 
 const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', head_portrait: '', member_description: '' }
 // initial state
@@ -41,7 +42,10 @@ const state = {
   noMoreOfTa$Following: false,
   ta$Followers: [],
   ta$FollowerFirstLoaded: false,
-  noMoreOfTa$Follower: false
+  noMoreOfTa$Follower: false,
+  member$FollowingTrends: [],
+  member$FollowingTrendFirstLoaded: false,
+  noMoreOfMember$FollowingTrend: false
 }
 
 // getters
@@ -107,6 +111,12 @@ const getters = {
   },
   allTa$Followers (state) {
     return state.ta$Followers
+  },
+  appendMember$FollowingTrendDiabled (state, getters, rootState) {
+    return rootState.loading || state.noMoreOfMember$FollowingTrend || !state.member$FollowingTrendFirstLoaded
+  },
+  allMember$FollowingTrends (state) {
+    return state.member$FollowingTrends
   }
 }
 
@@ -200,6 +210,16 @@ const mutations = {
   },
   [ENTITY_NAME + TA_FOLLOWER_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
     state.noMoreOfTa$Follower = fetchCount < size
+  },
+  [ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { trends }) {
+    state.member$FollowingTrends = trends
+    state.member$FollowingTrendFirstLoaded = true
+  },
+  [ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { trends }) {
+    state.member$FollowingTrends = state.member$FollowingTrends.concat(trends)
+  },
+  [ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
+    state.noMoreOfMember$FollowingTrend = fetchCount < size
   }
 }
 // actions
@@ -449,6 +469,32 @@ const actions = {
         commit(ENTITY_NAME + TA_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: followers.length, size: rootState.dataFetchingSize })
       } else {
         commit(ENTITY_NAME + TA_FOLLOWER_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  fetchMember$FollowingTrendList ({ commit, rootState }) {
+    console.log('fetchMember$FollowingTrendList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
+    return Vue.http.post('trv/followingTrends', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const trends = ret.data.rows
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.FETCH_LIST_SUCCESS, { trends })
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: trends.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
+      }
+    })
+  },
+  appendMember$FollowingTrendList ({ commit, state, rootState }) {
+    console.log('appendMember$FollowingTrendList')
+    commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
+    return Vue.http.post('trv/followingTrends', {page: {size: rootState.dataFetchingSize, skip: state.ta$Followings.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      if (ret.data.success) {
+        const trends = ret.data.rows
+        trends.length > 0 && commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.APPEND_LIST_SUCCESS, { trends })
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: trends.length, size: rootState.dataFetchingSize })
+      } else {
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
     })
   }
