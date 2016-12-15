@@ -31,6 +31,7 @@
     display: flex;
     .group-date{
       width:20%;
+      font-size:0.6rem;
       span.today,span.yesterday{
         font-size: 1.2rem;
       }

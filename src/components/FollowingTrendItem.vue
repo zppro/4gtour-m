@@ -7,9 +7,11 @@
         slot(name="subject_name")
       .action_name.inline-block
         slot(name="action_name")
-      .object_name.inline-block
+      router-link.object_name(v-if="isMember", :to="objectMemberUrl")
         slot(name="object_name")
-    .item-imgs-content
+      .object_name.inline-block(v-if="!isMember")
+        slot(name="object_name")
+    .item-imgs-content(v-if="!isExperienceRemoved")
       .item-imgs.inline-block
         slot(name="item_imgs")
         .item-img-totals
@@ -18,6 +20,7 @@
         slot(name="content")
         router-link.details-link(v-if="trend.is_experience_route", :to="routeItemUrl")
           slot(name="details-link")
+    .item-content-removed.inline-block.text-muted(v-if="isExperienceRemoved") 原文已删除
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" >
@@ -72,20 +75,31 @@
       padding-left:0.2rem;
     }
   }
+  .item-content-removed{
+    padding:0.2rem;
+    font-size: 0.6rem;
+    font-style: italic;
+  }
 }
 </style>
 <script>
   export default {
     props: ['trend', 'showImgTotal'],
     computed: {
-      isExperienceRoute: function (experience) {
-        return experience.category === 'A0003'
+      isMember () {
+        return this.trend.object_type === 'A0001'
       },
       subjectUrl () {
         return {path: '/ta/' + this.trend.subject_id + '/details'}
       },
+      objectMemberUrl () {
+        return {path: '/ta/' + this.trend.object_id + '/details'}
+      },
       routeItemUrl () {
         return {path: '/experience-details/' + this.trend.object_id + '/route'}
+      },
+      isExperienceRemoved () {
+        return this.trend.action_type === 'A0009'
       }
     }
   }

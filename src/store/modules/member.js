@@ -112,11 +112,18 @@ const getters = {
   allTa$Followers (state) {
     return state.ta$Followers
   },
-  appendMember$FollowingTrendDiabled (state, getters, rootState) {
+  appendMember$FollowingTrendDiabled (state, rootState) {
     return rootState.loading || state.noMoreOfMember$FollowingTrend || !state.member$FollowingTrendFirstLoaded
   },
   allMember$FollowingTrends (state) {
     return state.member$FollowingTrends
+  },
+  allMember$FollowingTrendTotals (state) {
+    let trendTotals = 0
+    state.member$FollowingTrends.forEach(o => {
+      trendTotals += o.group_value.length
+    })
+    return trendTotals
   }
 }
 
@@ -216,6 +223,13 @@ const mutations = {
     state.member$FollowingTrendFirstLoaded = true
   },
   [ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { trends }) {
+    let newFirstTrendGroup = trends.splice(0, 1)[0]
+    let oldLastTrendGroup = state.member$FollowingTrends.find(item => item.group_key === newFirstTrendGroup.group_key)
+    if (oldLastTrendGroup) {
+      Vue.set(oldLastTrendGroup, 'group_value', oldLastTrendGroup.group_value.concat(newFirstTrendGroup.group_value))
+    } else {
+      state.member$FollowingTrends.push(newFirstTrendGroup)
+    }
     state.member$FollowingTrends = state.member$FollowingTrends.concat(trends)
   },
   [ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE] (state, { fetchCount, size }) {
@@ -478,21 +492,30 @@ const actions = {
     return Vue.http.post('trv/followingTrends', {page: {size: rootState.dataFetchingSize, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const trends = ret.data.rows
+        let fetchCount = 0
+        trends.forEach((o) => {
+          fetchCount += o.group_value.length
+        })
         commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.FETCH_LIST_SUCCESS, { trends })
-        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: trends.length, size: rootState.dataFetchingSize })
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: fetchCount, size: rootState.dataFetchingSize })
       } else {
         commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
     })
   },
-  appendMember$FollowingTrendList ({ commit, state, rootState }) {
+  appendMember$FollowingTrendList ({ commit, getters, rootState }) {
     console.log('appendMember$FollowingTrendList')
+    let skip = getters['allMember$FollowingTrendTotals']
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/followingTrends', {page: {size: rootState.dataFetchingSize, skip: state.ta$Followings.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/followingTrends', {page: {size: rootState.dataFetchingSize, skip: skip}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const trends = ret.data.rows
+        let fetchCount = 0
+        trends.forEach((o) => {
+          fetchCount += o.group_value.length
+        })
         trends.length > 0 && commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.APPEND_LIST_SUCCESS, { trends })
-        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: trends.length, size: rootState.dataFetchingSize })
+        commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: fetchCount, size: rootState.dataFetchingSize })
       } else {
         commit(ENTITY_NAME + FOLLOWING_TREND_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }

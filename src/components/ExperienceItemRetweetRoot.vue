@@ -9,9 +9,9 @@
           router-link.member-name.text-danger(:to="memberInfoUrl") {{'@' + experience.member_name}}
           .time-description {{experience.time_description}}
       .item-body
-        .content {{experience.content}}
-        router-link(v-if="false" ,:to="routeItemUrl")
-          span.text-danger 全文
+        .content.inline-block {{experience.content}}
+          router-link(v-if="isRoute" ,:to="routeItemUrl")
+            span.text-danger.link 全文
         .imgs
           .img-list
             image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
@@ -95,6 +95,9 @@
       },
       isRemoved () {
         return this.experience.status === 0
+      },
+      isRoute () {
+        return this.experience.category === 'A0003'
       },
       routeItemUrl () {
         return {path: '/experience-details/' + this.experience.id + '/route'}
