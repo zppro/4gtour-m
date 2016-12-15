@@ -1,6 +1,6 @@
 <template lang="jade">
   .hot-list-c
-    .hot-list(v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance")
+    .hot-list(v-infinite-scroll="appendHotList", infinite-scroll-disabled="appendHotDiabled", infinite-scroll-distance="infiniteScrollDistance", infinite-scroll-immediate-check="false")
       p(v-show="showExperienceFetchIndicator" class="page-refresh-loading")
         mt-spinner(type="triple-bounce" color="#ea5513")
         | {{dataRefreshText}}
@@ -12,7 +12,7 @@
             span(slot="member_name") {{experience.member_name}}
             span(slot="time_description") {{experience.time_description}}
             div.inline-block(slot="content" v-html="experience.content")
-            span.text-danger(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
+            span.text-danger.link(slot="details-link"  v-if="isExperienceRoute(experience)") 全文
             .img-list(slot="imgs")
               image-collection(:all-images="experience.imgs", v-on:select="zoomIn")
             span(slot="location") {{experience.location}}

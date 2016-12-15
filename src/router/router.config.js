@@ -135,6 +135,7 @@ export default [
   },
   {
     name: '关注见闻',
+    meta: { auth: true },
     path: '/experience/follow',
     components: {
       head: ExperienceNav,

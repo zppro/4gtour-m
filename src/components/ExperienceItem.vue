@@ -99,7 +99,6 @@
         a{
           span{
             margin-left: 0.2rem;
-            text-decoration: underline;
           }
         }
       }

@@ -1,47 +1,91 @@
 <template lang="jade">
-  .follow-item
+  .following-trend-item
     .item-head
-      router-link.subject_name(:to="memberInfoUrl")
-        slot(name="subject_name")
-      .check_in_hour_min
+      .check_in_hour_min.inline-block.text-muted
         slot(name="check_in_hour_min")
+      router-link.subject_name(:to="subjectUrl")
+        slot(name="subject_name")
+      .action_name.inline-block
+        slot(name="action_name")
+      .object_name.inline-block
+        slot(name="object_name")
     .item-imgs-content
-      .item-imgs
+      .item-imgs.inline-block
         slot(name="item_imgs")
-      .item-content
+        .item-img-totals
+          slot(name="img_totals")
+      .item-content.inline-block
         slot(name="content")
-    .item-foot(v-if="showImgTotal")
-      span.item-img-totals
-        | 共
-        slot(name="img_totals")
-        | 张
+        router-link.details-link(v-if="trend.is_experience_route", :to="routeItemUrl")
+          slot(name="details-link")
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" >
-.follow-item {
+.following-trend-item {
   width:100%;
-  padding:0.05rem;
-  height:3.1rem;
+  min-height:1.5rem;
+  padding:0.2rem;
+  margin: 0.2rem 0;
   text-align: left;
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
+  background-color: #efeff4;
+  -moz-border-radius: 0.2rem;
+  -webkit-border-radius: 0.2rem;
+  border-radius: 0.2rem;
   .item-head{
+    width: 100%;
+    padding: 0 0.2rem;
     height: 0.8rem;
+    font-size:0.7rem;
+    span{
+      font-size:0.7rem;
+    }
+    .subject_name,.object_name{
+      margin:0 0.1rem;
+      color:#e95513;
+    }
+    .check_in_hour_min{
+      span{
+        font-size:0.6rem;
+      }
+    }
   }
   .item-imgs-content{
+    padding: 0.2rem;
+    margin-top:0.2rem;
     flex: 1;
-  }
-  .item-foot{
-    height: 0.5rem;
+    font-size: 0.6rem;
+    color:#7c7b7b;
+    .item-imgs{
+      text-align: center;
+      img{
+        max-width:3rem;
+        max-height:3rem;
+      }
+    }
+    .item-content{
+      vertical-align: top;
+      padding:0.1rem;
+    }
+    .details-link{
+      padding-left:0.2rem;
+    }
   }
 }
 </style>
 <script>
   export default {
-    props: ['memberId', 'showImgTotal'],
+    props: ['trend', 'showImgTotal'],
     computed: {
-      memberInfoUrl () {
-        return {path: '/ta/' + this.memberId + '/details'}
+      isExperienceRoute: function (experience) {
+        return experience.category === 'A0003'
+      },
+      subjectUrl () {
+        return {path: '/ta/' + this.trend.subject_id + '/details'}
+      },
+      routeItemUrl () {
+        return {path: '/experience-details/' + this.trend.object_id + '/route'}
       }
     }
   }
