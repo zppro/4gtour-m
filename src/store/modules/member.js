@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import moment from 'moment'
 import localStore from 'store'
+import io from 'socket.io-client'
+import { memberSocketUrl } from '../../config/socket-option'
 import * as mutationTypes from '../mutation-types'
 import { MEMBER_TOKEN } from '../keys'
 import { APICLOUD_LOGIN, APICLOUD_LOGOUT } from '../share-apicloud-event-names'
@@ -23,6 +25,7 @@ const state = {
   self: initEmptyMemberInfo,
   isLogining: false,
   listRequestTypeAppending: true,
+  socket: {},
   member$UploadTokenCurrent: '',
   member$Orders: [],
   member$OrderNoMore: false,
@@ -66,6 +69,9 @@ const getters = {
     return state.member$Orders.filter((r) => {
       return r.local_status === 'A0001' && moment().isBefore(r.last_pay_time)
     }).length
+  },
+  memberSocket (state) {
+    return state.socket
   },
   memberInfo (state) {
     return state.self
@@ -134,6 +140,19 @@ const mutations = {
     state.token = token
     state.isLogining = false
     localStore.set(MEMBER_TOKEN, token)
+    // 设置socket
+    state.socket = io(memberSocketUrl)
+    state.socket.on('connect', () => {
+      console.log('member ' + memberInfo.member_id + ' connected')
+    })
+    state.socket.on('disconnect', () => {
+      console.log('member ' + memberInfo.member_id + ' disconnected')
+    })
+    state.socket.on('SM001', (data) => {
+      console.log('memberLogined: ' + data)
+    })
+
+    state.socket.emit('CM001', memberInfo.member_id)
   },
   [ENTITY_NAME + mutationTypes.LOGIN_FAIL] (state) {
     state.self = initEmptyMemberInfo
