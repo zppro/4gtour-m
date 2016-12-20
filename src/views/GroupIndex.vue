@@ -1,0 +1,73 @@
+<template lang="jade">
+  .group-index-c
+    group-latest-participated(:group="latestParticipated")
+    .index-list(v-infinite-scroll="appendGroups", infinite-scroll-disabled="appendGroupDiabled", infinite-scroll-distance="infiniteScrollDistance", infinite-scroll-immediate-check="false")
+      p(v-show="showGroupFetchIndicator" class="page-refresh-loading")
+        mt-spinner(type="triple-bounce" color="#ea5513")
+        | {{dataRefreshText}}
+      mt-loadmore(:top-method="loadTop" @top-status-change="handleTopChange" ref="groupIndexList")
+        group-list
+          group-item(v-for="group in allGroups", :group-id="group.id")
+            img(:src="group.group_cover_img || defaultMemberHeadPortrait" slot="group-cover-img")
+            span(slot="group_name") {{group.name}}
+            span(slot="group_intro") {{group.intro}}
+        .mint-loadmore-top.text-muted(slot="top")
+          span(v-show="topStatus !== 'loading'") 下拉刷新
+      p(v-show="showGroupAppendIndicator" class="page-append-loading")
+        mt-spinner(type="fading-circle" color="#ea5513")
+        | {{dataAppendText}}
+</template>
+
+<script>
+  import { mapState, mapGetters, mapActions } from 'vuex'
+  import GroupLatestParticipated from '../components/GroupLatestParticipated.vue'
+  import GroupList from '../components/GroupList.vue'
+  import GroupItem from '../components/GroupItem.vue'
+  export default {
+    data () {
+      return {
+        topStatus: ''
+      }
+    },
+    computed: {
+      ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'authMemberByTokenPromise']),
+      ...mapGetters(['isLogined', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
+    },
+    created () {
+      this.authMemberByTokenPromise.then(() => {
+        this.allGroups.length === 0 && this.fetchGroups()
+      })
+    },
+    methods: {
+      handleTopChange (status) {
+        this.topStatus = status
+      },
+      loadTop (id) {
+        this.fetchGroups().then(() => {
+          this.$refs.groupIndexList.onTopLoaded(id)
+        })
+      },
+      ...mapActions(['fetchGroups', 'appendGroups'])
+    },
+    components: {
+      GroupLatestParticipated,
+      GroupList,
+      GroupItem
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="less" scoped>
+  .group-index-c{
+    width: 100%;
+    .index-list {
+      width: 100%;
+      height: 8rem;
+      background-color: white;
+    }
+    .mint-loadmore-top {
+      font-size: 0.8rem;
+    }
+  }
+</style>

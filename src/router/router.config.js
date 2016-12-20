@@ -33,6 +33,10 @@ import MySelf from '../views/MySelf.vue'
 import TANav from '../views/partials/TANav.vue'
 import TA from '../views/TA.vue'
 import TAInfo from '../views/partials/TAInfo.vue'
+import GroupIndexNav from '../views/partials/GroupIndexNav.vue'
+import GroupIndex from '../views/GroupIndex.vue'
+import GroupAddNav from '../views/partials/GroupAddNav.vue'
+import GroupAdd from '../views/GroupAdd.vue'
 
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
@@ -282,5 +286,21 @@ export default [
         }
       }
     ]
+  },
+  {
+    name: '团首页',
+    path: '/group/index',
+    components: {
+      head: GroupIndexNav,
+      body: GroupIndex
+    }
+  },
+  {
+    name: '添加团',
+    path: '/group/add',
+    components: {
+      head: GroupAddNav,
+      body: GroupAdd
+    }
   }
 ]

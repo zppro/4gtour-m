@@ -4,12 +4,12 @@
       i.fa.fa-chevron-left(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
-    a.nav-item.nav-item-right(@click="submitForm")
+    a.nav-item.nav-item-right2(@click="submitForm")
       a.btn-send 保存
 </template>
-<style lang="less">
+<style lang="less" scoped>
 
-  .nav-header .nav-item-right{
+  .nav-header .nav-item-right2{
     flex: 0.3;
     font-size:1.2rem;
     margin-right:0.2rem;

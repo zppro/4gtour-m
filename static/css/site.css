@@ -123,6 +123,8 @@ body {
 .text-info,a.text-info{color:#31708f;}
 .text-warning,a.text-warning{color:#8a6d3b;}
 .text-danger,a.text-danger{color:#ea5513;}
+.text-italic{font-style: italic;}
+.text-bold{font-weight: bold;}
 iframe.img-loader{padding:0;margin:0;}
 .header-color{background-color:#ea5513;}
 .inline-block{display: inline-block}

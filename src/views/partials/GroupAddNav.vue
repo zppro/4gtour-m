@@ -33,18 +33,12 @@
   export default {
     computed: {
       title () {
-        console.log(this.$route)
-        if (this.$route.matched.length > 1) {
-          return this.$route.matched[0].name
-        } else {
-          return this.$route.name
-        }
+        return this.$route.name
       }
     },
     methods: {
       back () {
-//        this.$router.replace('/experience/mine')
-        window.history.back()
+        this.$router.replace('/group/index')
       },
       ...mapActions(['submitForm'])
     }
