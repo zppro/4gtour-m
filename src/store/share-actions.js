@@ -29,7 +29,7 @@ export const toast = (o, {msg, option}) => {
   Toast(Object.assign({message: msg}, toastOption, option))
 }
 
-export const toastSuccess = (o, {msg = '操作成功'}) => {
+export const toastSuccess = (o, msg = '操作成功') => {
   Toast(Object.assign({message: msg}, toastOption, {iconClass: 'fa fa-check'}))
 }
 

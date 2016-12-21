@@ -22,6 +22,7 @@ const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', hea
 // initial state
 const state = {
   token: '',
+  socketEnable: false,
   self: initEmptyMemberInfo,
   isLogining: false,
   listRequestTypeAppending: true,
@@ -140,19 +141,21 @@ const mutations = {
     state.token = token
     state.isLogining = false
     localStore.set(MEMBER_TOKEN, token)
-    // 设置socket
-    state.socket = io(memberSocketUrl)
-    state.socket.on('connect', () => {
-      console.log('member ' + memberInfo.member_id + ' connected')
-    })
-    state.socket.on('disconnect', () => {
-      console.log('member ' + memberInfo.member_id + ' disconnected')
-    })
-    state.socket.on('SM001', (data) => {
-      console.log('memberLogined: ' + data)
-    })
+    if (state.socketEnable) {
+      // 设置socket
+      state.socket = io(memberSocketUrl)
+      state.socket.on('connect', () => {
+        console.log('member ' + memberInfo.member_id + ' connected')
+      })
+      state.socket.on('disconnect', () => {
+        console.log('member ' + memberInfo.member_id + ' disconnected')
+      })
+      state.socket.on('SM001', (data) => {
+        console.log('memberLogined: ' + data)
+      })
 
-    state.socket.emit('CM001', memberInfo.member_id)
+      state.socket.emit('CM001', memberInfo.member_id)
+    }
   },
   [ENTITY_NAME + mutationTypes.LOGIN_FAIL] (state) {
     state.self = initEmptyMemberInfo

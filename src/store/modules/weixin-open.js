@@ -102,7 +102,7 @@ const actions = {
             const userInfoRet = ret.data.ret
             commit(ENTITY_NAME + USER_INFO_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, userInfoRet)
             dispatch('authMemberByOpenWeixinOnClient').then(() => {
-              dispatch('toastSuccess', {msg: '微信登录成功'}).then(() => {
+              dispatch('toastSuccess', '微信登录成功').then(() => {
                 router.replace({path: '/'})
               })
             })
