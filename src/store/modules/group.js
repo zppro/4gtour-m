@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import * as mutationTypes from '../mutation-types'
-import { DATA_FETCH_TEXT } from '../loading-texts'
+import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 
 const ENTITY_NAME = 'GROUP'
 export const LATEST_NAME = '$LATEST'
@@ -11,7 +11,8 @@ const state = {
   current: {},
   groupsFirstLoaded: false,
   listRequestTypeAppending: true,
-  noMoreOfIndexes: false
+  noMoreOfIndexes: false,
+  newGroup: true
 }
 
 // getters
@@ -33,6 +34,9 @@ const getters = {
   },
   showGroupAppendIndicator (state, rootState) {
     return rootState.loading && state.listRequestTypeAppending
+  },
+  haveNewGroup (state) {
+    return state.newGroup
   }
 }
 
@@ -44,6 +48,7 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { groups }) {
     state.all = groups
     state.groupsFirstLoaded = true
+    state.newGroup = true
   },
   [ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { groups }) {
     state.all = state.all.concat(groups)
@@ -56,6 +61,9 @@ const mutations = {
   },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { group }) {
     state.current = group
+  },
+  [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
+    state.newGroup = true
   }
 }
 
@@ -64,7 +72,7 @@ const actions = {
   fetchGroups ({ commit, rootState }) {
     console.log('fetchGroups')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
-    return Vue.http.post('trv/groups', {page: {size: rootState.dataFetchingSizeSmall, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/groups', {latestParticipated: state.latest.id, page: {size: rootState.dataFetchingSizeSmall, skip: 0}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const groups = ret.data.rows
         commit(ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS, { groups })
@@ -77,7 +85,7 @@ const actions = {
   appendGroups ({ commit, state, rootState }) {
     console.log('appendGroups')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/groups', {page: {size: rootState.dataFetchingSize, skip: state.all.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/groups', {latestParticipated: state.latest.id, page: {size: rootState.dataFetchingSize, skip: state.all.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const groups = ret.data.rows
         groups.length > 0 && commit(ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS, { groups })
@@ -99,6 +107,12 @@ const actions = {
       return latest
     })
   },
+  ensureLatestParticipated ({ state, rootState, dispatch }) {
+    if (!state.latest.id) {
+      return dispatch('fetchLatestParticipated')
+    }
+    return dispatch('noop')
+  },
   fetchGroupInfo ({commit, dispatch}, {id}) {
     return Vue.http.get('trv/group/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       let group
@@ -116,6 +130,42 @@ const actions = {
       return dispatch('fetchGroupInfo', rootState.route.params)
     }
     return dispatch('noop')
+  },
+  saveGroup ({commit, dispatch}, theGroup) {
+    if (!theGroup.id) {
+      return Vue.http.post('trv/group', theGroup, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+        const success = ret.data.success
+        if (success) {
+          const group = ret.data.ret
+          commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
+          commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
+          dispatch('submitFormSuccess').then(() => {
+            dispatch('toastSuccess')
+          })
+        } else {
+          dispatch('submitFormFail').then(() => {
+            dispatch('toastError', ret.data)
+          })
+        }
+        return success
+      })
+    } else {
+      return Vue.http.put('trv/group/' + theGroup.id, theGroup, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+        const success = ret.data.success
+        if (success) {
+          const group = ret.data.ret
+          commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
+          dispatch('submitFormSuccess').then(() => {
+            dispatch('toastSuccess')
+          })
+        } else {
+          dispatch('submitFormFail').then(() => {
+            dispatch('toastError', ret.data)
+          })
+        }
+        return success
+      })
+    }
   }
 }
 

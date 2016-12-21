@@ -103,8 +103,8 @@
         if (newSubmitingForm) {
           if (this.isValid) {
             console.log(this.newGroup)
-            this.saveExperience(this.newExperience).then((success) => {
-              success && self.$router.replace('/experience/mine')
+            this.saveGroup(this.newGroup).then((success) => {
+              success && self.$router.replace('/group/index')
             })
           } else {
             this.submitFormFail().then(() => {
@@ -138,7 +138,7 @@
         console.log(imgUrlIndex)
         this.newGroup.imgs.splice(imgUrlIndex, 1)
       },
-      ...mapActions(['toastError', 'submitForm', 'submitFormFail', 'saveExperience', 'fetchExperienceInfo'])
+      ...mapActions(['toastError', 'submitForm', 'submitFormFail', 'saveGroup', 'fetchExperienceInfo'])
     },
     components: {
       ImageUploader

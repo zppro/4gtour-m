@@ -55,7 +55,7 @@
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        (this.experiencesHot.length === 0 || this.haveNewExperience) && this.fetchHotList()
+        this.experiencesHot.length === 0 && this.fetchHotList()
       })
     },
     methods: {

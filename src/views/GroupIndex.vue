@@ -31,11 +31,13 @@
     },
     computed: {
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'authMemberByTokenPromise']),
-      ...mapGetters(['isLogined', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
+      ...mapGetters(['isLogined', 'haveNewGroup', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        this.allGroups.length === 0 && this.fetchGroups()
+        this.ensureLatestParticipated().then(() => {
+          (this.allGroups.length === 0 || this.haveNewGroup) && this.fetchGroups()
+        })
       })
     },
     methods: {
@@ -47,7 +49,7 @@
           this.$refs.groupIndexList.onTopLoaded(id)
         })
       },
-      ...mapActions(['fetchGroups', 'appendGroups'])
+      ...mapActions(['ensureLatestParticipated', 'fetchGroups', 'appendGroups'])
     },
     components: {
       GroupLatestParticipated,
@@ -62,8 +64,8 @@
   .group-index-c{
     width: 100%;
     .index-list {
+      margin-top:0.2rem;
       width: 100%;
-      height: 8rem;
       background-color: white;
     }
     .mint-loadmore-top {
