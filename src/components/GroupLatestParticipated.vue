@@ -52,7 +52,7 @@
     .item-head{
       padding: 0.5rem 0;
       border-bottom: solid 1px #F6F6F7;
-      height: 2rem;
+      height: 2.5rem;
       flex:0;
       .count-down-part{
         text-align:left;
@@ -118,7 +118,6 @@
           display: flex;
           .action{
             flex:2;
-            height:100%;
             a.btn-convene-enter{
               width:6.25rem;
               display: inline-block;
@@ -128,11 +127,11 @@
           .success-img-tag{
             flex:1;
             .tag-wrapper{
-              width:3.45rem;
-              height:3.45rem;
+              width:3rem;
+              height:3rem;
               img{
-                max-width: 3.45rem;
-                max-height: 3.45rem;
+                max-width: 3rem;
+                max-height: 3rem;
                 vertical-align: middle;
                 display: inline-block;
               }
@@ -185,7 +184,7 @@
     },
     methods: {
       format (img) {
-        return window.utils.qiniuImageView(img, window.utils.rem2px(3.45), window.utils.rem2px(3.45))
+        return window.utils.qiniuImageView(img, window.utils.rem2px(3), window.utils.rem2px(3))
       },
       countDownFinished () {
         if (this.beforeAssembling) {

@@ -48,7 +48,7 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS] (state, { groups }) {
     state.all = groups
     state.groupsFirstLoaded = true
-    state.newGroup = true
+    state.newGroup = false
   },
   [ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS] (state, { groups }) {
     state.all = state.all.concat(groups)
@@ -143,8 +143,8 @@ const actions = {
         const success = ret.data.success
         if (success) {
           const group = ret.data.ret
-          commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
+          commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
           dispatch('submitFormSuccess').then(() => {
             dispatch('toastSuccess')
           })
