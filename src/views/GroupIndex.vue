@@ -7,10 +7,7 @@
         | {{dataRefreshText}}
       mt-loadmore(:top-method="loadTop" @top-status-change="handleTopChange" ref="groupIndexList")
         group-list
-          group-item(v-for="group in allGroups", :group-id="group.id")
-            img(:src="group.group_cover_img || defaultMemberHeadPortrait" slot="group-cover-img")
-            span(slot="group_name") {{group.name}}
-            span(slot="group_intro") {{group.intro}}
+          group-item(v-for="group in allGroups", :group="group", :member-id="memberInfo.member_id" v-on:participate-group="participateGroup")
         .mint-loadmore-top.text-muted(slot="top")
           span(v-show="topStatus !== 'loading'") 下拉刷新
       p(v-show="showGroupAppendIndicator" class="page-append-loading")
@@ -31,7 +28,7 @@
     },
     computed: {
       ...mapState(['infiniteScrollDistance', 'dataRefreshText', 'dataAppendText', 'authMemberByTokenPromise']),
-      ...mapGetters(['isLogined', 'haveNewGroup', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
+      ...mapGetters(['isLogined', 'memberInfo', 'haveNewGroup', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
@@ -49,7 +46,7 @@
           this.$refs.groupIndexList.onTopLoaded(id)
         })
       },
-      ...mapActions(['ensureLatestParticipated', 'fetchGroups', 'appendGroups'])
+      ...mapActions(['ensureLatestParticipated', 'fetchGroups', 'appendGroups', 'participateGroup'])
     },
     components: {
       GroupLatestParticipated,
@@ -67,6 +64,8 @@
       margin-top:0.2rem;
       width: 100%;
       background-color: white;
+      height:19.25rem;
+
     }
     .mint-loadmore-top {
       font-size: 0.8rem;

@@ -16,12 +16,12 @@
         a.primary(@click="triggerDatePicker('deadlinePicker')")
           i.fa.fa-calendar(aria-hidden="true")
         mt-datetime-picker(ref="deadlinePicker" type="datetime", :start-date="start_date" @confirm="selectDeadline" )
-    .item-block.assembing-info
-      mt-field(label="集合地点" v-model="newGroup.assembing_place")
-      mt-field(label="集合时间" placeholder="右方日历图标" v-model="assembingTime", :readonly="true", :disableClear="true" )
-        a.primary(@click="triggerDatePicker('assembingTimePicker')")
+    .item-block.assembling-info
+      mt-field(label="集合地点" v-model="newGroup.assembling_place.location_text")
+      mt-field(label="集合时间" placeholder="右方日历图标" v-model="assemblingTime", :readonly="true", :disableClear="true" )
+        a.primary(@click="triggerDatePicker('assemblingTimePicker')")
           i.fa.fa-calendar(aria-hidden="true")
-        mt-datetime-picker(ref="assembingTimePicker" type="datetime", :start-date="start_date" @confirm="selectAssembingTime" )
+        mt-datetime-picker(ref="assemblingTimePicker" type="datetime", :start-date="start_date" @confirm="selectassemblingTime" )
     .group-add-actions
       a.btn1.btn-save(@click="submitForm") 提交
 </template>
@@ -44,8 +44,10 @@
           participate_min: 2,
           participate_max: 10,
           deadline: null,
-          assembing_place: '',
-          assembing_time: null,
+          assembling_place: {
+            location_text: ''
+          },
+          assembling_time: null,
           imgs: []
         }
       }
@@ -57,9 +59,9 @@
         }
         return ''
       },
-      assembingTime () {
-        if (this.newGroup.assembing_time) {
-          return moment(this.newGroup.assembing_time).format('YYYY-MM-DD HH:mm')
+      assemblingTime () {
+        if (this.newGroup.assembling_time) {
+          return moment(this.newGroup.assembling_time).format('YYYY-MM-DD HH:mm')
         }
         return ''
       },
@@ -79,8 +81,8 @@
           participate_min$required: { fulfilled: !!this.newGroup.participate_min, msg: '最少成团人数是必须的' },
           participate_max$required: { fulfilled: !!this.newGroup.participate_max, msg: '最大参团人数是必须的' },
           deadline$required: { fulfilled: !!this.newGroup.deadline, msg: '报名截止时间是必须的' },
-          assembing_place$required: { fulfilled: !!this.newGroup.assembing_place.trim(), msg: '集合地点是必须的' },
-          assembing_time$required: { fulfilled: !!this.newGroup.assembing_time, msg: '报名截止时间是必须的' }
+          assembling_place$required: { fulfilled: !!this.newGroup.assembling_place.location_text.trim(), msg: '集合地点是必须的' },
+          assembling_time$required: { fulfilled: !!this.newGroup.assembling_time, msg: '报名截止时间是必须的' }
         }
       },
       isValid: function () {
@@ -127,8 +129,8 @@
       selectDeadline (d) {
         this.newGroup.deadline = d
       },
-      selectAssembingTime (d) {
-        this.newGroup.assembing_time = d
+      selectassemblingTime (d) {
+        this.newGroup.assembling_time = d
       },
       onUploaded (imgUrl) {
         console.log(imgUrl)
@@ -138,7 +140,7 @@
         console.log(imgUrlIndex)
         this.newGroup.imgs.splice(imgUrlIndex, 1)
       },
-      ...mapActions(['toastError', 'submitForm', 'submitFormFail', 'saveGroup', 'fetchExperienceInfo'])
+      ...mapActions(['toastError', 'submitForm', 'submitFormFail', 'saveGroup'])
     },
     components: {
       ImageUploader

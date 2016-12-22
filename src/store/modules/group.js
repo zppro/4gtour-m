@@ -64,6 +64,12 @@ const mutations = {
   },
   [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
     state.newGroup = true
+  },
+  [ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST] (state, { id, group }) {
+    let theIndex = state.all.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      state.all.splice(theIndex, 1, group)
+    }
   }
 }
 
@@ -100,7 +106,7 @@ const actions = {
       let latest
       if (ret.data.success) {
         latest = ret.data.ret
-        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
+        latest && commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
       } else {
         dispatch('toastError', ret.data)
       }
@@ -166,6 +172,32 @@ const actions = {
         return success
       })
     }
+  },
+  updateLatestGroupStatus ({commit, dispatch}, {id, group_status}) {
+    return Vue.http.put('trv/group/' + id, {group_status}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      const success = ret.data.success
+      if (success) {
+        const latest = ret.data.ret
+        latest && commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
+        dispatch('toastSuccess')
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return success
+    })
+  },
+  participateGroup ({commit, dispatch}, {id}) {
+    return Vue.http.post('trv/groupParticipate/' + id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      const success = ret.data.success
+      if (success) {
+        const group = ret.data.ret
+        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
+        dispatch('toastSuccess')
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return success
+    })
   }
 }
 

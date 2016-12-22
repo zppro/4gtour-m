@@ -12,13 +12,14 @@
 <script>
   import moment from 'moment'
   export default {
-    props: ['seconds'],
     data () {
       return {
+        countDownId: null,
         durationSeconds: 0,
         duration: moment.duration(0)
       }
     },
+    props: ['secondsToAssembly'],
     computed: {
       days () {
         return this.duration.days()
@@ -30,20 +31,25 @@
         return this.duration.minutes()
       },
       seconds () {
-        console.log(this.duration.seconds())
         return this.duration.seconds()
       }
     },
     created () {
-      this.durationSeconds = this.seconds
-      console.log(this.durationSeconds)
-      window.setInterval(this.convertDuration, 1000)
+      if (this.secondsToAssembly > 0) {
+        this.durationSeconds = this.secondsToAssembly
+        this.countDownId = window.setInterval(this.convertDuration, 1000)
+      } else {
+        this.$emit('count-down-finish')
+      }
     },
     methods: {
       convertDuration () {
-        console.log(this.durationSeconds)
         this.durationSeconds--
         this.duration = moment.duration(this.durationSeconds * 1000)
+        if (this.countDownId && this.durationSeconds === 0) {
+          window.clearInterval(this.countDownId)
+          this.$emit('count-down-finish')
+        }
       }
     }
   }
