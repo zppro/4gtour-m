@@ -5,7 +5,7 @@
     .participated(v-if="haveGroupLatestPariticipated")
       .item-head
         .count-down-part(v-if="beforeAssembling") 据集合还剩
-          count-down(:seconds-to-assembly="secondsToAssembly" v-on:count-down-finish="countDownFinished")
+          count-down(:seconds-to-assembly="secondsToAssembly" v-on:count-down-finish="countDownFinished" ref="countDownAssembling")
         .count-down-part(v-if="!beforeAssembling") 出行中
       .item-body
         .group-left
@@ -187,11 +187,14 @@
         return window.utils.qiniuImageView(img, window.utils.rem2px(3), window.utils.rem2px(3))
       },
       countDownFinished () {
-        if (this.beforeAssembling) {
+        if (this.beforeAssembling && this.group.group_status !== 'A0007' && this.group.group_status !== 'A0009') {
           // 更新group_status
           console.log('更新group_status')
           let groupStatus = this.group.participant_number < this.group.participate_min ? 'A0007' : 'A0009'
-          this.updateLatestGroupStatus({id: this.group.id, group_status: groupStatus})
+          this.updateLatestGroupStatus({id: this.group.id, group_status: groupStatus}).then(() => {
+            console.log(this.$refs.countDownAssembling.restart)
+            this.$refs.countDownAssembling.restart()
+          })
         }
       },
       conveneAndEnter () {

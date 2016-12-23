@@ -19,7 +19,7 @@
         duration: moment.duration(0)
       }
     },
-    props: ['secondsToAssembly'],
+    props: ['secondsToAssembly', 'trigger'],
     computed: {
       days () {
         return this.duration.days()
@@ -35,19 +35,26 @@
       }
     },
     created () {
-      if (this.secondsToAssembly > 0) {
-        this.durationSeconds = this.secondsToAssembly
-        this.countDownId = window.setInterval(this.convertDuration, 1000)
-      } else {
-        this.$emit('count-down-finish')
-      }
+      this.restart()
     },
     methods: {
+      restart () {
+        if (this.countDownId) {
+          window.clearInterval(this.countDownId)
+        }
+        if (this.secondsToAssembly > 0) {
+          this.durationSeconds = this.secondsToAssembly
+          this.countDownId = window.setInterval(this.convertDuration, 1000)
+        } else {
+          this.$emit('count-down-finish')
+        }
+      },
       convertDuration () {
         this.durationSeconds--
         this.duration = moment.duration(this.durationSeconds * 1000)
         if (this.countDownId && this.durationSeconds === 0) {
           window.clearInterval(this.countDownId)
+          this.countDownId = null
           this.$emit('count-down-finish')
         }
       }

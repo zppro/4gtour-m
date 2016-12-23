@@ -62,6 +62,13 @@ const mutations = {
   },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { group }) {
     state.current = group
+    if (state.latest.assembling_time) {
+      if (moment(group.assembling_time).unix() - moment(state.latest.assembling_time).unix() < 0) {
+        state.latest = group
+      }
+    } else {
+      state.latest = group
+    }
   },
   [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
     state.newGroup = true
@@ -80,6 +87,12 @@ const mutations = {
         state.all.splice(theIndex, 1)
         state.latest = group
       }
+    }
+  },
+  [ENTITY_NAME + mutationTypes.REMOVE] (state, { id }) {
+    let theIndex = state.all.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      state.all.splice(theIndex, 1)
     }
   }
 }
@@ -124,7 +137,7 @@ const actions = {
       return latest
     })
   },
-  ensureLatestParticipated ({ state, rootState, dispatch }) {
+  ensureLatestParticipated ({ state, dispatch }) {
     if (!state.latest.id) {
       return dispatch('fetchLatestParticipated')
     }
@@ -184,12 +197,28 @@ const actions = {
       })
     }
   },
-  updateLatestGroupStatus ({commit, dispatch}, {id, group_status}) {
+  updateLatestGroupStatus ({state, rootState, commit, dispatch}, {id, group_status}) {
     return Vue.http.put('trv/group/' + id, {group_status}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
       const success = ret.data.success
       if (success) {
         const latest = ret.data.ret
-        latest && commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
+        if (latest) {
+          if (latest.group_status === 'A0007') {
+            // 如果新设置的latest的group_status是A0007(不成团关闭)，则需要从state.all中提取最新的数据到latest中
+            let arrParticipated = state.all.filter((o) => {
+              return o.participanter_ids.some((p) => {
+                return p === rootState.member.self.member_id
+              })
+            })
+            if (arrParticipated.length > 0) {
+              let latestParticipated = arrParticipated[0]
+              commit(ENTITY_NAME + mutationTypes.REMOVE, latestParticipated)
+              commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: latestParticipated})
+            }
+          } else {
+            commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
+          }
+        }
         dispatch('toastSuccess')
       } else {
         dispatch('toastError', ret.data)
