@@ -1,7 +1,7 @@
 <template lang="jade">
   nav.nav-header.header-color
-    a.nav-item.nav-item-left(@click="back")
-      i.fa.fa-chevron-left(aria-hidden="true")
+    a.nav-item.nav-item-left
+      i.fa(aria-hidden="true")
     a.nav-item.nav-item-center
       h1 {{title}}
     a.nav-item.nav-item-right(@click="addGroup")
@@ -17,9 +17,6 @@
       ...mapGetters(['isLogined'])
     },
     methods: {
-      back () {
-        this.$router.replace('/')
-      },
       addGroup () {
         if (!this.isLogined) {
           this.login()

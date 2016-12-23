@@ -192,14 +192,13 @@
           console.log('更新group_status')
           let groupStatus = this.group.participant_number < this.group.participate_min ? 'A0007' : 'A0009'
           this.updateLatestGroupStatus({id: this.group.id, group_status: groupStatus}).then(() => {
-            console.log(this.$refs.countDownAssembling.restart)
-            this.$refs.countDownAssembling.restart()
+            groupStatus === 'A0007' && this.$refs.countDownAssembling.restart()
           })
         }
       },
       conveneAndEnter () {
         if (this.canConveneAndEnter) {
-          console.log('进入召集')
+          this.$router.push('/group/convene/' + this.group.id)
         }
         return false
       },

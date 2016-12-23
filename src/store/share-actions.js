@@ -75,7 +75,7 @@ export const login = ({ state, dispatch }) => {
   }
 }
 
-export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
+export const addEventListenerFromApiCloudToMember = ({ state, dispatch }) => {
   return Promise.resolve(true).then(() => {
     window.apiready = function () {
       window.api.addEventListener({ name: APICLOUD_LOGIN }, (ret, err) => {
@@ -93,6 +93,18 @@ export const addEventListenerFromApiCloud = ({ state, dispatch }) => {
 export const sendEventToApiCloud = ({ dispatch }, { eventName, eventData = null }) => {
   return Promise.resolve(true).then(() => {
     window.api && window.api.sendEvent({name: eventName, extra: eventData})
+  })
+}
+
+export const addEventListenerFromApiCloud = ({ dispatch }, {eventName, eventHandler}) => {
+  return Promise.resolve(true).then(() => {
+    window.api && window.api.addEventListener({ name: eventName }, eventHandler)
+  })
+}
+
+export const removeEventListenerFromApiCloud = ({ dispatch }, eventName) => {
+  return Promise.resolve(true).then(() => {
+    window.api && window.api.removeEventListener({ name: eventName })
   })
 }
 export const shareToWeixinOnApiCloud = ({ dispatch }, { scene, title, description, thumbUrl, contentUrl, contentType = 'web_page' }) => {

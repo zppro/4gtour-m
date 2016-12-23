@@ -1,0 +1,33 @@
+<template lang="jade">
+  .group-member-c
+    group-member-list(:group-members="conveningGroup.participants")
+</template>
+
+<script>
+  import { mapState, mapGetters, mapActions } from 'vuex'
+  import GroupMemberList from '../components/GroupMemberList.vue'
+  export default {
+    computed: {
+      ...mapState(['authMemberByTokenPromise']),
+      ...mapGetters(['isLogined', 'memberInfo', 'conveningGroup'])
+    },
+    created () {
+      this.authMemberByTokenPromise.then(() => {
+        this.ensureLatestParticipated()
+      })
+    },
+    methods: {
+      ...mapActions(['ensureLatestParticipated'])
+    },
+    components: {
+      GroupMemberList
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="less" scoped>
+  .group-member-c{
+    width: 100%;
+  }
+</style>

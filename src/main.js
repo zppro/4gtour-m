@@ -2,7 +2,7 @@ import Vue from 'vue'
 import moment from 'moment'
 import VueResource from 'vue-resource'
 import { sync } from 'vuex-router-sync'
-import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, Swipe, SwipeItem, Loadmore, Checklist, Radio, InfiniteScroll, Lazyload } from 'mint-ui'
+import { Progress, Spinner, Popup, Cell, Field, Badge, Actionsheet, DatetimePicker, Swipe, SwipeItem, Loadmore, Checklist, Radio, PaletteButton, InfiniteScroll, Lazyload } from 'mint-ui'
 import store from './store'
 import router from './router'
 import * as httpOption from './config/http-option'
@@ -27,6 +27,7 @@ Vue.component(SwipeItem.name, SwipeItem)
 Vue.component(Loadmore.name, Loadmore)
 Vue.component(Checklist.name, Checklist)
 Vue.component(Radio.name, Radio)
+Vue.component(PaletteButton.name, PaletteButton)
 Vue.use(InfiniteScroll)
 Vue.use(Lazyload)
 // Vue.use(VeeValidate, veeValidateOption)
@@ -45,7 +46,7 @@ Vue.http.interceptors.push(httpOption.loadingIndicator)
 // 配置微信开放平台数据
 !store.state.env.isWeixin && store.dispatch('weixinOpen$getConfig')
 // !store.state.env.isWeixin && window.utils.loadScript('http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=YOUR APPKEY&debug=true')
-store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloud')
+store.state.env.isApiCloud && store.dispatch('addEventListenerFromApiCloudToMember')
 
 Vue.config.devtools = process.env.NODE_ENV !== 'production'
 

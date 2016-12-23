@@ -5,9 +5,14 @@ import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 
 const ENTITY_NAME = 'GROUP'
 export const LATEST_NAME = '$LATEST'
+export const CONVENING_NAME = '$CONVENING'
+
 // initial state
 const state = {
   latest: {},
+  conveningOne: {
+    assembling_place: {}
+  },
   all: [],
   current: {},
   groupsFirstLoaded: false,
@@ -23,6 +28,9 @@ const getters = {
   },
   latestParticipated (state) {
     return state.latest
+  },
+  conveningGroup (state) {
+    return state.conveningOne
   },
   groupInDetails (state) {
     return state.current
@@ -59,6 +67,9 @@ const mutations = {
   },
   [ENTITY_NAME + LATEST_NAME + mutationTypes.SET] (state, { latest }) {
     state.latest = latest
+  },
+  [ENTITY_NAME + CONVENING_NAME + mutationTypes.SET] (state, { conveningOne }) {
+    state.conveningOne = conveningOne
   },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { group }) {
     state.current = group
@@ -140,6 +151,24 @@ const actions = {
   ensureLatestParticipated ({ state, dispatch }) {
     if (!state.latest.id) {
       return dispatch('fetchLatestParticipated')
+    }
+    return dispatch('noop')
+  },
+  fetchConveningGroup ({commit, dispatch}, {id}) {
+    return Vue.http.get('trv/group/' + id, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+      let conveningOne
+      if (ret.data.success) {
+        conveningOne = ret.data.ret
+        commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne})
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return conveningOne
+    })
+  },
+  ensureConveningGroup ({ state, rootState, dispatch }) {
+    if (!state.conveningOne.id) {
+      return dispatch('fetchConveningGroup', rootState.route.params)
     }
     return dispatch('noop')
   },
