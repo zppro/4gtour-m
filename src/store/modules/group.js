@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import moment from 'moment'
 import * as mutationTypes from '../mutation-types'
 import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 
@@ -68,7 +69,17 @@ const mutations = {
   [ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST] (state, { id, group }) {
     let theIndex = state.all.findIndex(item => item.id === id)
     if (theIndex !== -1) {
-      state.all.splice(theIndex, 1, group)
+      if (state.latest.assembling_time) {
+        if (moment(group.assembling_time).unix() - moment(state.latest.assembling_time).unix() < 0) {
+          state.all.splice(theIndex, 1, Object.assign({}, state.latest))
+          state.latest = group
+        } else {
+          state.all.splice(theIndex, 1, group)
+        }
+      } else {
+        state.all.splice(theIndex, 1)
+        state.latest = group
+      }
     }
   }
 }

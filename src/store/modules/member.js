@@ -141,6 +141,7 @@ const mutations = {
     state.token = token
     state.isLogining = false
     localStore.set(MEMBER_TOKEN, token)
+    // todo 检测如果是切换用户则设置用户变更标志
     if (state.socketEnable) {
       // 设置socket
       state.socket = io(memberSocketUrl)
@@ -153,7 +154,6 @@ const mutations = {
       state.socket.on('SM001', (data) => {
         console.log('memberLogined: ' + data)
       })
-
       state.socket.emit('CM001', memberInfo.member_id)
     }
   },
