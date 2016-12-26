@@ -13,11 +13,11 @@
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        this.ensureLatestParticipated()
+        this.ensureConveningGroup()
       })
     },
     methods: {
-      ...mapActions(['ensureLatestParticipated'])
+      ...mapActions(['ensureConveningGroup'])
     },
     components: {
       GroupMemberList

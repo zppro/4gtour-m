@@ -2,7 +2,9 @@ import Vue from 'vue'
 import moment from 'moment'
 import * as mutationTypes from '../mutation-types'
 import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
-
+import { SUB_ENTITY_SOCKET_NAME } from '../keys'
+import io from 'socket.io-client'
+import { groupSocketUrl } from '../../config/socket-option'
 const ENTITY_NAME = 'GROUP'
 export const LATEST_NAME = '$LATEST'
 export const CONVENING_NAME = '$CONVENING'
@@ -11,14 +13,16 @@ export const CONVENING_NAME = '$CONVENING'
 const state = {
   latest: {},
   conveningOne: {
-    assembling_place: {}
+    assembling_place: {},
+    participants: []
   },
   all: [],
   current: {},
   groupsFirstLoaded: false,
   listRequestTypeAppending: true,
   noMoreOfIndexes: false,
-  newGroup: true
+  newGroup: true,
+  socket: {}
 }
 
 // getters
@@ -51,6 +55,16 @@ const getters = {
 
 // mutations
 const mutations = {
+  [ENTITY_NAME + SUB_ENTITY_SOCKET_NAME + mutationTypes.SET] (state) {
+    // 设置socket
+    state.socket = io(groupSocketUrl)
+    state.socket.on('connect', () => {
+      console.log('group socket connected')
+    })
+    state.socket.on('disconnect', () => {
+      console.log('group socket disconnected')
+    })
+  },
   [ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
     state.listRequestTypeAppending = listRequestType === 'append'
   },
@@ -110,6 +124,39 @@ const mutations = {
 
 // actions
 const actions = {
+  shakeHandToGroupSocket ({ commit, state, rootState }) {
+    commit(ENTITY_NAME + SUB_ENTITY_SOCKET_NAME + mutationTypes.SET)
+    const groupMemberChange = (data) => {
+      console.log('group socket listener: ' + data.reason)
+      if (state.latest.id === data.group.id) {
+        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: state.latest})
+      } else {
+        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id: data.group.id, group: data.group})
+      }
+    }
+    state.socket.on('SG001', groupMemberChange)
+    state.socket.on('SG002', groupMemberChange)
+    state.socket.on('SG003', (data) => {
+      console.log('group socket listener: ' + data.reason)
+      if (state.latest.id === data.group.id) {
+        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: {}})
+      } else {
+        commit(ENTITY_NAME + mutationTypes.REMOVE, data.group)
+      }
+      let arrParticipated = state.all.filter((o) => {
+        return o.participanter_ids.some((p) => {
+          return p === rootState.member.self.member_id
+        })
+      })
+      if (arrParticipated.length > 0) {
+        let latestParticipated = arrParticipated[0]
+        commit(ENTITY_NAME + mutationTypes.REMOVE, latestParticipated)
+        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: latestParticipated})
+      }
+    })
+    state.socket.emit('CG001', rootState.member.self.member_id)
+    return Promise.resolve(state.socket)
+  },
   fetchGroups ({ commit, rootState }) {
     console.log('fetchGroups')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'fetch' })
@@ -190,7 +237,7 @@ const actions = {
     }
     return dispatch('noop')
   },
-  saveGroup ({commit, dispatch}, theGroup) {
+  saveGroup ({commit, state, dispatch}, theGroup) {
     if (!theGroup.id) {
       return Vue.http.post('trv/group', theGroup, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         const success = ret.data.success
@@ -198,6 +245,7 @@ const actions = {
           const group = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
           commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
+          state.socket.emit('CG002', group.id)
           dispatch('submitFormSuccess').then(() => {
             dispatch('toastSuccess')
           })
@@ -234,6 +282,7 @@ const actions = {
         if (latest) {
           if (latest.group_status === 'A0007') {
             // 如果新设置的latest的group_status是A0007(不成团关闭)，则需要从state.all中提取最新的数据到latest中
+            // todo: 将来需要从服务端去检测，当前仅从在线列表中检测
             let arrParticipated = state.all.filter((o) => {
               return o.participanter_ids.some((p) => {
                 return p === rootState.member.self.member_id
@@ -243,6 +292,9 @@ const actions = {
               let latestParticipated = arrParticipated[0]
               commit(ENTITY_NAME + mutationTypes.REMOVE, latestParticipated)
               commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: latestParticipated})
+            } else {
+              // 列表中没有任何参加的团
+              commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: {}})
             }
           } else {
             commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest})
@@ -261,6 +313,7 @@ const actions = {
       if (success) {
         const group = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
+        state.socket.emit('CG003', id)
         dispatch('toastSuccess')
       } else {
         dispatch('toastError', ret.data)

@@ -22,10 +22,10 @@ const initEmptyMemberInfo = { member_id: 'anonymity', member_name: '匿名', hea
 // initial state
 const state = {
   token: '',
-  socketEnable: false,
   self: initEmptyMemberInfo,
   isLogining: false,
   listRequestTypeAppending: true,
+  socketEnable: false,
   socket: {},
   member$UploadTokenCurrent: '',
   member$Orders: [],
