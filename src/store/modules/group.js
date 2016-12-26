@@ -64,6 +64,7 @@ const mutations = {
     state.socket.on('disconnect', () => {
       console.log('group socket disconnected')
     })
+    console.log(state.socket)
   },
   [ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
     state.listRequestTypeAppending = listRequestType === 'append'
@@ -154,8 +155,17 @@ const actions = {
         commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: latestParticipated})
       }
     })
+    state.socket.on('SG004', groupMemberChange)
     state.socket.emit('CG001', rootState.member.self.member_id)
     return Promise.resolve(state.socket)
+  },
+  ensureGroupSocket ({ state, rootState, dispatch }) {
+    if (!state.socket.id) {
+      return rootState.authMemberByTokenPromise.then(() => {
+        return dispatch('shakeHandToGroupSocket')
+      })
+    }
+    return dispatch('noop')
   },
   fetchGroups ({ commit, rootState }) {
     console.log('fetchGroups')
@@ -314,6 +324,20 @@ const actions = {
         const group = ret.data.ret
         commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
         state.socket.emit('CG003', id)
+        dispatch('toastSuccess')
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return success
+    })
+  },
+  exitGroup ({commit, dispatch}, {id}) {
+    return Vue.http.post('trv/groupExit/' + id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      const success = ret.data.success
+      if (success) {
+        const group = ret.data.ret
+        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
+        state.socket.emit('CG004', id)
         dispatch('toastSuccess')
       } else {
         dispatch('toastError', ret.data)

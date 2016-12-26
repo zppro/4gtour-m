@@ -31,6 +31,7 @@
       ...mapGetters(['isLogined', 'memberInfo', 'haveNewGroup', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
     },
     created () {
+      this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
         this.ensureLatestParticipated().then(() => {
           (this.allGroups.length === 0 || this.haveNewGroup) && this.fetchGroups()
@@ -46,7 +47,7 @@
           this.$refs.groupIndexList.onTopLoaded(id)
         })
       },
-      ...mapActions(['ensureLatestParticipated', 'fetchGroups', 'appendGroups', 'participateGroup'])
+      ...mapActions(['ensureGroupSocket', 'ensureLatestParticipated', 'fetchGroups', 'appendGroups', 'participateGroup'])
     },
     components: {
       GroupLatestParticipated,

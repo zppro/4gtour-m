@@ -187,14 +187,15 @@
         return window.utils.qiniuImageView(img, window.utils.rem2px(3), window.utils.rem2px(3))
       },
       countDownFinished () {
-        if (this.beforeAssembling && this.group.group_status !== 'A0007' && this.group.group_status !== 'A0009') {
-          // 更新group_status
-          console.log('更新group_status')
-          let groupStatus = this.group.participant_number < this.group.participate_min ? 'A0007' : 'A0009'
-          this.updateLatestGroupStatus({id: this.group.id, group_status: groupStatus}).then(() => {
-            groupStatus === 'A0007' && this.$refs.countDownAssembling.restart()
-          })
-        }
+        console.log('countDownFinished')
+//        if (this.beforeAssembling && this.group.group_status !== 'A0007' && this.group.group_status !== 'A0009') {
+//          // 更新group_status
+//          console.log('更新group_status')
+//          let groupStatus = this.group.participant_number < this.group.participate_min ? 'A0007' : 'A0009'
+//          this.updateLatestGroupStatus({id: this.group.id, group_status: groupStatus}).then(() => {
+//            groupStatus === 'A0007' && this.$refs.countDownAssembling.restart()
+//          })
+//        }
       },
       conveneAndEnter () {
         if (this.canConveneAndEnter) {
