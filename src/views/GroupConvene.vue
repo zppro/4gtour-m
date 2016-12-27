@@ -4,7 +4,9 @@
       .map-container-bg-text.text-muted.text-italic 地图位置
       span.verticle-middle
     .bottom-info
-      .always-show
+      .btn-up
+        i.fa(:class='{"fa-angle-up": isBottomRawPosition, "fa-angle-down": !isBottomRawPosition}', aria-hidden="true")
+      .group-details-info(:style="groupDetailsInfoStyle")
         .assembling_place
           .location-text
             i.fa.fa-map-marker.text-primary(aria-hidden="true")
@@ -17,14 +19,33 @@
   import { mapState, mapGetters, mapActions } from 'vuex'
   import { APICLOUD_OPEN_MAP, APICLOUD_CLOSE_MAP, APICLOUD_OPEN_MAP_SUCCESS, APICLOUD_OPEN_MAP_FAIL, APICLOUD_LOCATE, APICLOUD_LOCATE_SUCCESS, APICLOUD_LOCATE_FAIL } from '../store/share-apicloud-event-names'
   export default {
+    data () {
+      let h = 2
+      return {
+        hammerBtnUp: {},
+        rawGroupDetailsInfoH: h,
+        groupDetailsInfoStyle: {
+          height: h + 'rem'
+        }
+      }
+    },
     computed: {
-      conveneContainerStyle () {
-        let h = 30.15
+      maxH () {
+        let h = 30.15 - 2
         if (this.env.isApiCloud) {
           h = h - 2.55
         }
+        return h
+      },
+      maxPanH () {
+        return this.maxH - this.rawGroupDetailsInfoH
+      },
+      isBottomRawPosition () {
+        return this.groupDetailsInfoStyle.height === this.rawGroupDetailsInfoH + 'rem'
+      },
+      conveneContainerStyle () {
         return {
-          height: h + 'rem'
+          height: this.maxH + 'rem'
         }
       },
       ...mapState(['env', 'authMemberByTokenPromise']),
@@ -74,6 +95,75 @@
           }
         })
       }
+      var elem = window.$('.group-convene-c .btn-up')[0]
+      this.hammerBtnUp = new window.Hammer.Manager(elem)
+      this.hammerBtnUp.add(new window.Hammer.Pan())
+      this.hammerBtnUp.add(new window.Hammer.Tap())
+      this.hammerBtnUp.on('panstart panmove panend', (ev) => {
+//        console.log(ev.type + ' gesture detected.')
+        if (ev.type === 'panstart') {
+          elem.style.backgroundColor = 'whitesmoke'
+        } else if (ev.type === 'panend') {
+          elem.style.backgroundColor = 'white'
+        } else if (ev.type === 'panmove') {
+          let rawHpx = window.utils.rem2px(this.groupDetailsInfoStyle.height.replace('rem', ''))
+          let newHrem = window.utils.px2rem(rawHpx - ev.velocityY * 10)
+          if (ev.deltaY < 0) {
+            // 往上
+            if (newHrem > this.maxPanH) {
+              newHrem = this.maxPanH
+            }
+          } else {
+            // 往下
+            if (newHrem < this.rawGroupDetailsInfoH) {
+              newHrem = this.rawGroupDetailsInfoH
+            }
+          }
+          this.groupDetailsInfoStyle.height = newHrem + 'rem'
+          this.makeWebkitRedraw()
+        }
+      })
+      this.hammerBtnUp.on('tap', (ev) => {
+        if (this.isBottomRawPosition) {
+          this.groupDetailsInfoStyle.height = this.maxPanH + 'rem'
+        } else {
+          this.groupDetailsInfoStyle.height = this.rawGroupDetailsInfoH + 'rem'
+        }
+        this.makeWebkitRedraw()
+//        let self = this
+//        const stepMS = 7
+//        let intervalId
+//        console.log(this.isBottomRawPosition)
+//        if (this.isBottomRawPosition) {
+//          intervalId = window.setInterval(() => {
+//            let rawHpx = window.utils.rem2px(self.groupDetailsInfoStyle.height.replace('rem', ''))
+//            console.log(typeof rawHpx)
+//            let newHrem = window.utils.px2rem(parseFloat(rawHpx) + 10.7)
+//            console.log(newHrem)
+//            if (newHrem > self.maxPanH) {
+//              newHrem = self.maxPanH
+//              window.clearInterval(intervalId)
+//              intervalId = undefined
+//            }
+//            self.groupDetailsInfoStyle.height = newHrem + 'rem'
+//            self.makeWebkitRedraw()
+//          }, stepMS)
+//        } else {
+//          intervalId = window.setInterval(() => {
+//            let rawHpx = window.utils.rem2px(self.groupDetailsInfoStyle.height.replace('rem', ''))
+//            console.log(typeof rawHpx)
+//            let newHrem = window.utils.px2rem(parseFloat(rawHpx) - 10)
+//            if (newHrem < self.rawGroupDetailsInfoH) {
+//              newHrem = self.rawGroupDetailsInfoH
+//
+//              window.clearInterval(intervalId)
+//              intervalId = undefined
+//            }
+//            self.groupDetailsInfoStyle.height = newHrem + 'rem'
+//            self.makeWebkitRedraw()
+//          }, stepMS)
+//        }
+      })
     },
     beforeDestroy () {
       if (this.env.isApiCloud) {
@@ -84,8 +174,10 @@
       console.log('before destroy')
     },
     methods: {
-      iconButtonTouched () {
-        console.log('touched..')
+      makeWebkitRedraw () {
+        this.$el.style.display = 'none'
+        this.$el.offsetHeight
+        this.$el.style.display = 'flex'
       },
       ...mapActions(['sendEventToApiCloud', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'ensureConveningGroup'])
     }
@@ -96,6 +188,7 @@
 <style lang="less" scoped>
   .group-convene-c{
     width: 100%;
+    overflow-y: hidden;
     display:flex;
     flex-direction: column;
     .map-container{
@@ -108,14 +201,22 @@
       }
     }
     .bottom-info {
-      height: 2rem;
       background-color: white;
-      .always-show{
-        height:100%;
+      .btn-up{
+        font-size:1.2rem;
+        text-align: center;
+        border-bottom: solid 1px #F6F6F7;
+      }
+      .group-details-info-active{
+        height:10rem;
+      }
+      .group-details-info{
+        height:2rem;
         display: flex;
         .assembling_place{
           flex:1;
           text-align: left;
+          height:2rem;
           .location-text{
             display: inline-block;
             vertical-align: middle;
@@ -126,23 +227,13 @@
           }
         }
         .actions{
+          background-color: red;
           width: 2.5rem;
-          height:100%;
-          .pb{
-            width: 1.8rem;
-            height: 1.8rem;
-            line-height: 1.8rem;
-            color: #FFF;
-          }
-          .my-icon-button{
-            width:30px;
-            height:30px;
-            border-radius:50%;
-            background-color:#26a2ff;
-            color: #fff;
-            line-height:30px;
-            text-align:center;
-          }
+          height:2rem;
+          transition: width 1s ease-out;
+        }
+        .actions-active{
+          width:10rem;
         }
       }
     }

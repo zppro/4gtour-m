@@ -77,6 +77,26 @@
     return (px1 * rem).toFixed(0);
   }
 
+  function px2rem (px) {
+    px = parseFloat(px);
+    var width = window.$('html').width();
+    var px1;
+    if(width > 640 ){
+      px1 = 40;
+    } else if (width> 568 && width <= 640) {
+      px1 = 35;
+    } else if (width> 480 && width <= 568) {
+      px1 = 30;
+    } else if (width> 427 && width <= 480) {
+      px1 = 26.75;
+    } else if (width> 400 && width <= 427) {
+      px1 = 25;
+    } else {
+      px1 = 20;
+    }
+    return (px / px1).toFixed(4);
+  }
+
   function qiniuImageView (img, w, h, mode) {
     return img + '?imageView2/' + (mode || 1) + '/w/' + w + '/h/' + h
   }
@@ -99,6 +119,7 @@
     isIDNo:isIDNo,
     loadScript: loadScript,
     rem2px: rem2px,
+    px2rem: px2rem,
     qiniuImageView: qiniuImageView
   };
 }())

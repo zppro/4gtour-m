@@ -44,7 +44,8 @@
       border-radius: 1rem;
     }
     .progress-current{
-      width: 10%;
+      transition: width 1s ease-out;
+      width: 0%;
       height:100%;
       background-color: #FF864E;
       -moz-border-radius: 1rem;

@@ -174,7 +174,10 @@
         return window.utils.qiniuImageView('http://img2.okertrip.com/participated-success.png', window.utils.rem2px(6.5), window.utils.rem2px(6.5))
       },
       actionBtnText () {
-        return this.canConveneAndEnter ? '进入' : '等待召集'
+        if (this.group.group_status === 'A0003') {
+          return '报名中'
+        }
+        return this.canConveneAndEnter ? '进入' : '等待集合'
       },
       secondsToAssembly () {
         var seconds = moment(this.group.assembling_time).unix() - moment().unix()

@@ -47,7 +47,14 @@
           this.$refs.groupIndexList.onTopLoaded(id)
         })
       },
-      ...mapActions(['ensureGroupSocket', 'ensureLatestParticipated', 'fetchGroups', 'appendGroups', 'participateGroup'])
+      memberParticipateGroup (group) {
+        if (!this.isLogined) {
+          this.login()
+        } else {
+          this.participateGroup(group)
+        }
+      },
+      ...mapActions(['login', 'ensureGroupSocket', 'ensureLatestParticipated', 'fetchGroups', 'appendGroups', 'participateGroup'])
     },
     components: {
       GroupLatestParticipated,

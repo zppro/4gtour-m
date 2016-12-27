@@ -133,7 +133,7 @@
         return this.group.group_status !== 'A0007' && this.group.group_status !== 'A0011'
       },
       checkParticipateButtonEnable () {
-        return this.group.participant_number < this.group.participate_max && !this.group.participanter_ids.some((o) => {
+        return this.group.group_status === 'A0003' && this.group.participant_number < this.group.participate_max && !this.group.participanter_ids.some((o) => {
           return o === this.memberId
         })
       }
