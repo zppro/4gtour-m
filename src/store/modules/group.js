@@ -130,7 +130,7 @@ const actions = {
     const groupMemberChange = (data) => {
       console.log('group socket listener: ' + data.reason)
       if (state.latest.id === data.group.id) {
-        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: state.latest})
+        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: data.group})
       } else {
         commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id: data.group.id, group: data.group})
       }
