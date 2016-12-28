@@ -14,11 +14,25 @@
               span {{conveningGroup.assembling_place.location_text}}
             span.verticle-middle
           .actions
-            a.iconfont-misc.icon-misc-qiandao 签到
+            a.iconfont-misc.icon-misc-qiandao(v-show="!isCheckIn" @click="checkIn", :class='{"disabled":!checkInButtonEnable}') 签到
+            .checked 已签到
         .group-details-space
         .group-details-row
+          .group-details-row-left
+          .group-details-row-text.group-name {{conveningGroup.name}}
+        .group-details-row
+          .group-details-row-left
+          .group-details-row-content.group-leader
+            router-link.group-leader-head-portrait(:to="'/ta/'+groupLeader.participant_id+'/details'")
+              img(:src="groupLeader.head_pic || defaultMemberHeadPortrait")
+              mt-badge.leader-flag(type="error" size="small") 团长
+            .group-leader-nick-name {{conveningGroup.leader.nick_name}}
+            .group-leader-phone {{conveningGroup.leader.phone}}
+            .group-leader-phone-icon.iconfont-misc.icon-misc-xihebiaozhunyuanjian439
+          .group-details-row-right
+        .group-details-row
           .group-tip-left.iconfont-misc.icon-misc-shangyinhao
-          .group-tip {{conveningGroup.tip}}
+          .group-tip {{conveningGroup.tip || '暂无内容'}}
           .group-tip-right.iconfont-misc.icon-misc-yinhaoxia
         .group-details-row
           .group-details-row-left.iconfont-misc.icon-misc-jing
@@ -35,9 +49,10 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import { mapState, mapGetters, mapActions } from 'vuex'
   import moment from 'moment'
-  import { APICLOUD_OPEN_MAP, APICLOUD_CLOSE_MAP, APICLOUD_OPEN_MAP_SUCCESS, APICLOUD_OPEN_MAP_FAIL, APICLOUD_LOCATE, APICLOUD_LOCATE_SUCCESS, APICLOUD_LOCATE_FAIL } from '../store/share-apicloud-event-names'
+  import { APICLOUD_OPEN_MAP, APICLOUD_CLOSE_MAP, APICLOUD_OPEN_MAP_SUCCESS, APICLOUD_OPEN_MAP_FAIL, APICLOUD_LOCATE, APICLOUD_LOCATE_SUCCESS, APICLOUD_LOCATE_FAIL, APICLOUD_RESIZE_MAP } from '../store/share-apicloud-event-names'
   export default {
     data () {
       let h = 2
@@ -76,9 +91,27 @@
         return moment(this.conveningGroup.assembling_time).toNow()
       },
       assemblingMemberStat () {
-        return 0 + ' / ' + this.conveningGroup.participant_number
+        return this.conveningGroup.check_in_number + ' / ' + this.conveningGroup.participant_number
       },
-      ...mapState(['env', 'authMemberByTokenPromise']),
+      isCheckIn () {
+        return this.conveningGroup.checkins.some((o) => {
+          return o.member_check_in_id === this.memberInfo.member_id
+        })
+      },
+      groupLeader () {
+        var arr = this.conveningGroup.participants.filter((o) => {
+          return o.position_in_group === 'A0001'
+        })
+        if (arr.length === 1) {
+          return arr[0]
+        } else {
+          return {}
+        }
+      },
+      checkInButtonEnable () {
+        return moment(this.conveningGroup.assembling_time).unix() - moment().unix() <= 30 * 60
+      },
+      ...mapState(['env', 'authMemberByTokenPromise', 'defaultMemberHeadPortrait']),
       ...mapGetters(['isLogined', 'memberInfo', 'conveningGroup'])
     },
     created () {
@@ -88,7 +121,7 @@
           console.log('begin loading map')
           if (this.env.isApiCloud) {
             let hTop = window.utils.rem2px(3.2)
-            let hBottom = window.utils.rem2px(2)
+            let hBottom = window.utils.rem2px(5.2)
             this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_MAP, eventData: {hTop, hBottom} })
             console.log('send event open map')
           }
@@ -118,7 +151,7 @@
           eventName: APICLOUD_LOCATE_SUCCESS,
           eventHandler: (eventRet) => {
             console.log(eventRet)
-            this.reportLocationAsGroupMember(Object.assign(eventRet, {id: this.conveningGroup.id}))
+            this.reportLocationAsGroupMember(Object.assign(eventRet.value, {id: this.conveningGroup.id}))
           }
         })
         this.addEventListenerFromApiCloud({
@@ -158,12 +191,12 @@
         }
       })
       this.hammerBtnUp.on('tap', (ev) => {
-        if (this.isBottomRawPosition) {
-          this.groupDetailsInfoStyle.height = this.maxPanH + 'rem'
-        } else {
-          this.groupDetailsInfoStyle.height = this.rawGroupDetailsInfoH + 'rem'
-        }
+        let dh = this.isBottomRawPosition ? this.maxPanH : this.rawGroupDetailsInfoH
+        this.groupDetailsInfoStyle.height = dh + 'rem'
         this.makeWebkitRedraw()
+        Vue.nextTick(() => {
+          this.sendEventToApiCloud({ eventName: APICLOUD_RESIZE_MAP, eventData: {h: window.$('.group-convene-c .map-container').height()} })
+        })
 //        let self = this
 //        const stepMS = 7
 //        let intervalId
@@ -209,12 +242,18 @@
       console.log('before destroy')
     },
     methods: {
+      checkIn () {
+        if (!this.checkInButtonEnable) {
+          return false
+        }
+        this.checkInConveningGroup()
+      },
       makeWebkitRedraw () {
         this.$el.style.display = 'none'
         this.$el.offsetHeight
         this.$el.style.display = 'flex'
       },
-      ...mapActions(['sendEventToApiCloud', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'ensureConveningGroup', 'reportLocationAsGroupMember'])
+      ...mapActions(['sendEventToApiCloud', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'ensureConveningGroup', 'checkInConveningGroup', 'reportLocationAsGroupMember'])
     }
   }
 </script>
@@ -275,8 +314,12 @@
               color:white;
               font-size:0.6rem;
             }
+            .checked{
+              color:white;
+              font-size:0.6rem;
+            }
           }
-          .group-details-row-left{
+          .group-details-row-left,.group-details-row-right{
             width: 1rem;
             color:#2EACF8;
             font-size: 0.8rem;
@@ -293,10 +336,61 @@
           }
           .group-details-row-text{
             text-align: left;
-            font-size:0.6rem;
-            color:#A0A0A0;
             height:1.2rem;
             line-height:1.2rem;
+          }
+          .group-details-row-content{
+            height:2rem;
+            flex:1;
+          }
+          .group-name{
+            font-size:0.8rem;
+            height:2rem;
+            line-height:2rem;
+          }
+          .group-leader{
+            margin-bottom:0.5rem;
+            border: solid 0.05rem #F00F22;
+            border-radius: 2rem;
+            display: flex;
+            .group-leader-head-portrait{
+              width:2rem;
+              height:2rem;
+              display: inline-block;
+              text-align: left;
+              position: relative;
+              > img{
+                width: 1.9rem;
+                height: 1.9rem;
+                border-radius: 100%;
+              }
+              > .leader-flag{
+                position: absolute;
+                top:-0.2rem;
+                right:-0.5rem;
+                font-size:0.4rem;
+              }
+            }
+            .group-leader-nick-name{
+              flex:1;
+              line-height:2rem;
+              text-align: left;
+              text-indent: 0.2rem;
+              color:#A0A0A0;
+            }
+            .group-leader-phone{
+              flex:1;
+              line-height:2rem;
+            }
+            .group-leader-phone-icon{
+              width:2rem;
+              background-color: #F00F22;
+              font-size:1.2rem;
+              line-height:1.8rem;
+              color:white;
+              border-top-right-radius: 100%;
+              border-bottom-right-radius: 100%;
+            }
           }
           .group-tip-left,.group-tip-right{
             width: 1rem;
@@ -307,11 +401,17 @@
             align-self:flex-end;
           }
           .group-tip{
+            flex:1;
             font-size:0.6rem;
             padding:0.2rem;
             color:#A0A0A0;
             letter-spacing: 0.1rem;
             text-align: left;
+          }
+
+          .group-assembling-time,.group-assembling-place-text,.group-assembling-member-stat{
+            font-size:0.6rem;
+            color:#A0A0A0;
           }
         }
       }

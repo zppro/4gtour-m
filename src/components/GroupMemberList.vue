@@ -38,7 +38,8 @@
     .leader-flag{
       position: absolute;
       top:0.2rem;
-      right:0;
+      right:0.2rem;
+      font-size:0.4rem;
     }
   }
 }

@@ -3,6 +3,7 @@ import moment from 'moment'
 import * as mutationTypes from '../mutation-types'
 import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 import { SUB_ENTITY_SOCKET_NAME } from '../keys'
+import { APICLOUD_OTHER_ANNOTATION } from '../share-apicloud-event-names'
 import io from 'socket.io-client'
 import { groupSocketUrl } from '../../config/socket-option'
 const ENTITY_NAME = 'GROUP'
@@ -13,8 +14,10 @@ export const CONVENING_LOCATION_NAME = '$CONVENING_LOCATION'
 const state = {
   latest: {},
   conveningOne: {
+    leader: {},
     assembling_place: {},
-    participants: []
+    participants: [],
+    checkins: []
   },
   conveningLocation: {
     lon: '',
@@ -133,7 +136,7 @@ const mutations = {
 
 // actions
 const actions = {
-  shakeHandToGroupSocket ({ commit, state, rootState }) {
+  shakeHandToGroupSocket ({ commit, state, rootState, dispatch }) {
     commit(ENTITY_NAME + SUB_ENTITY_SOCKET_NAME + mutationTypes.SET)
     const groupMemberChange = (data) => {
       console.log('group socket listener: ' + data.reason)
@@ -164,6 +167,15 @@ const actions = {
       }
     })
     state.socket.on('SG004', groupMemberChange)
+    state.socket.on('SG100', (data) => {
+      console.log('group socket listener: ' + data.reason)
+      data.group && commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: data.group})
+      data.checking_member && dispatch('toastInfo', data.checking_member.member_name + '签到成功')
+    })
+    state.socket.on('SG102', (data) => {
+      console.log('group socket listener: ' + data.reason)
+      dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: 'M' + data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat} })
+    })
     state.socket.emit('CG001', rootState.member.self.member_id)
     return Promise.resolve(state.socket)
   },
@@ -353,9 +365,23 @@ const actions = {
       return success
     })
   },
-  reportLocationAsGroupMember ({state, commit, dispatch}, {id, lon, lat}) {
+  checkInConveningGroup ({state, rootState, commit, dispatch}) {
+    return Vue.http.post('trv/groupCheckIn/' + state.conveningOne.id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      const success = ret.data.success
+      if (success) {
+        const group = ret.data.ret
+        commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: group})
+        state.socket.emit('CG100', { group_id: group.id, checking_member: rootState.member.self })
+        dispatch('toastSuccess')
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return success
+    })
+  },
+  reportLocationAsGroupMember ({state, rootState, commit, dispatch}, {id, lon, lat}) {
     commit(ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET, {lon, lat})
-    state.socket.emit('CG102', {group_id: id, location: state.conveningLocation})
+    state.socket.emit('CG102', {group_id: id, locating_member: rootState.member.self, location: state.conveningLocation})
     return dispatch('noop')
   }
 }
