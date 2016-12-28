@@ -8,13 +8,17 @@ import { groupSocketUrl } from '../../config/socket-option'
 const ENTITY_NAME = 'GROUP'
 export const LATEST_NAME = '$LATEST'
 export const CONVENING_NAME = '$CONVENING'
-
+export const CONVENING_LOCATION_NAME = '$CONVENING_LOCATION'
 // initial state
 const state = {
   latest: {},
   conveningOne: {
     assembling_place: {},
     participants: []
+  },
+  conveningLocation: {
+    lon: '',
+    lat: ''
   },
   all: [],
   current: {},
@@ -85,6 +89,10 @@ const mutations = {
   },
   [ENTITY_NAME + CONVENING_NAME + mutationTypes.SET] (state, { conveningOne }) {
     state.conveningOne = conveningOne
+  },
+  [ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET] (state, { lon, lat }) {
+    Vue.set(state.conveningLocation, 'lon', lon)
+    Vue.set(state.conveningLocation, 'lat', lat)
   },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { group }) {
     state.current = group
@@ -344,6 +352,11 @@ const actions = {
       }
       return success
     })
+  },
+  reportLocationAsGroupMember ({state, commit, dispatch}, {id, lon, lat}) {
+    commit(ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET, {lon, lat})
+    state.socket.emit('CG102', {group_id: id, location: state.conveningLocation})
+    return dispatch('noop')
   }
 }
 
