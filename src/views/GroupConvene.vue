@@ -37,7 +37,7 @@
         .group-details-row
           .group-details-row-left.iconfont-misc.icon-misc-jing
           .group-details-row-label 集合时间
-          .group-details-row-text.group-assembling-time {{assemblingTimeShow}}
+          .group-details-row-text.group-assembling-time {{conveningGroup.assembling_time | humanizeDate}}
         .group-details-row
           .group-details-row-left.iconfont-misc.icon-misc-jing
           .group-details-row-label 集合地点
@@ -83,12 +83,6 @@
         return {
           height: this.maxH + 'rem'
         }
-      },
-      assemblingTimeShow () {
-        if (moment(this.conveningGroup.assembling_time).unix() - moment().unix() < 0 || moment(this.conveningGroup.assembling_time).diff(moment(), 'days') > 2) {
-          return moment(this.conveningGroup.assembling_time).format('YYYY-MM-DD HH:mm')
-        }
-        return moment(this.conveningGroup.assembling_time).toNow()
       },
       assemblingMemberStat () {
         return this.conveningGroup.check_in_number + ' / ' + this.conveningGroup.participant_number

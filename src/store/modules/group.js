@@ -12,7 +12,12 @@ export const CONVENING_NAME = '$CONVENING'
 export const CONVENING_LOCATION_NAME = '$CONVENING_LOCATION'
 // initial state
 const state = {
-  latest: {},
+  latest: {
+    leader: {},
+    assembling_place: {},
+    participants: [],
+    checkins: []
+  },
   conveningOne: {
     leader: {},
     assembling_place: {},
@@ -24,7 +29,12 @@ const state = {
     lat: ''
   },
   all: [],
-  current: {},
+  current: {
+    leader: {},
+    assembling_place: {},
+    participants: [],
+    checkins: []
+  },
   groupsFirstLoaded: false,
   listRequestTypeAppending: true,
   noMoreOfIndexes: false,
@@ -47,10 +57,6 @@ const getters = {
     return state.current
   },
   appendGroupDiabled (state, rootState) {
-    console.log('appendGroupDiabled')
-    console.log(rootState.loading)
-    console.log(state.noMoreOfIndexes)
-    console.log(!state.groupsFirstLoaded)
     return rootState.loading || state.noMoreOfIndexes || !state.groupsFirstLoaded
   },
   showGroupFetchIndicator (state, rootState) {
@@ -75,7 +81,6 @@ const mutations = {
     state.socket.on('disconnect', () => {
       console.log('group socket disconnected')
     })
-    console.log(state.socket)
   },
   [ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE] (state, { listRequestType }) {
     state.listRequestTypeAppending = listRequestType === 'append'

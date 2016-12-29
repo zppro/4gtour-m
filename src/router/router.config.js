@@ -43,7 +43,8 @@ import GroupConveningMember from '../views/GroupConveningMember.vue'
 import GroupConveningMemberNav from '../views/partials/GroupConveningMemberNav.vue'
 import GroupDetails from '../views/GroupDetails.vue'
 import GroupDetailsNav from '../views/partials/GroupDetailsNav.vue'
-function attachFilters (component, filterOption) {
+
+export const attachFilters = (component, filterOption) => {
   component.filters = component.filters || {}
   Object.assign(component.filters, filters)
   return component
@@ -313,7 +314,7 @@ export default [
     path: '/group/details/:id',
     components: {
       head: GroupDetailsNav,
-      body: GroupDetails
+      body: attachFilters(GroupDetails)
     }
   },
   {
@@ -321,7 +322,7 @@ export default [
     path: '/group/convene/:id',
     components: {
       head: GroupConveneNav,
-      body: GroupConvene
+      body: attachFilters(GroupConvene)
     }
   },
   {

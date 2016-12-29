@@ -11,7 +11,7 @@
         .title {{group.name}}
         .assembling-time
           i.fa.fa-clock-o.text-primary(aria-hidden="true")
-          span {{AssemblingTimeFormatted}}
+          span {{group.assembling_time | humanizeDate}}
         .participate-max
           i.fa.fa-users(aria-hidden="true")
           span {{group.participant_number}} /{{group.participate_max}}人团

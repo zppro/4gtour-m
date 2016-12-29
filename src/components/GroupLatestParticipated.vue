@@ -4,9 +4,11 @@
     span.verticle-middle(v-if="!haveGroupLatestPariticipated")
     .participated(v-if="haveGroupLatestPariticipated")
       .item-head
-        .count-down-part(v-if="beforeAssembling") 据集合还剩
-          count-down(:seconds-to-assembly="secondsToAssembly" v-on:count-down-finish="countDownFinished" ref="countDownAssembling")
-        .count-down-part(v-if="!beforeAssembling") 出行中
+        .count-down-part(v-if="beforeDeadline") 报名截止
+          count-down(v-if="secondsToDeadline", :seconds-to-assembly="secondsToDeadline" v-on:count-down-finish="countDownFinished")
+        .count-down-part(v-if="beforeAssembling") 等待出行
+          count-down(v-if="secondsToAssembly", :seconds-to-assembly="secondsToAssembly" v-on:count-down-finish="countDownFinished")
+        .count-down-part(v-if="afterAssembling") 出行中
       .item-body
         .group-left
           img(v-if="showGroupImg", :src="group.imgs[0]")
@@ -18,7 +20,7 @@
           .title {{group.name}}
           .assembling-time
             i.fa.fa-clock-o.text-primary(aria-hidden="true")
-            span {{assemblingTimeFormatted}}
+            span {{group.assembling_time | humanizeDate}}
           .participate-max
             i.fa.fa-users(aria-hidden="true")
             span {{group.participant_number}} /{{group.participate_max}}人团
@@ -153,8 +155,14 @@
       haveGroupLatestPariticipated () {
         return !!this.group.id
       },
+      beforeDeadline () {
+        return this.group.group_status === 'A0003'
+      },
       beforeAssembling () {
-        return this.group.group_status === 'A0003' || this.group.group_status === 'A0005'
+        return this.group.group_status === 'A0005'
+      },
+      afterAssembling () {
+        return this.group.group_status === 'A0009'
       },
       canConveneAndEnter () {
         var seconds = moment(this.group.assembling_time).unix() - moment().unix()
@@ -178,6 +186,11 @@
           return '报名中'
         }
         return this.canConveneAndEnter ? '进入' : '等待集合'
+      },
+      secondsToDeadline () {
+        var seconds = moment(this.group.deadline || this.group.assembling_time).unix() - moment().unix()
+        console.log(seconds)
+        return seconds > 0 ? seconds : 0
       },
       secondsToAssembly () {
         var seconds = moment(this.group.assembling_time).unix() - moment().unix()

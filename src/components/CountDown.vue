@@ -1,13 +1,13 @@
 <template lang="jade">
-  span.count-down
-    .count-part.days {{days}}
-    span.count-unit 天
-    .count-part.hours {{hours}}
-    span.count-unit 时
-    .count-part.minutes {{minutes}}
-    span.count-unit 分
-    .count-part.seconds {{seconds}}
-    span.count-unit 秒
+  .count-down
+    .count-part.days(:style="countPartStyle") {{days}}
+    span.count-unit(:style="countUnitStyle") 天
+    .count-part.hours(:style="countPartStyle") {{hours}}
+    span.count-unit(:style="countUnitStyle") 时
+    .count-part.minutes(:style="countPartStyle") {{minutes}}
+    span.count-unit(:style="countUnitStyle") 分
+    .count-part.seconds(:style="countPartStyle") {{seconds}}
+    span.count-unit(:style="countUnitStyle") 秒
 </template>
 <script>
   import moment from 'moment'
@@ -19,8 +19,21 @@
         duration: moment.duration(0)
       }
     },
-    props: ['secondsToAssembly', 'trigger'],
+    props: ['secondsToAssembly', 'partWidth', 'fontSize'],
     computed: {
+      countPartStyle () {
+        let w = this.partWidth || '1.8rem'
+        let f = this.fontSize || '1.13rem'
+        return {
+          width: w,
+          fontSize: f
+        }
+      },
+      countUnitStyle () {
+        return {
+          fontSize: this.countPartStyle.fontSize
+        }
+      },
       days () {
         return this.duration.days()
       },
@@ -64,17 +77,18 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .count-down {
+    display:inline-block;
+    vertical-align: middle;
     .count-part{
       display:inline-block;
       background-color: black;
       color:white;
-      font-size:1.13rem;
-      width: 1.8rem;
       text-align: center;
       margin: 0 0.1rem;
     }
     .count-unit{
       text-align: center;
+      display:inline-block;
     }
   }
 </style>

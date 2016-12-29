@@ -18,6 +18,7 @@
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
   import GroupLatestParticipated from '../components/GroupLatestParticipated.vue'
+  import { attachFilters } from '../router/router.config.js'
   import GroupList from '../components/GroupList.vue'
   import GroupItem from '../components/GroupItem.vue'
   export default {
@@ -31,6 +32,8 @@
       ...mapGetters(['isLogined', 'memberInfo', 'haveNewGroup', 'latestParticipated', 'allGroups', 'appendGroupDiabled', 'showGroupFetchIndicator', 'showGroupAppendIndicator'])
     },
     created () {
+      attachFilters(GroupLatestParticipated)
+      attachFilters(GroupItem)
       this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
         this.ensureLatestParticipated().then(() => {
