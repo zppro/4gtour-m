@@ -174,7 +174,8 @@ const actions = {
     })
     state.socket.on('SG102', (data) => {
       console.log('group socket listener: ' + data.reason)
-      dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: 'M' + data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat} })
+      // window.alert(data.location.lon + '   ' + data.location.lat)
+      dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat, type: 'M'} })
     })
     state.socket.emit('CG001', rootState.member.self.member_id)
     return Promise.resolve(state.socket)

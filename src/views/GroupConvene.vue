@@ -188,15 +188,22 @@
           }
           this.groupDetailsInfoStyle.height = newHrem + 'rem'
           this.makeWebkitRedraw()
+          if (this.env.isApiCloud) {
+            Vue.nextTick(() => {
+              this.sendEventToApiCloud({ eventName: APICLOUD_RESIZE_MAP, eventData: {h: window.$('.group-convene-c .map-container').height()} })
+            })
+          }
         }
       })
       this.hammerBtnUp.on('tap', (ev) => {
         let dh = this.isBottomRawPosition ? this.maxPanH : this.rawGroupDetailsInfoH
         this.groupDetailsInfoStyle.height = dh + 'rem'
         this.makeWebkitRedraw()
-        Vue.nextTick(() => {
-          this.sendEventToApiCloud({ eventName: APICLOUD_RESIZE_MAP, eventData: {h: window.$('.group-convene-c .map-container').height()} })
-        })
+        if (this.env.isApiCloud) {
+          Vue.nextTick(() => {
+            this.sendEventToApiCloud({ eventName: APICLOUD_RESIZE_MAP, eventData: {h: window.$('.group-convene-c .map-container').height()} })
+          })
+        }
 //        let self = this
 //        const stepMS = 7
 //        let intervalId
