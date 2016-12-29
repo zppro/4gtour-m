@@ -41,6 +41,8 @@ import GroupConvene from '../views/GroupConvene.vue'
 import GroupConveneNav from '../views/partials/GroupConveneNav.vue'
 import GroupConveningMember from '../views/GroupConveningMember.vue'
 import GroupConveningMemberNav from '../views/partials/GroupConveningMemberNav.vue'
+import GroupDetails from '../views/GroupDetails.vue'
+import GroupDetailsNav from '../views/partials/GroupDetailsNav.vue'
 function attachFilters (component, filterOption) {
   component.filters = component.filters || {}
   Object.assign(component.filters, filters)
@@ -304,6 +306,14 @@ export default [
     components: {
       head: GroupAddNav,
       body: GroupAdd
+    }
+  },
+  {
+    name: '团详情',
+    path: '/group/details/:id',
+    components: {
+      head: GroupDetailsNav,
+      body: GroupDetails
     }
   },
   {

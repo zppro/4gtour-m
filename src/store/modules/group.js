@@ -47,6 +47,10 @@ const getters = {
     return state.current
   },
   appendGroupDiabled (state, rootState) {
+    console.log('appendGroupDiabled')
+    console.log(rootState.loading)
+    console.log(state.noMoreOfIndexes)
+    console.log(!state.groupsFirstLoaded)
     return rootState.loading || state.noMoreOfIndexes || !state.groupsFirstLoaded
   },
   showGroupFetchIndicator (state, rootState) {
@@ -195,7 +199,7 @@ const actions = {
       if (ret.data.success) {
         const groups = ret.data.rows
         commit(ENTITY_NAME + mutationTypes.FETCH_LIST_SUCCESS, { groups })
-        commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: groups.length, size: rootState.dataFetchingSize })
+        commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: groups.length, size: rootState.dataFetchingSizeSmall })
       } else {
         commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
@@ -204,11 +208,11 @@ const actions = {
   appendGroups ({ commit, state, rootState }) {
     console.log('appendGroups')
     commit(ENTITY_NAME + mutationTypes.SET_LIST_REQUEST_TYPE, { listRequestType: 'append' })
-    return Vue.http.post('trv/groups', {latestParticipated: state.latest.id, page: {size: rootState.dataFetchingSize, skip: state.all.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
+    return Vue.http.post('trv/groups', {latestParticipated: state.latest.id, page: {size: rootState.dataFetchingSizeSmall, skip: state.all.length}}, {headers: {loadingText: DATA_FETCH_TEXT}}).then(ret => {
       if (ret.data.success) {
         const groups = ret.data.rows
         groups.length > 0 && commit(ENTITY_NAME + mutationTypes.APPEND_LIST_SUCCESS, { groups })
-        commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: groups.length, size: rootState.dataFetchingSize })
+        commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: groups.length, size: rootState.dataFetchingSizeSmall })
       } else {
         commit(ENTITY_NAME + mutationTypes.SET_NO_MORE, { fetchCount: 0, size: 1 })
       }
@@ -263,7 +267,7 @@ const actions = {
     })
   },
   ensureGroup ({ state, rootState, dispatch }) {
-    if (!state.current.id) {
+    if (!state.current.id || state.current.id !== rootState.route.params.id) {
       return dispatch('fetchGroupInfo', rootState.route.params)
     }
     return dispatch('noop')

@@ -129,6 +129,7 @@ iframe.img-loader{padding:0;margin:0;}
 .header-color{background-color:#ea5513;}
 .inline-block{display: inline-block}
 .disabled, a.disabled{background-color: #7c7d7d; color:whitesmoke;cursor:not-allowed;}
+.display-flex{display: flex;}
 span.verticle-middle{
   height:100%;
   display:inline-block;

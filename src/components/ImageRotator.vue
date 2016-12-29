@@ -1,10 +1,13 @@
 <template lang="jade">
-  .img-rotator(@click="close")
-    mt-swipe(:auto="swipeAuto")
+  .img-rotator(@click="close", :style="imgRotatorStyle" )
+    mt-swipe(v-show="allImages && allImages.length > 0", :auto="swipeAuto")
       mt-swipe-item(v-for=" image in allImages")
         .img-wrapper
           img(:src="format(image)" @click="close")
         span.verticle-middle
+    .no-images(v-show="!(allImages && allImages.length > 0)")
+      .no-images-text.text-muted.text-italic 暂无图片
+      span.verticle-middle
 </template>
 <script>
   export default {
@@ -12,6 +15,11 @@
     computed: {
       swipeAuto () {
         return this.auto || 0
+      },
+      imgRotatorStyle () {
+        return {
+          height: this.height + 'rem'
+        }
       }
     },
     methods: {
@@ -30,6 +38,15 @@
     width: 100%;
     height:100%;
     background-color: #000;
+    .no-images{
+      width: 100%;
+      height:100%;
+      text-align: center;
+      .no-img-text{
+        vertical-align: middle;
+        display: inline-block;
+      }
+    }
     .img-wrapper{
       width: 100%;
       display: inline-block;

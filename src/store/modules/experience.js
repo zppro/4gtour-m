@@ -464,7 +464,7 @@ const actions = {
     })
   },
   ensureExperience ({ state, rootState, dispatch }) {
-    if (!state.current.id) {
+    if (!state.current.id || state.current.id !== rootState.route.params.id) {
       return dispatch('fetchExperienceInfo', rootState.route.params)
     }
     return dispatch('noop')

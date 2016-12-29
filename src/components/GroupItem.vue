@@ -1,6 +1,6 @@
 <template lang="jade">
   .group-item-c
-    .group-item
+    router-link.group-item(:to="groupInfoUrl")
       .group-left
         img(v-if="group.imgs.length > 0", :src="group.imgs[0]")
         span.verticle-middle(v-if="group.imgs.length > 0")
@@ -20,7 +20,7 @@
             progress-bar.process-bar(bar-height="0.6rem", :current="group.participant_number", :max="group.participate_max")
             span.verticle-middle
           .action(v-if="checkParticipateButtonVisible")
-            a.btn1.btn-participate(@click="participate", :class='{"disabled":!checkParticipateButtonEnable}') 去参团
+            a.btn1.btn-participate(@click.prevent="participate", :class='{"disabled":!checkParticipateButtonEnable}') {{participateText}}
             span.verticle-middle
 </template>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -124,7 +124,7 @@
     props: ['group', 'memberId'],
     computed: {
       groupInfoUrl () {
-        return {path: '/group/' + this.group.id + '/details'}
+        return {path: '/group/details/' + this.group.id}
       },
       AssemblingTimeFormatted () {
         return moment(this.group.assembling_time).format('MM月DD日 HH:mm')
@@ -136,6 +136,23 @@
         return this.group.group_status === 'A0003' && this.group.participant_number < this.group.participate_max && !this.group.participanter_ids.some((o) => {
           return o === this.memberId
         })
+      },
+      participateText () {
+        if (this.group.group_status === 'A0003') {
+          if (this.group.participant_number < this.group.participate_max) {
+            if (!this.group.participanter_ids.some((o) => {
+              return o === this.memberId
+            })) {
+              return '立即参团'
+            } else {
+              return '已参团'
+            }
+          } else {
+            return '满员'
+          }
+        } else {
+          return '报名截止'
+        }
       }
     },
     methods: {
@@ -143,7 +160,6 @@
         if (!this.checkParticipateButtonEnable) {
           return false
         }
-        console.log('参团')
         this.$emit('participate-group', this.group)
       }
     },
