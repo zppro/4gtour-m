@@ -33,7 +33,8 @@ const state = {
     leader: {},
     assembling_place: {},
     participants: [],
-    checkins: []
+    checkins: [],
+    participanter_ids: []
   },
   groupsFirstLoaded: false,
   listRequestTypeAppending: true,
@@ -76,9 +77,11 @@ const mutations = {
     // 设置socket
     state.socket = io(groupSocketUrl)
     state.socket.on('connect', () => {
+      window.alert('group socket connected')
       console.log('group socket connected')
     })
     state.socket.on('disconnect', () => {
+      window.alert('group socket disconnected')
       console.log('group socket disconnected')
     })
   },
@@ -108,7 +111,13 @@ const mutations = {
   },
   [ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS] (state, { group }) {
     state.current = group
-    if (state.latest.assembling_time) {
+  },
+  [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
+    state.newGroup = true
+  },
+  [ENTITY_NAME + mutationTypes.ADD] (state, { group }) {
+    // 因为列表会刷新所以不用处理
+    if (state.latest.id) {
       if (moment(group.assembling_time).unix() - moment(state.latest.assembling_time).unix() < 0) {
         state.latest = group
       }
@@ -116,13 +125,13 @@ const mutations = {
       state.latest = group
     }
   },
-  [ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY] (state) {
-    state.newGroup = true
-  },
-  [ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST] (state, { id, group }) {
+  [ENTITY_NAME + mutationTypes.DO] (state, { id, group }) {
+    window.alert('DO' + state.all.findIndex)
     let theIndex = state.all.findIndex(item => item.id === id)
     if (theIndex !== -1) {
-      if (state.latest.assembling_time) {
+      // 如果在列表中，则必不在latest里
+      if (state.latest.id) {
+        console.log('DO:' + (moment(group.assembling_time).unix() - moment(state.latest.assembling_time).unix()))
         if (moment(group.assembling_time).unix() - moment(state.latest.assembling_time).unix() < 0) {
           state.all.splice(theIndex, 1, Object.assign({}, state.latest))
           state.latest = group
@@ -133,6 +142,46 @@ const mutations = {
         state.all.splice(theIndex, 1)
         state.latest = group
       }
+    } else if (state.latest.id === id) {
+      // 如果在latest中
+      state.latest = group
+    }
+    window.alert(state.current.id === id)
+    if (state.current.id === id) {
+      state.current = Object.assign({}, group)
+    }
+  },
+  [ENTITY_NAME + mutationTypes.UNDO] (state, { id, group, memberId }) {
+    let theIndex = state.all.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      // 如果在列表中，则必不在latest里
+      state.all.splice(theIndex, 1, group)
+    } else if (state.latest.id === id) {
+      // 如果在latest中,更新当前的latest，并将latest加入到latest中，并从列表中查找自己参加的最近时间的group设为latest
+      state.latest = group
+      let newLatestIndex = state.all.find(item => item.participanter_ids.some((o) => {
+        return o === memberId
+      }))
+
+      if (newLatestIndex !== -1) {
+        state.latest = state.all.splice(newLatestIndex, 1, group)[0]
+      }
+    }
+    if (state.current.id === id) {
+      state.current = Object.assign({}, group)
+    }
+  },
+  [ENTITY_NAME + mutationTypes.CHANGE_STATUS] (state, { id, group }) {
+    let theIndex = state.all.findIndex(item => item.id === id)
+    if (theIndex !== -1) {
+      // 如果在列表中，则必不在latest里
+      state.all.splice(theIndex, 1, group)
+    } else if (state.latest.id === id) {
+      // 如果在latest中
+      state.latest = group
+    }
+    if (state.current.id === id) {
+      state.current = Object.assign({}, group)
     }
   },
   [ENTITY_NAME + mutationTypes.REMOVE] (state, { id }) {
@@ -147,18 +196,18 @@ const mutations = {
 const actions = {
   shakeHandToGroupSocket ({ commit, state, rootState, dispatch }) {
     commit(ENTITY_NAME + SUB_ENTITY_SOCKET_NAME + mutationTypes.SET)
-    const groupMemberChange = (data) => {
-      console.log('group socket listener: ' + data.reason)
-      if (state.latest.id === data.group.id) {
-        commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: data.group})
-      } else {
-        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id: data.group.id, group: data.group})
-      }
-    }
-    state.socket.on('SG001', groupMemberChange)
-    state.socket.on('SG002', groupMemberChange)
+    state.socket.on('SG001', (data) => {
+      console.log('group socket listener SG001: ' + data.reason)
+      // window.alert('group socket listener SG001: ' + data.reason)
+      commit(ENTITY_NAME + mutationTypes.DO, {id: data.group.id, group: data.group})
+    })
+    state.socket.on('SG002', (data) => {
+      console.log('group socket listener SG002: ' + data.reason)
+      // window.alert('group socket listener SG002: ' + data.reason)
+      commit(ENTITY_NAME + mutationTypes.UNDO, {id: data.group.id, group: data.group})
+    })
     state.socket.on('SG003', (data) => {
-      console.log('group socket listener: ' + data.reason)
+      console.log('group socket listener SG003: ' + data.reason)
       if (state.latest.id === data.group.id) {
         commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: {}})
       } else {
@@ -175,14 +224,17 @@ const actions = {
         commit(ENTITY_NAME + LATEST_NAME + mutationTypes.SET, {latest: latestParticipated})
       }
     })
-    state.socket.on('SG004', groupMemberChange)
+    state.socket.on('SG004', (data) => {
+      console.log('group socket listener SG004: ' + data.reason)
+      commit(ENTITY_NAME + mutationTypes.CHANGE_STATUS, {id: data.group.id, group: data.group})
+    })
     state.socket.on('SG100', (data) => {
-      console.log('group socket listener: ' + data.reason)
+      console.log('group socket listener SG100: ' + data.reason)
       data.group && commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: data.group})
       data.checking_member && dispatch('toastInfo', data.checking_member.member_name + '签到成功')
     })
     state.socket.on('SG102', (data) => {
-      console.log('group socket listener: ' + data.reason)
+      console.log('group socket listener SG102: ' + data.reason)
       // window.alert(data.location.lon + '   ' + data.location.lat)
       dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat, type: 'M'} })
     })
@@ -277,7 +329,7 @@ const actions = {
     }
     return dispatch('noop')
   },
-  saveGroup ({commit, state, dispatch}, theGroup) {
+  saveGroup ({rootState, commit, state, dispatch}, theGroup) {
     if (!theGroup.id) {
       return Vue.http.post('trv/group', theGroup, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
         const success = ret.data.success
@@ -285,6 +337,10 @@ const actions = {
           const group = ret.data.ret
           commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
           commit(ENTITY_NAME + mutationTypes.HAVE_NEW_NOTIFY)
+          if (rootState.member_id === group.member_id) {
+            // 更新自己发布的
+            commit(ENTITY_NAME + mutationTypes.ADD, {group})
+          }
           state.socket.emit('CG002', group.id)
           dispatch('submitFormSuccess').then(() => {
             dispatch('toastSuccess')
@@ -352,7 +408,8 @@ const actions = {
       const success = ret.data.success
       if (success) {
         const group = ret.data.ret
-        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
+        id === state.current.id && commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
+        commit(ENTITY_NAME + mutationTypes.DO, {id, group})
         state.socket.emit('CG003', id)
         dispatch('toastSuccess')
       } else {
@@ -361,12 +418,13 @@ const actions = {
       return success
     })
   },
-  exitGroup ({commit, dispatch}, {id}) {
+  exitGroup ({state, commit, dispatch}, {id}) {
     return Vue.http.post('trv/groupExit/' + id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
       const success = ret.data.success
       if (success) {
         const group = ret.data.ret
-        commit(ENTITY_NAME + mutationTypes.SET_ONE_IN_LIST, {id, group})
+        id === state.current.id && commit(ENTITY_NAME + mutationTypes.FETCH_DETAILS_SUCCESS, {group})
+        commit(ENTITY_NAME + mutationTypes.UNDO, {id, group})
         state.socket.emit('CG004', id)
         dispatch('toastSuccess')
       } else {

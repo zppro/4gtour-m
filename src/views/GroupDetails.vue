@@ -12,8 +12,8 @@
       .group-control
         count-down(v-if="beforeDeadline && secondsToAssembly > 0", :seconds-to-assembly="secondsToAssembly", :part-width="'1rem'", :font-size="'0.6rem'")
         count-down(v-if="beforeAssembling && secondsToAssembly > 0", :seconds-to-assembly="secondsToAssembly", :part-width="'1rem'", :font-size="'0.6rem'")
-        a.btn1.btn-participate(v-if="showParticipateButton")(@click.prevent="participate") 立即参团
-        a.btn1.btn-exit(v-if="showExitButton")(@click.prevent="exit") 取消报名
+        a.btn1.btn-participate(v-if="showParticipateButton" @click.prevent="participate") 立即参团
+        a.btn1.btn-exit(v-if="showExitButton" @click.prevent="exit") 取消报名
         span.verticle-middle
     .group-row.display-flex.group-row-border-top
       i.fa.fa-clock-o.text-primary(aria-hidden="true")
@@ -24,15 +24,26 @@
       .group-label 集合地点
       .group-text {{groupInDetails.assembling_place.location_text}}
     .group-row.display-flex.group-row-border-top.group-header-top
-      .group-label 我们邀请您参加团，快来看看吧～
+      .group-text 我们邀请您参加团，快来看看吧～
+      .group-text
+        | 还差
+        span.group-success-left {{groupSuccessLeft}}
+        | 人成团
     .group-row.display-flex.group-header-middle
       .group-control.group-field-leader
         router-link.group-leader-head-portrait(:to="'/ta/'+groupLeader.participant_id+'/details'")
           img(:src="groupLeader.head_pic || defaultMemberHeadPortrait")
           mt-badge.leader-flag(type="error" size="small") 团长
-        .group-leader-nick-name {{groupLeader.nick_name}}
+        .group-leader-nick-name {{groupLeader.name}}
         .group-leader-phone {{groupLeader.phone}}
         .group-leader-phone-icon.iconfont-misc.icon-misc-xihebiaozhunyuanjian439
+    .group-intro.display-flex
+      .group-field-intro {{groupInDetails.intro}}
+    .group-row-space
+    .group-tip-top.display-flex.group-row-border-top
+      .group-label-border-blue 注意事项
+    .group-tip-middle.display-flexSET_ONE_IN_LIST
+      .group-field-tip {{groupInDetails.tip}}
 </template>
 
 <script>
@@ -67,14 +78,17 @@
         console.log(seconds)
         return seconds > 0 ? seconds : 0
       },
+      groupSuccessLeft () {
+        return (this.groupInDetails.participate_min - this.groupInDetails.participant_number) || 0
+      },
       showParticipateButton () {
         return this.beforeDeadline && this.groupInDetails.participant_number < this.groupInDetails.participate_max && !this.groupInDetails.participanter_ids.some((o) => {
-          return o === this.memberId
+          return o === this.memberInfo.member_id
         })
       },
       showExitButton () {
         return this.beforeDeadline && this.groupInDetails.participanter_ids.some((o) => {
-          return o === this.memberId
+          return o === this.memberInfo.member_id
         })
       },
       groupLeader () {
@@ -88,11 +102,13 @@
         }
       },
       ...mapState(['env', 'authMemberByTokenPromise']),
-      ...mapGetters(['groupInDetails'])
+      ...mapGetters(['groupInDetails', 'memberInfo'])
     },
     created () {
       this.authMemberByTokenPromise.then(() => {
-        this.ensureGroup()
+        this.ensureLatestParticipated().then(() => {
+          this.ensureGroup()
+        })
       })
     },
     methods: {
@@ -100,13 +116,15 @@
         if (!this.showParticipateButton) {
           return false
         }
+        this.participateGroup(this.groupInDetails)
       },
       exit () {
         if (!this.showExitButton) {
           return false
         }
+        this.exitGroup(this.groupInDetails)
       },
-      ...mapActions(['ensureGroup'])
+      ...mapActions(['ensureLatestParticipated', 'ensureGroup', 'participateGroup', 'exitGroup'])
     },
     components: {
       ImageRotator,
@@ -125,8 +143,18 @@
     .group-imgs{
       width:100%;
     }
-    height: 0.8rem;
     line-height:0.8rem;
+    .group-row-space{
+      height: 0.5rem;
+      background-color: #F0EEF4;
+    }
+    .group-text {
+      line-height: 1.1rem;
+      font-size:0.6rem;
+      color:#A0A0A0;
+      padding-left:0.3rem;
+      text-align: left;
+    }
     .group-row{
       width:100%;
       background-color: white;
@@ -148,11 +176,18 @@
         text-align: left;
         line-height: 1.1rem;
       }
-      .group-text {
-        line-height: 1.1rem;
-        font-size:0.6rem;
-        color:#A0A0A0;
-        padding-left:0.3rem;
+      .group-label-border-blue {
+        .group-label;
+        border: solid 1px #35ADF8;
+        color:#35ADF8;
+        line-height: 1rem;
+        padding: 0 0.3rem;
+        border-radius: 0.2rem;
+      }
+      .group-success-left{
+        color:red;
+        font-size:0.8rem;
+        padding: 0 0.2rem;
       }
       .group-field-name {
         flex: 1;
@@ -181,6 +216,30 @@
         a.btn-exit{
           background-color: #428bca;
         }
+      }
+    }
+    .group-intro{
+      .group-row;
+      height: inherit;
+      .group-field-intro{
+        .group-text;
+        padding-left:0;
+        text-indent: 1.2rem;
+      }
+    }
+    .group-tip-top{
+      .group-row;
+      padding-top: 0.7rem;
+      padding-bottom: 0.4rem;
+      height: inherit;
+    }
+    .group-tip-middle{
+      .group-row;
+      height: inherit;
+      .group-field-tip{
+        .group-text;
+        padding-left:0;
+        text-indent: 1.2rem;
       }
     }
     .group-header-top{
@@ -222,7 +281,7 @@
           flex:1;
           line-height:2rem;
           text-align: left;
-          text-indent: 0.2rem;
+          text-indent: 1rem;
           color:#A0A0A0;
         }
         .group-leader-phone{

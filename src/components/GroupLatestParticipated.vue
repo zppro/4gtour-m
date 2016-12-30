@@ -9,7 +9,7 @@
         .count-down-part(v-if="beforeAssembling") 等待出行
           count-down(v-if="secondsToAssembly", :seconds-to-assembly="secondsToAssembly" v-on:count-down-finish="countDownFinished")
         .count-down-part(v-if="afterAssembling") 出行中
-      .item-body
+      router-link.item-body(:to="groupInfoUrl")
         .group-left
           img(v-if="showGroupImg", :src="group.imgs[0]")
           span.verticle-middle(v-if="showGroupImg")
@@ -26,7 +26,7 @@
             span {{group.participant_number}} /{{group.participate_max}}人团
           .action-status
             .action
-              a.btn1.btn-convene-enter( @click="conveneAndEnter", :class='{"disabled":!canConveneAndEnter}') {{actionBtnText}}
+              a.btn1.btn-convene-enter( @click.prevent="conveneAndEnter", :class='{"disabled":!canConveneAndEnter}') {{actionBtnText}}
               span.verticle-middle
             .success-img-tag
               .tag-wrapper
@@ -152,6 +152,9 @@
   export default {
     props: ['group'],
     computed: {
+      groupInfoUrl () {
+        return {path: '/group/details/' + this.group.id}
+      },
       haveGroupLatestPariticipated () {
         return !!this.group.id
       },
@@ -174,9 +177,6 @@
       },
       assemblingTimeFormatted () {
         return moment(this.group.assembling_time).format('MM月DD日 HH:mm')
-      },
-      groupInfoUrl () {
-        return this.group.group_status === 'A0009' ? '/group/' + this.group.id + '/convene' : '/group/' + this.group.id + '/details'
       },
       participatedSuccessImg () {
         return window.utils.qiniuImageView('http://img2.okertrip.com/participated-success.png', window.utils.rem2px(6.5), window.utils.rem2px(6.5))
