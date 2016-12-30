@@ -4,7 +4,7 @@
         image-rotator(:all-images="groupInDetails.imgs", :auto="3000" slot="routeImages" width="18.75" height="7")
     .group-row.display-flex
       .group-label.group-field-name {{groupInDetails.name}}
-      .group-field-participated-max {{participatedMaxText}}
+      .group-field-participated-max {{groupInDetails.participate_max || 0}}人团
     .group-row.display-flex.group-row-border-top
       i.fa.fa-clock-o.text-primary(aria-hidden="true")
       .group-label 报名截止
@@ -25,10 +25,14 @@
       .group-text {{groupInDetails.assembling_place.location_text}}
     .group-row.display-flex.group-row-border-top.group-header-top
       .group-text 我们邀请您参加团，快来看看吧～
-      .group-text
+      .group-text(v-if="!isGroupSuccess")
         | 还差
         span.group-success-left {{groupSuccessLeft}}
         | 人成团
+      .group-text(v-if="isGroupSuccess")
+        | 已加入
+        span.group-success-over {{groupInDetails.participant_number || 0}}
+        | / {{groupInDetails.participate_max || 0}}人
     .group-row.display-flex.group-header-middle
       .group-control.group-field-leader
         router-link.group-leader-head-portrait(:to="'/ta/'+groupLeader.participant_id+'/details'")
@@ -53,9 +57,6 @@
   import CountDown from '../components/CountDown.vue'
   export default {
     computed: {
-      participatedMaxText () {
-        return (this.groupInDetails.participate_max || '0') + '人团'
-      },
       deadline () {
         return this.groupInDetails.deadline || this.groupInDetails.assembling_time
       },
@@ -78,8 +79,14 @@
         console.log(seconds)
         return seconds > 0 ? seconds : 0
       },
+      isGroupSuccess () {
+        return this.groupInDetails.participate_min - this.groupInDetails.participant_number <= 0
+      },
       groupSuccessLeft () {
         return (this.groupInDetails.participate_min - this.groupInDetails.participant_number) || 0
+      },
+      groupSuccessOver () {
+        return (this.groupInDetails.participant_number - this.groupInDetails.participate_min) || 0
       },
       showParticipateButton () {
         return this.beforeDeadline && this.groupInDetails.participant_number < this.groupInDetails.participate_max && !this.groupInDetails.participanter_ids.some((o) => {
@@ -105,10 +112,9 @@
       ...mapGetters(['groupInDetails', 'memberInfo'])
     },
     created () {
+      this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
-        this.ensureLatestParticipated().then(() => {
-          this.ensureGroup()
-        })
+        this.ensureGroup()
       })
     },
     methods: {
@@ -124,7 +130,7 @@
         }
         this.exitGroup(this.groupInDetails)
       },
-      ...mapActions(['ensureLatestParticipated', 'ensureGroup', 'participateGroup', 'exitGroup'])
+      ...mapActions(['ensureGroupSocket', 'ensureGroup', 'participateGroup', 'exitGroup'])
     },
     components: {
       ImageRotator,
@@ -184,7 +190,7 @@
         padding: 0 0.3rem;
         border-radius: 0.2rem;
       }
-      .group-success-left{
+      .group-success-left, .group-success-over{
         color:red;
         font-size:0.8rem;
         padding: 0 0.2rem;

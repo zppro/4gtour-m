@@ -22,7 +22,8 @@ const state = {
     leader: {},
     assembling_place: {},
     participants: [],
-    checkins: []
+    checkins: [],
+    leave_outs: []
   },
   conveningLocation: {
     lon: '',
@@ -77,11 +78,9 @@ const mutations = {
     // 设置socket
     state.socket = io(groupSocketUrl)
     state.socket.on('connect', () => {
-      window.alert('group socket connected')
       console.log('group socket connected')
     })
     state.socket.on('disconnect', () => {
-      window.alert('group socket disconnected')
       console.log('group socket disconnected')
     })
   },
@@ -105,6 +104,11 @@ const mutations = {
   [ENTITY_NAME + CONVENING_NAME + mutationTypes.SET] (state, { conveningOne }) {
     state.conveningOne = conveningOne
   },
+  [ENTITY_NAME + mutationTypes.LEAVE_OUT] (state, { id, group }) {
+    // let newLatestIndex = state.all.find(item => item.participanter_ids.some((o) => {
+    //   return o === memberId
+    // }))
+  },
   [ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET] (state, { lon, lat }) {
     Vue.set(state.conveningLocation, 'lon', lon)
     Vue.set(state.conveningLocation, 'lat', lat)
@@ -126,7 +130,6 @@ const mutations = {
     }
   },
   [ENTITY_NAME + mutationTypes.DO] (state, { id, group }) {
-    window.alert('DO' + state.all.findIndex)
     let theIndex = state.all.findIndex(item => item.id === id)
     if (theIndex !== -1) {
       // 如果在列表中，则必不在latest里
@@ -146,7 +149,6 @@ const mutations = {
       // 如果在latest中
       state.latest = group
     }
-    window.alert(state.current.id === id)
     if (state.current.id === id) {
       state.current = Object.assign({}, group)
     }
@@ -159,7 +161,7 @@ const mutations = {
     } else if (state.latest.id === id) {
       // 如果在latest中,更新当前的latest，并将latest加入到latest中，并从列表中查找自己参加的最近时间的group设为latest
       state.latest = group
-      let newLatestIndex = state.all.find(item => item.participanter_ids.some((o) => {
+      let newLatestIndex = state.all.findIndex(item => item.participanter_ids.some((o) => {
         return o === memberId
       }))
 
@@ -232,6 +234,11 @@ const actions = {
       console.log('group socket listener SG100: ' + data.reason)
       data.group && commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: data.group})
       data.checking_member && dispatch('toastInfo', data.checking_member.member_name + '签到成功')
+    })
+    state.socket.on('SG101', (data) => {
+      console.log('group socket listener SG101: ' + data.reason)
+      data.group && commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: data.group})
+      data.leaving_member && dispatch('toastInfo', data.leaving_member.member_name + '已退团')
     })
     state.socket.on('SG102', (data) => {
       console.log('group socket listener SG102: ' + data.reason)
@@ -440,6 +447,20 @@ const actions = {
         const group = ret.data.ret
         commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: group})
         state.socket.emit('CG100', { group_id: group.id, checking_member: rootState.member.self })
+        dispatch('toastSuccess')
+      } else {
+        dispatch('toastError', ret.data)
+      }
+      return success
+    })
+  },
+  leaveOutConveningGroup ({state, rootState, commit, dispatch}) {
+    return Vue.http.post('trv/groupLeaveOut/' + state.conveningOne.id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
+      const success = ret.data.success
+      if (success) {
+        const group = ret.data.ret
+        commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: group})
+        state.socket.emit('CG101', { group_id: group.id, leaving_member: rootState.member.self })
         dispatch('toastSuccess')
       } else {
         dispatch('toastError', ret.data)

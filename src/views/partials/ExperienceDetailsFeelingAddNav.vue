@@ -8,7 +8,6 @@
       a.btn-send 保存
 </template>
 <style lang="less" scoped>
-
   .nav-header .nav-item-right2{
     flex: 0.3;
     font-size:1.2rem;

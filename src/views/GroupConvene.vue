@@ -89,7 +89,7 @@
       },
       isCheckIn () {
         return this.conveningGroup.checkins.some((o) => {
-          return o.member_check_in_id === this.memberInfo.member_id
+          return o.member_id === this.memberInfo.member_id
         })
       },
       groupLeader () {
@@ -109,7 +109,7 @@
       ...mapGetters(['isLogined', 'memberInfo', 'conveningGroup'])
     },
     created () {
-      moment.locale('zh-cn')
+      this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
         this.ensureConveningGroup().then(() => {
           console.log('begin loading map')
@@ -254,7 +254,7 @@
         this.$el.offsetHeight
         this.$el.style.display = 'flex'
       },
-      ...mapActions(['sendEventToApiCloud', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'ensureConveningGroup', 'checkInConveningGroup', 'reportLocationAsGroupMember'])
+      ...mapActions(['ensureGroupSocket', 'sendEventToApiCloud', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'ensureConveningGroup', 'checkInConveningGroup', 'reportLocationAsGroupMember'])
     }
   }
 </script>
