@@ -23,6 +23,10 @@
       i.fa.fa-map-marker.text-primary(aria-hidden="true")
       .group-label 集合地点
       .group-text {{groupInDetails.assembling_place.location_text}}
+    .group-row.group-map-inline-row.display-flex
+      .group-map-inline
+        .map-inline-bg-text.text-muted.text-italic 地图位置
+        span.verticle-middle
     .group-row.display-flex.group-row-border-top.group-header-top
       .group-text 我们邀请您参加团，快来看看吧～
       .group-text(v-if="!isGroupSuccess")
@@ -41,6 +45,8 @@
         .group-leader-nick-name {{groupLeader.name}}
         .group-leader-phone {{groupLeader.phone}}
         .group-leader-phone-icon.iconfont-misc.icon-misc-xihebiaozhunyuanjian439
+    .group-member.display-flex
+      group-member-list(:group="groupInDetails", :bg-color="'#FDE4E5'")
     .group-intro.display-flex
       .group-field-intro {{groupInDetails.intro}}
     .group-row-space
@@ -55,6 +61,8 @@
   import moment from 'moment'
   import ImageRotator from '../components/ImageRotator.vue'
   import CountDown from '../components/CountDown.vue'
+  import GroupMemberList from '../components/GroupMemberList.vue'
+  import { APICLOUD_OPEN_MAP_INLINE } from '../store/share-apicloud-event-names'
   export default {
     computed: {
       deadline () {
@@ -114,7 +122,15 @@
     created () {
       this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
-        this.ensureGroup()
+        this.ensureGroup().then(() => {
+          let elem = window.$('.group-map-inline')
+//          let top = 360
+//          let width = elem.width() || 300
+//          let height = elem.height() || 400
+          let offset = elem.offset()
+          console.log(offset)
+          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_MAP_INLINE, eventData: offset })
+        })
       })
     },
     methods: {
@@ -134,7 +150,8 @@
     },
     components: {
       ImageRotator,
-      CountDown
+      CountDown,
+      GroupMemberList
     }
   }
 </script>
@@ -223,6 +240,23 @@
           background-color: #428bca;
         }
       }
+    }
+    .group-map-inline-row{
+      height: 4rem;
+    }
+    .group-map-inline{
+      width:100%;
+      background-color: #A0A0A0;
+      .map-inline-bg-text{
+        vertical-align: middle;
+        display: inline-block;
+        font-size: 1rem;
+      }
+    }
+    .group-member{
+      .group-row;
+      height: inherit;
+      background-color: #FDE4E5;
     }
     .group-intro{
       .group-row;

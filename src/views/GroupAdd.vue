@@ -18,6 +18,8 @@
         mt-datetime-picker(ref="deadlinePicker" type="datetime", :start-date="start_date" @confirm="selectDeadline" )
     .item-block.assembling-info
       mt-field(label="集合地点" v-model="newGroup.assembling_place.location_text")
+        a.primary(@click="pickLocation")
+          i.fa.fa-map-marker(aria-hidden="true")
       mt-field(label="集合时间" placeholder="右方日历图标" v-model="assemblingTime", :readonly="true", :disableClear="true" )
         a.primary(@click="triggerDatePicker('assemblingTimePicker')")
           i.fa.fa-calendar(aria-hidden="true")
@@ -30,6 +32,7 @@
   import { mapState, mapGetters, mapActions } from 'vuex'
   import moment from 'moment'
   import ImageUploader from '../components/ImageUploader.vue'
+  import { APICLOUD_OPEN_MAP_DIALOG, APICLOUD_OPEN_MAP_DIALOG_PICKED } from '../store/share-apicloud-event-names'
   export default {
     data () {
       return {
@@ -99,6 +102,28 @@
         !this.newGroup.leader.nick_name && (this.newGroup.leader.nick_name = this.memberInfo.member_name)
       })
     },
+    mounted () {
+      if (this.env.isApiCloud) {
+        this.addEventListenerFromApiCloud({
+          eventName: APICLOUD_OPEN_MAP_DIALOG_PICKED,
+          eventHandler: (eventRet) => {
+            console.log(eventRet.value)
+            // window.alert(eventRet.value)
+            if (eventRet.value) {
+              this.newGroup.assembling_place.location_text = eventRet.value.addr || (eventRet.value.lon + ',' + eventRet.value.lat)
+              this.newGroup.assembling_place.lon = eventRet.value.lon
+              this.newGroup.assembling_place.lat = eventRet.value.lat
+            }
+          }
+        })
+      }
+    },
+    beforeDestroy () {
+      if (this.env.isApiCloud) {
+        this.removeEventListenerFromApiCloud('APICLOUD_OPEN_MAP_DIALOG_PICKED')
+      }
+      console.log('before destroy')
+    },
     watch: {
       submitingForm: function (newSubmitingForm) {
         var self = this
@@ -123,6 +148,9 @@
       }
     },
     methods: {
+      pickLocation () {
+        this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_MAP_DIALOG, eventData: this.newGroup.assembling_place })
+      },
       triggerDatePicker (id) {
         this.$refs[id].open()
       },
@@ -140,7 +168,7 @@
         console.log(imgUrlIndex)
         this.newGroup.imgs.splice(imgUrlIndex, 1)
       },
-      ...mapActions(['toastError', 'submitForm', 'submitFormFail', 'saveGroup'])
+      ...mapActions(['toastError', 'addEventListenerFromApiCloud', 'removeEventListenerFromApiCloud', 'sendEventToApiCloud', 'submitForm', 'submitFormFail', 'saveGroup'])
     },
     components: {
       ImageUploader

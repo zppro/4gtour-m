@@ -1,10 +1,10 @@
 <template lang="jade">
-  .group-member-list
-    router-link.member-head-portrait-c(v-for="groupMember in groupMembers", :to="'/ta/'+groupMember.participant_id+'/details'")
+  .group-member-list(:style="groupMemberListStyle")
+    router-link.member-head-portrait-c(:style="memberHeadPortraitStyle", v-for="groupMember in groupMembers", :to="'/ta/'+groupMember.participant_id+'/details'")
       .member-head-portrait
         img(:src="groupMember.head_pic || defaultMemberHeadPortrait")
       .member-name {{ isSelf(groupMember.participant_id) ? '我(' + groupMember.name + ')' : groupMember.name}}
-      .group-member-status-description.text-italic(:class='{"text-muted": !isCheckIn(groupMember.participant_id), "text-success": isCheckIn(groupMember.participant_id) && !isLeaveOut(groupMember.participant_id), "text-primary": isCheckIn(groupMember.participant_id) && isLeaveOut(groupMember.participant_id) }') {{getGroupMemberDescription(groupMember.participant_id)}}
+      .group-member-status-description.text-italic(v-if="this.showGroupMemberDescription", :class='{"text-muted": !isCheckIn(groupMember.participant_id), "text-success": isCheckIn(groupMember.participant_id) && !isLeaveOut(groupMember.participant_id), "text-primary": isCheckIn(groupMember.participant_id) && isLeaveOut(groupMember.participant_id) }') {{getGroupMemberDescription(groupMember.participant_id)}}
       mt-badge.leader-flag(v-if="groupMember.position_in_group === 'A0001'" type="error" size="small") 团长
     .clear
 </template>
@@ -13,11 +13,9 @@
 <style lang="less">
 .group-member-list {
   width:100%;
-  background-color: white;
   .member-head-portrait-c{
     float:left;
     width:20%;
-    height:4.5rem;
     padding:0.1rem;
     display:block;
     position: relative;
@@ -52,8 +50,18 @@
 <script>
   import { mapState } from 'vuex'
   export default {
-    props: ['group', 'memberId'],
+    props: ['group', 'bgColor', 'showGroupMemberDescription', 'memberId'],
     computed: {
+      groupMemberListStyle () {
+        return {
+          backgroundColor: this.bgColor || 'white'
+        }
+      },
+      memberHeadPortraitStyle () {
+        return {
+          height: (this.showGroupMemberDescription ? 4.5 : 4) + 'rem'
+        }
+      },
       groupMembers () {
         return this.group.participants
       },
@@ -74,6 +82,7 @@
         })
       },
       getGroupMemberDescription (groupMemberId) {
+        if (!this.showGroupMemberDescription) return ''
         let isCheckIn = this.isCheckIn(groupMemberId)
         let isLeaveOut = this.isLeaveOut(groupMemberId)
         if (!isCheckIn) {
