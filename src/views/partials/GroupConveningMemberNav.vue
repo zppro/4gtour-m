@@ -28,26 +28,34 @@
   }
 </style>
 <script>
-  import { mapActions } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   export default {
     computed: {
       title () {
         return this.$route.name
-      }
+      },
+      ...mapGetters(['conveningGroup'])
     },
     methods: {
       back () {
         window.history.back()
       },
       leaveOut () {
-        this.confirm('退团时确认本团行程已全部结束，要继续么?').then(action => {
-          console.log('checkout')
-          this.leaveOutConveningGroup().then(() => {
-            this.$router.push('/group/index')
+        this.checkGroupMemberPosition({group: this.conveningGroup}).then((groupMemberPosition) => {
+          let msg = '退团时确认本团行程已全部结束，要继续么?'
+          let isGroupLeader = groupMemberPosition === 'A0001'
+          if (isGroupLeader) {
+            msg = '您是本团的团长，一旦退团，本团将立即解散，要继续么?'
+          }
+          this.confirm(msg).then(action => {
+            console.log('checkout')
+            this.leaveOutConveningGroup({isGroupLeader}).then(() => {
+              this.$router.push('/group/index')
+            })
           })
         })
       },
-      ...mapActions(['confirm', 'leaveOutConveningGroup'])
+      ...mapActions(['confirm', 'leaveOutConveningGroup', 'checkGroupMemberPosition'])
     }
   }
 </script>

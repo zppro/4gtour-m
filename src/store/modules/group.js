@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import moment from 'moment'
+import router from '../../router'
 import * as mutationTypes from '../mutation-types'
 import { DATA_FETCH_TEXT, DATA_SAVE_TEXT } from '../loading-texts'
 import { SUB_ENTITY_SOCKET_NAME } from '../keys'
@@ -10,33 +11,24 @@ const ENTITY_NAME = 'GROUP'
 export const LATEST_NAME = '$LATEST'
 export const CONVENING_NAME = '$CONVENING'
 export const CONVENING_LOCATION_NAME = '$CONVENING_LOCATION'
+
+const initGroupInfo = {
+  leader: {},
+  assembling_place: {},
+  participants: [],
+  checkins: [],
+  leave_outs: []
+}
 // initial state
 const state = {
-  latest: {
-    leader: {},
-    assembling_place: {},
-    participants: [],
-    checkins: []
-  },
-  conveningOne: {
-    leader: {},
-    assembling_place: {},
-    participants: [],
-    checkins: [],
-    leave_outs: []
-  },
+  latest: Object.assign({}, initGroupInfo),
+  conveningOne: Object.assign({}, initGroupInfo),
   conveningLocation: {
     lon: '',
     lat: ''
   },
   all: [],
-  current: {
-    leader: {},
-    assembling_place: {},
-    participants: [],
-    checkins: [],
-    participanter_ids: []
-  },
+  current: Object.assign({}, initGroupInfo),
   groupsFirstLoaded: false,
   listRequestTypeAppending: true,
   noMoreOfIndexes: false,
@@ -104,10 +96,16 @@ const mutations = {
   [ENTITY_NAME + CONVENING_NAME + mutationTypes.SET] (state, { conveningOne }) {
     state.conveningOne = conveningOne
   },
-  [ENTITY_NAME + mutationTypes.LEAVE_OUT] (state, { id, group }) {
-    // let newLatestIndex = state.all.find(item => item.participanter_ids.some((o) => {
-    //   return o === memberId
-    // }))
+  [ENTITY_NAME + CONVENING_NAME + mutationTypes.LEAVE_OUT] (state, { memberId }) {
+    state.conveningOne = Object.assign({}, initGroupInfo)
+    let newLatestIndex = state.all.findIndex(item => item.participanter_ids.some((o) => {
+      return o === memberId
+    }))
+    if (newLatestIndex !== -1) {
+      state.latest = state.all.splice(newLatestIndex, 1)[0]
+    } else {
+      state.latest = Object.assign({}, initGroupInfo)
+    }
   },
   [ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET] (state, { lon, lat }) {
     Vue.set(state.conveningLocation, 'lon', lon)
@@ -242,6 +240,15 @@ const actions = {
     })
     state.socket.on('SG102', (data) => {
       console.log('group socket listener SG102: ' + data.reason)
+      const groupName = state.conveningOne.name
+      commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.LEAVE_OUT, {member_id: rootState.member.self.member_id})
+      dispatch('toastInfo', groupName + '已解散')
+      if (rootState.route.path.startsWith('/group/convene/') || rootState.route.path === '/group/convening-member') {
+        router.push({ path: '/group/index' })
+      }
+    })
+    state.socket.on('SG103', (data) => {
+      console.log('group socket listener SG103: ' + data.reason)
       // window.alert(data.location.lon + '   ' + data.location.lat)
       dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat, type: 'M'} })
     })
@@ -454,13 +461,18 @@ const actions = {
       return success
     })
   },
-  leaveOutConveningGroup ({state, rootState, commit, dispatch}) {
+  leaveOutConveningGroup ({state, rootState, commit, dispatch}, {isGroupLeader}) {
     return Vue.http.post('trv/groupLeaveOut/' + state.conveningOne.id, {}, {headers: {loadingText: DATA_SAVE_TEXT}}).then(ret => {
       const success = ret.data.success
       if (success) {
+        console.log('isGroupLeader:' + isGroupLeader)
         const group = ret.data.ret
-        commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.SET, {conveningOne: group})
-        state.socket.emit('CG101', { group_id: group.id, leaving_member: rootState.member.self })
+        commit(ENTITY_NAME + CONVENING_NAME + mutationTypes.LEAVE_OUT, {member_id: rootState.member.self.member_id})
+        if (isGroupLeader) {
+          state.socket.emit('CG102', { group_id: group.id })
+        } else {
+          state.socket.emit('CG101', { group_id: group.id, leaving_member: rootState.member.self })
+        }
         dispatch('toastSuccess')
       } else {
         dispatch('toastError', ret.data)
@@ -470,8 +482,19 @@ const actions = {
   },
   reportLocationAsGroupMember ({state, rootState, commit, dispatch}, {id, lon, lat}) {
     commit(ENTITY_NAME + CONVENING_LOCATION_NAME + mutationTypes.SET, {lon, lat})
-    state.socket.emit('CG102', {group_id: id, locating_member: rootState.member.self, location: state.conveningLocation})
+    state.socket.emit('CG103', {group_id: id, locating_member: rootState.member.self, location: state.conveningLocation})
     return dispatch('noop')
+  },
+  checkGroupMemberPosition ({rootState}, {group}) {
+    if (!group) return ''
+    let groupMembers = group.participants.filter((o) => {
+      return o.participant_id === rootState.member.self.member_id
+    })
+    if (groupMembers.length !== 1) {
+      return ''
+    }
+    let groupMember = groupMembers[0]
+    return groupMember.position_in_group
   }
 }
 

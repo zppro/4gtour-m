@@ -46,7 +46,7 @@
     .group-row-space
     .group-tip-top.display-flex.group-row-border-top
       .group-label-border-blue 注意事项
-    .group-tip-middle.display-flexSET_ONE_IN_LIST
+    .group-tip-middle.display-flex
       .group-field-tip {{groupInDetails.tip}}
 </template>
 

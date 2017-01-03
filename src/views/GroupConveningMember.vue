@@ -1,6 +1,6 @@
 <template lang="jade">
   .group-member-c
-    group-member-list(:group-members="conveningGroup.participants")
+    group-member-list(:group="conveningGroup", :member-id="memberInfo.member_id")
 </template>
 
 <script>

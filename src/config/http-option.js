@@ -1,6 +1,6 @@
 import store from '../store'
 // 'http://192.168.101.7:3002/me-services' 'http://192.168.255.116:3002/me-services'
-export const root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.104:3002/me-services' : 'http://sh.okertrip.com/me-services'
+export const root = process.env.NODE_ENV === 'development' ? 'http://192.168.255.107:3002/me-services' : 'http://sh.okertrip.com/me-services'
 // Vue.http.options.emulateJSON = true
 export const credentials = true
 export const auth = (request, next) => {

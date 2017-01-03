@@ -42,7 +42,7 @@ export const toastInfo = (o, msg) => {
 }
 
 export const confirm = (o, msg) => {
-  return MessageBox.confirm('确定执行此操作?')
+  return MessageBox.confirm(msg || '确定执行此操作?')
 }
 
 export const preloadD = ({ commit, dispatch }, key) => {
