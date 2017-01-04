@@ -250,7 +250,7 @@ const actions = {
     state.socket.on('SG103', (data) => {
       console.log('group socket listener SG103: ' + data.reason)
       // window.alert(data.location.lon + '   ' + data.location.lat)
-      let type = data.isGroupLeader ? 'L': 'M'
+      let type = data.isGroupLeader ? 'L' : 'M'
       dispatch('sendEventToApiCloud', { eventName: APICLOUD_OTHER_ANNOTATION, eventData: {id: data.locating_member.member_id, lon: data.location.lon, lat: data.location.lat, type} })
     })
     state.socket.emit('CG001', rootState.member.self.member_id)
