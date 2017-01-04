@@ -110,7 +110,7 @@
             console.log(eventRet.value)
             // window.alert(eventRet.value)
             if (eventRet.value) {
-              this.newGroup.assembling_place.location_text = eventRet.value.addr || (eventRet.value.lon + ',' + eventRet.value.lat)
+              this.newGroup.assembling_place.location_text = eventRet.value.location_text || (eventRet.value.lon + ',' + eventRet.value.lat)
               this.newGroup.assembling_place.lon = eventRet.value.lon
               this.newGroup.assembling_place.lat = eventRet.value.lat
             }

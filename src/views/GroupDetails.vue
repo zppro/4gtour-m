@@ -62,7 +62,7 @@
   import ImageRotator from '../components/ImageRotator.vue'
   import CountDown from '../components/CountDown.vue'
   import GroupMemberList from '../components/GroupMemberList.vue'
-  import { APICLOUD_OPEN_MAP_INLINE } from '../store/share-apicloud-event-names'
+  import { APICLOUD_OPEN_MAP_INLINE, APICLOUD_CLOSE_MAP } from '../store/share-apicloud-event-names'
   export default {
     computed: {
       deadline () {
@@ -123,15 +123,27 @@
       this.ensureGroupSocket()
       this.authMemberByTokenPromise.then(() => {
         this.ensureGroup().then(() => {
-          let elem = window.$('.group-map-inline')
-//          let top = 360
-//          let width = elem.width() || 300
-//          let height = elem.height() || 400
-          let offset = elem.offset()
-          console.log(offset)
-          this.sendEventToApiCloud({ eventName: APICLOUD_OPEN_MAP_INLINE, eventData: offset })
+          let isOpenMapInline = !!(this.groupInDetails.assembling_place.lon && this.groupInDetails.assembling_place.lat)
+          if (this.env.isApiCloud && isOpenMapInline) {
+            let elem = window.$('.group-map-inline')
+            let offset = elem.offset()
+            console.log(offset)
+            this.sendEventToApiCloud({
+              eventName: APICLOUD_OPEN_MAP_INLINE,
+              eventData: Object.assign({
+                lon: this.groupInDetails.assembling_place.lon,
+                lat: this.groupInDetails.assembling_place.lat
+              }, offset)
+            })
+          }
         })
       })
+    },
+    beforeDestroy () {
+      if (this.env.isApiCloud) {
+        this.sendEventToApiCloud({ eventName: APICLOUD_CLOSE_MAP })
+      }
+      console.log('before destroy')
     },
     methods: {
       participate () {
@@ -146,7 +158,7 @@
         }
         this.exitGroup(this.groupInDetails)
       },
-      ...mapActions(['ensureGroupSocket', 'ensureGroup', 'participateGroup', 'exitGroup'])
+      ...mapActions(['sendEventToApiCloud', 'ensureGroupSocket', 'ensureGroup', 'participateGroup', 'exitGroup'])
     },
     components: {
       ImageRotator,
