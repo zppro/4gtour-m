@@ -68,7 +68,12 @@ const getters = {
 const mutations = {
   [ENTITY_NAME + SUB_ENTITY_SOCKET_NAME + mutationTypes.SET] (state) {
     // 设置socket
-    state.socket = io(groupSocketUrl)
+    if (groupSocketUrl.toLowerCase().startsWith('https')) {
+      state.socket = io(groupSocketUrl, {secure: true})
+    } else {
+      state.socket = io(groupSocketUrl)
+    }
+
     state.socket.on('connect', () => {
       console.log('group socket connected')
     })
